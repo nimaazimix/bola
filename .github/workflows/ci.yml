@@ -18,6 +18,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
 
+    env:
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,6 +48,10 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
 
+    env:
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -68,6 +76,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       VITE_API_URL: ${{ vars.VITE_API_URL }}
 
     steps:
@@ -92,6 +102,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
+    env:
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
 
     steps:
       - name: Checkout repository
