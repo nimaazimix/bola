@@ -1,0 +1,21 @@
+# Testing
+coverage
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next
+out
+build
+dist
+
+# Lock files
+pnpm-lock.yaml
+
+# Generated files
+routeTree.gen.ts
+**/generated/prisma/**

@@ -1,0 +1,11 @@
+{
+  "extends": "@bola/typescript-config/nestjs.json",
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "outDir": "dist",
+    "paths": {
+      "src/*": ["./src/*"],
+      "test/*": ["./test/*"]
+    }
+  }
+}
