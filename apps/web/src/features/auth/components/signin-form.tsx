@@ -24,14 +24,14 @@ export function SigninForm({ redirect }: SigninFormProps) {
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: SigninSchema,
-      onSubmitAsync: async ({ value }) => {
-        try {
-          await signin({ input: value });
-          navigate({ to: redirect || "/app" });
-        } catch (error) {
-          handleSubmitError(error);
-        }
-      },
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await signin({ input: value });
+        navigate({ to: redirect || "/app" });
+      } catch (error) {
+        handleSubmitError(error);
+      }
     },
   });
 
