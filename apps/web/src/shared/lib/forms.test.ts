@@ -5,7 +5,7 @@ import { handleSubmitError } from "./forms";
 vi.mock("sonner");
 
 describe("handleSubmitError", () => {
-  it("should toast API error message when it responds with unrelated code", () => {
+  it("should toast API error message successfully", () => {
     // Arrange
     const error = new AxiosError();
     error.response = {
@@ -13,23 +13,27 @@ describe("handleSubmitError", () => {
       statusText: "Bad Request",
       data: {
         success: false,
-        error: { code: "common.something_else", message: "Server exploded" },
+        error: { code: "common.something", message: "This message is from API" },
       },
       headers: {},
       config: {} as InternalAxiosRequestConfig,
     };
 
-    // Act, Assert
-    expect(handleSubmitError(error)).toBeUndefined();
-    expect(toast.error).toHaveBeenCalledWith("Server exploded");
+    // Act
+    handleSubmitError(error);
+
+    // Assert
+    expect(toast.error).toHaveBeenCalledWith("This message is from API");
   });
 
   it("should toast generic message when there is no API response", () => {
     // Arrange
     const error = new AxiosError();
 
-    // Act, Assert
-    expect(handleSubmitError(error)).toBeUndefined();
+    // Act
+    handleSubmitError(error);
+
+    // Assert
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
   });
 
@@ -37,8 +41,10 @@ describe("handleSubmitError", () => {
     // Arrange
     const error = new Error();
 
-    // Act, Assert
-    expect(handleSubmitError(error)).toBeUndefined();
+    // Act
+    handleSubmitError(error);
+
+    // Assert
     expect(toast.error).toHaveBeenCalledWith("Something went wrong");
   });
 });

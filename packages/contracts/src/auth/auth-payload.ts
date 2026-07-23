@@ -1,5 +1,5 @@
 import z from "zod";
-import { UserSchema } from "../user";
+import { UserSchema } from "../users";
 
 export const AuthPayloadSchema = z.object({
   accessToken: z.string(),

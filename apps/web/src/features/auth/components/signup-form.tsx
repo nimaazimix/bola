@@ -26,14 +26,14 @@ export function SignupForm({ redirect, data, onSignup }: SignupFormProps) {
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: SignupSchema,
-      onSubmitAsync: async ({ value }) => {
-        try {
-          await signup({ input: value, query: { redirect } });
-          onSignup({ name: value.name, email: value.email });
-        } catch (error) {
-          handleSubmitError(error);
-        }
-      },
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await signup({ input: value, query: { redirect } });
+        onSignup({ name: value.name, email: value.email });
+      } catch (error) {
+        handleSubmitError(error);
+      }
     },
   });
 
