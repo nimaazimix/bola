@@ -1,9 +1,19 @@
 import z from "zod";
 
 export const SignupSchema = z.object({
-  name: z.string().nonempty(),
-  email: z.email(),
-  password: z.string().nonempty().min(8),
+  name: z.string().nonempty("Please enter your name"),
+  email: z.email({
+    error: (issue) => {
+      if (issue.code === "invalid_type") return;
+      return issue.input!.length
+        ? "Please enter a valid email address"
+        : "Please enter your email address";
+    },
+  }),
+  password: z
+    .string()
+    .nonempty("Please enter your password")
+    .min(8, "Password must be at least 8 characters"),
 });
 
 export const SignupQuerySchema = z.object({
