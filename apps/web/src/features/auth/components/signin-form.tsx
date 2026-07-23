@@ -90,9 +90,14 @@ export function SigninForm({ redirect }: SigninFormProps) {
         />
       </FieldGroup>
 
-      <Button size="lg" className="w-full" disabled={form.state.isSubmitting}>
-        {form.state.isSubmitting ? "Signing in" : "Sign in"}
-      </Button>
+      <form.Subscribe
+        selector={(state) => state.isSubmitting}
+        children={(isSubmitting) => (
+          <Button size="lg" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Signing in" : "Sign in"}
+          </Button>
+        )}
+      />
     </form>
   );
 }
