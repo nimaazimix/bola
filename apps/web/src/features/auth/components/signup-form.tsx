@@ -114,9 +114,14 @@ export function SignupForm({ redirect, data, onSignup }: SignupFormProps) {
         />
       </FieldGroup>
 
-      <Button size="lg" className="w-full" disabled={form.state.isSubmitting}>
-        {form.state.isSubmitting ? "Signing up" : "Sign up"}
-      </Button>
+      <form.Subscribe
+        selector={(state) => state.isSubmitting}
+        children={(isSubmitting) => (
+          <Button size="lg" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Signing up" : "Sign up"}
+          </Button>
+        )}
+      />
     </form>
   );
 }
