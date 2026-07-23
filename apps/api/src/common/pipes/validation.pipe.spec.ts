@@ -56,7 +56,7 @@ describe("ValidationPipe", () => {
       expect((error as BadRequestException).getResponse()).toEqual({
         code: "common.validation_failed",
         message: "Invalid request payload",
-        details: expect.any(Array),
+        details: expect.any(Object),
       });
     }
   });
