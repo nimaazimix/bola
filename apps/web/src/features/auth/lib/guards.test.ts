@@ -19,14 +19,14 @@ describe("requireAuth", () => {
     expect(() => requireAuth("/app/settings")).not.toThrow();
   });
 
-  it("should throw redirect to /auth/signin and set visited route as redirect when user is unauthenticated", () => {
+  it("should throw redirect to /signin and set visited route as redirect when user is unauthenticated", () => {
     // Arrange
     useAuthStore.setState({ isAuthenticated: false });
 
     // Act, Arrange
     expect(() => requireAuth("/app/settings")).toThrow();
     expect(redirect).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "/auth/signin", search: { redirect: "/app/settings" } }),
+      expect.objectContaining({ to: "/signin", search: { redirect: "/app/settings" } }),
     );
   });
 
@@ -37,7 +37,7 @@ describe("requireAuth", () => {
     // Act, Arrange
     expect(() => requireAuth("/app")).toThrow();
     expect(redirect).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "/auth/signin", search: { redirect: undefined } }),
+      expect.objectContaining({ to: "/signin", search: { redirect: undefined } }),
     );
   });
 });

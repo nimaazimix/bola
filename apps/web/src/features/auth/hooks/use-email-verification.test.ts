@@ -40,7 +40,7 @@ describe("useEmailVerification", () => {
     });
   });
 
-  it("should navigate to /auth/signin and set redirect route when verification fails", async () => {
+  it("should navigate to /signin and set redirect route when verification fails", async () => {
     // Arrange
     server.use(
       http.post(AuthRoutes.VERIFY_EMAIL, () => {
@@ -56,14 +56,14 @@ describe("useEmailVerification", () => {
     await waitFor(() => {
       expect(navigateMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          to: "/auth/signin",
+          to: "/signin",
           search: { redirect: "/app/settings" },
         }),
       );
     });
   });
 
-  it("should navigate to /auth/signin and set redirect route when token is not provided", async () => {
+  it("should navigate to /signin and set redirect route when token is not provided", async () => {
     // Arrange
     renderHook(() => useEmailVerification({ redirect: "/app/settings" }), {
       wrapper: AllTheProviders,
@@ -72,7 +72,7 @@ describe("useEmailVerification", () => {
     // Assert
     expect(navigateMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: "/auth/signin",
+        to: "/signin",
         search: { redirect: "/app/settings" },
       }),
     );

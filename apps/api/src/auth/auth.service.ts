@@ -63,7 +63,7 @@ export class AuthService {
       },
     });
 
-    const url = new URL(`${this.configService.getOrThrow("CLIENT_URL")}/auth/verify-email`);
+    const url = new URL(`${this.configService.getOrThrow("CLIENT_URL")}/verify-email`);
     url.searchParams.set("token", vrfToken);
     if (redirect) {
       url.searchParams.set("redirect", redirect);

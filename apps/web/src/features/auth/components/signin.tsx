@@ -11,7 +11,7 @@ import { SigninForm } from "./signin-form";
 import { OAuthButtons } from "./oauth-buttons";
 
 export function Signin() {
-  const search = useSearch({ from: "/auth/signin" });
+  const search = useSearch({ from: "/(auth)/signin" });
 
   return (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
@@ -29,7 +29,7 @@ export function Signin() {
         <p className="text-muted-foreground mx-auto">
           Doesn&apos;t have an account?{" "}
           <Link
-            to="/auth/signup"
+            to="/signup"
             search={{ redirect: search.redirect }}
             className="text-primary underline"
           >

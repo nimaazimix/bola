@@ -127,7 +127,7 @@ describe("AuthService", () => {
       expect(argon2.hash).toHaveBeenCalledWith(dto.password);
       expect(mailServiceMock.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        "http://localhost:3000/auth/verify-email?token=vrf-token",
+        "http://localhost:3000/verify-email?token=vrf-token",
       );
       expect(result).toEqual(newUser);
     });
@@ -151,7 +151,7 @@ describe("AuthService", () => {
       // Assert
       expect(mailServiceMock.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        "http://localhost:3000/auth/verify-email?token=vrf-token&redirect=%2Fapp%2Fsettings",
+        "http://localhost:3000/verify-email?token=vrf-token&redirect=%2Fapp%2Fsettings",
       );
     });
 

@@ -7,7 +7,7 @@ export function requireAuth(locationHref: string) {
   const redirectParam = locationHref === "/app" ? undefined : locationHref;
   if (!isAuthenticated) {
     throw redirect({
-      to: "/auth/signin",
+      to: "/signin",
       search: { redirect: redirectParam },
       replace: true,
     });

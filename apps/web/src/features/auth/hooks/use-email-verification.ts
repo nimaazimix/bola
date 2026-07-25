@@ -14,14 +14,14 @@ export function useEmailVerification({ token, redirect }: EmailVerificationParam
   useEffect(() => {
     void (async () => {
       if (!token) {
-        return navigate({ to: "/auth/signin", search: { redirect }, replace: true });
+        return navigate({ to: "/signin", search: { redirect }, replace: true });
       }
 
       try {
         await verifyEmail({ input: { token } });
         navigate({ to: redirect || "/app", replace: true });
       } catch {
-        navigate({ to: "/auth/signin", search: { redirect }, replace: true });
+        navigate({ to: "/signin", search: { redirect }, replace: true });
       }
     })();
   }, [navigate, redirect, token, verifyEmail]);

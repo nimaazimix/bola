@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEmailVerification } from "#/features/auth";
 import { z } from "zod";
 
-export const Route = createFileRoute("/auth/verify-email")({
+export const Route = createFileRoute("/(auth)/verify-email")({
   validateSearch: z.object({
     token: z.string().nonempty().optional().catch(undefined),
     redirect: z.string().nonempty().optional().catch(undefined),

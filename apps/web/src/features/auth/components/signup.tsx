@@ -22,7 +22,7 @@ interface SignupState {
 export function Signup() {
   const [signupState, setSignupState] = useState<SignupState>({ step: "create-account" });
 
-  const search = useSearch({ from: "/auth/signup" });
+  const search = useSearch({ from: "/(auth)/signup" });
 
   return signupState.step === "create-account" ? (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
@@ -44,7 +44,7 @@ export function Signup() {
         <p className="text-muted-foreground mx-auto">
           Already have an account?{" "}
           <Link
-            to="/auth/signin"
+            to="/signin"
             search={{ redirect: search.redirect }}
             className="text-primary underline"
           >

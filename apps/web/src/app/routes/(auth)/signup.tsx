@@ -1,18 +1,21 @@
-import { Signin } from "#/features/auth";
+import { requireGuest, Signup } from "#/features/auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-export const Route = createFileRoute("/auth/signin")({
+export const Route = createFileRoute("/(auth)/signup")({
   validateSearch: z.object({
     redirect: z.string().nonempty().optional().catch(undefined),
   }),
+  beforeLoad: () => {
+    requireGuest();
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
     <div className="centered min-h-svh">
-      <Signin />
+      <Signup />
     </div>
   );
 }
