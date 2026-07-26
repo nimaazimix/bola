@@ -2,14 +2,14 @@ import { render, screen, userEvent, waitFor } from "#/test/utils";
 import { AuthRoutes, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
-import { SigninForm } from "./signin-form";
+import { SignInForm } from "./sign-in-form";
 
 const navigateMock = vi.fn();
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
 }));
 
-describe("SigninForm", () => {
+describe("SignInForm", () => {
   afterEach(() => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
@@ -27,7 +27,7 @@ describe("SigninForm", () => {
       }),
     );
 
-    render(<SigninForm redirect="/app/settings" />);
+    render(<SignInForm redirect="/app/settings" />);
     const user = userEvent.setup();
 
     // Act
@@ -45,7 +45,7 @@ describe("SigninForm", () => {
 
   it("should authenticate user and navigate to /app when redirect route is not provided", async () => {
     // Arrange
-    render(<SigninForm />);
+    render(<SignInForm />);
     const user = userEvent.setup();
 
     // Act
@@ -69,7 +69,7 @@ describe("SigninForm", () => {
       }),
     );
 
-    render(<SigninForm />);
+    render(<SignInForm />);
     const user = userEvent.setup();
 
     // Act
@@ -84,7 +84,7 @@ describe("SigninForm", () => {
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should show error message when signin fails", async () => {
+  it("should show error message when sign in fails", async () => {
     // Arrange
     server.use(
       http.post(AuthRoutes.SIGNIN, () => {
@@ -101,7 +101,7 @@ describe("SigninForm", () => {
       }),
     );
 
-    render(<SigninForm />);
+    render(<SignInForm />);
     const user = userEvent.setup();
 
     // Act
@@ -126,7 +126,7 @@ describe("SigninForm", () => {
       }),
     );
 
-    render(<SigninForm />);
+    render(<SignInForm />);
     const user = userEvent.setup();
 
     // Act

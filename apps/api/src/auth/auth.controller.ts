@@ -5,9 +5,9 @@ import { ZodSerializerDto } from "nestjs-zod";
 import { CurrentUser, Public } from "src/common/decorators";
 import {
   AuthResponseDto,
-  SigninDto,
-  SignupDto,
-  SignupQueryDto,
+  SignInDto,
+  SignUpDto,
+  SignUpQueryDto,
   UserResponseDto,
   VerifyEmailDto,
 } from "./dto";
@@ -25,8 +25,8 @@ export class AuthController {
   @Public()
   @Post("signup")
   @ZodSerializerDto(UserResponseDto)
-  async signup(@Body() dto: SignupDto, @Query() query: SignupQueryDto) {
-    return this.authService.signup(dto, query.redirect);
+  async signUp(@Body() dto: SignUpDto, @Query() query: SignUpQueryDto) {
+    return this.authService.signUp(dto, query.redirect);
   }
 
   @Public()
@@ -48,12 +48,12 @@ export class AuthController {
   @Post("signin")
   @HttpCode(HttpStatus.OK)
   @ZodSerializerDto(AuthResponseDto)
-  async signin(
-    @Body() dto: SigninDto,
+  async signIn(
+    @Body() dto: SignInDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { refreshToken, ...rest } = await this.authService.signin(dto, req.headers["user-agent"]);
+    const { refreshToken, ...rest } = await this.authService.signIn(dto, req.headers["user-agent"]);
 
     this.storeRefreshToken(res, refreshToken);
     return rest;
@@ -73,8 +73,8 @@ export class AuthController {
   @Public()
   @Post("signout")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async signout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    await this.authService.signout(req.cookies["refresh_token"]);
+  async signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    await this.authService.signOut(req.cookies["refresh_token"]);
 
     res.clearCookie("refresh_token");
   }

@@ -1,10 +1,10 @@
 import { render, screen, userEvent, waitFor } from "#/test/utils";
 import { AuthRoutes, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
-import { SignupForm } from "./signup-form";
+import { SignUpForm } from "./sign-up-form";
 
-describe("SignupForm", () => {
-  it("should request signup and call provided onSignup", async () => {
+describe("SignUpForm", () => {
+  it("should request sign up and call provided onSignUp", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
@@ -14,8 +14,8 @@ describe("SignupForm", () => {
       }),
     );
 
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} />);
     const user = userEvent.setup();
 
     // Act
@@ -26,7 +26,7 @@ describe("SignupForm", () => {
 
     // Assert
     await waitFor(() => {
-      expect(onSignup).toHaveBeenCalled();
+      expect(onSignUp).toHaveBeenCalled();
     });
     expect(requestBody).toEqual({
       name: "Test",
@@ -45,8 +45,8 @@ describe("SignupForm", () => {
       }),
     );
 
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} redirect="/app/settings" />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} redirect="/app/settings" />);
     const user = userEvent.setup();
 
     // Act
@@ -57,15 +57,15 @@ describe("SignupForm", () => {
 
     // Arrange
     await waitFor(() => {
-      expect(onSignup).toHaveBeenCalled();
+      expect(onSignUp).toHaveBeenCalled();
     });
     expect(requestUrl).toContain("redirect=%2Fapp%2Fsettings");
   });
 
   it("should prefill provided data", async () => {
     // Arrange
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} data={{ name: "Test", email: "test@example.com" }} />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} data={{ name: "Test", email: "test@example.com" }} />);
 
     // Assert
     expect(screen.getByDisplayValue("Test")).toBeInTheDocument();
@@ -81,8 +81,8 @@ describe("SignupForm", () => {
       }),
     );
 
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} />);
     const user = userEvent.setup();
 
     // Act
@@ -96,10 +96,10 @@ describe("SignupForm", () => {
     expect(screen.getByLabelText(/password/i)).toHaveAttribute("data-invalid", "true");
 
     expect(requestSent).toBe(false);
-    expect(onSignup).not.toHaveBeenCalled();
+    expect(onSignUp).not.toHaveBeenCalled();
   });
 
-  it("should show error message when signup fails", async () => {
+  it("should show error message when sign up fails", async () => {
     // Arrange
     server.use(
       http.post(AuthRoutes.SIGNUP, () => {
@@ -116,8 +116,8 @@ describe("SignupForm", () => {
       }),
     );
 
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} />);
     const user = userEvent.setup();
 
     // Act
@@ -128,7 +128,7 @@ describe("SignupForm", () => {
 
     // Assert
     expect(await screen.findByText(/already in use/i)).toBeInTheDocument();
-    expect(onSignup).not.toHaveBeenCalled();
+    expect(onSignUp).not.toHaveBeenCalled();
   });
 
   it("should disable the submit button while submitting values", async () => {
@@ -143,8 +143,8 @@ describe("SignupForm", () => {
       }),
     );
 
-    const onSignup = vi.fn();
-    render(<SignupForm onSignup={onSignup} />);
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} />);
     const user = userEvent.setup();
 
     // Act

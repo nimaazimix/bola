@@ -1,23 +1,23 @@
 import { render, screen, userEvent } from "#/test/utils";
-import { Signup } from "./signup";
+import { SignUp } from "./sign-up";
 
 vi.mock("@tanstack/react-router", () => ({
   useSearch: vi.fn(() => ({})),
   Link: ({ children }: React.PropsWithChildren) => <a>{children}</a>,
 }));
 
-describe("Signup", () => {
-  it("should render signup form initially", async () => {
+describe("SignUp", () => {
+  it("should render sign up form initially", async () => {
     // Arrange
-    render(<Signup />);
+    render(<SignUp />);
 
     // Assert
     expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
   });
 
-  it("should render check email after successful signup", async () => {
+  it("should render check email after successful sign up", async () => {
     // Arrange
-    render(<Signup />);
+    render(<SignUp />);
     const user = userEvent.setup();
 
     // Act
@@ -31,9 +31,9 @@ describe("Signup", () => {
     expect(screen.getByText(/test@example.com/i)).toBeInTheDocument();
   });
 
-  it("should go back to signup with prefilled data when user clicks back", async () => {
+  it("should go back to sign up form with prefilled data when user clicks back", async () => {
     // Arrange
-    render(<Signup />);
+    render(<SignUp />);
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText(/name/i), "Test");

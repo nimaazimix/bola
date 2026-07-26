@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const SignupSchema = z.object({
+export const SignUpSchema = z.object({
   name: z.string().nonempty("Please enter your name"),
   email: z.email({
     error: (issue) => {
@@ -16,9 +16,9 @@ export const SignupSchema = z.object({
     .min(8, "Password must be at least 8 characters"),
 });
 
-export const SignupQuerySchema = z.object({
+export const SignUpQuerySchema = z.object({
   redirect: z.string().nonempty().optional(),
 });
 
-export type SignupInput = z.infer<typeof SignupSchema>;
-export type SignupQuery = z.infer<typeof SignupQuerySchema>;
+export type SignUpInput = z.infer<typeof SignUpSchema>;
+export type SignUpQuery = z.infer<typeof SignUpQuerySchema>;

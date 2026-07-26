@@ -4,16 +4,16 @@ import { Button } from "@bola/ui/components/button";
 
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { SigninSchema } from "@bola/contracts/auth";
+import { SignInSchema } from "@bola/contracts/auth";
 import { handleSubmitError } from "#/shared/lib";
-import { useSignin } from "../api/use-signin";
+import { useSignIn } from "../api/use-sign-in";
 
-interface SigninFormProps {
+interface SignInFormProps {
   redirect?: string;
 }
 
-export function SigninForm({ redirect }: SigninFormProps) {
-  const { mutateAsync: signin } = useSignin();
+export function SignInForm({ redirect }: SignInFormProps) {
+  const { mutateAsync: signIn } = useSignIn();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -23,11 +23,11 @@ export function SigninForm({ redirect }: SigninFormProps) {
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: SigninSchema,
+      onDynamic: SignInSchema,
     },
     onSubmit: async ({ value }) => {
       try {
-        await signin({ input: value });
+        await signIn({ input: value });
         navigate({ to: redirect || "/app" });
       } catch (error) {
         handleSubmitError(error);
@@ -94,7 +94,7 @@ export function SigninForm({ redirect }: SigninFormProps) {
         selector={(state) => state.isSubmitting}
         children={(isSubmitting) => (
           <Button size="lg" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in" : "Sign in"}
+            {isSubmitting ? "SignIng in" : "Sign in"}
           </Button>
         )}
       />

@@ -1,4 +1,4 @@
-import { requireGuest, Signin } from "#/features/auth";
+import { requireGuest, SignIn } from "#/features/auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(auth)/signin")({
 function RouteComponent() {
   return (
     <div className="centered min-h-svh">
-      <Signin />
+      <SignIn />
     </div>
   );
 }

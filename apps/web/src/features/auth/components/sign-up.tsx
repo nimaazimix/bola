@@ -7,24 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@bola/ui/components/card";
-import { SignupForm } from "./signup-form";
+import { SignUpForm } from "./sign-up-form";
 import { OAuthButtons } from "./oauth-buttons";
 import { CheckEmail } from "./check-email";
 
 import { useState } from "react";
-import type { SignupData } from "../types";
+import type { SignUpData } from "../types";
 
-interface SignupState {
+interface SignUpState {
   step: "create-account" | "verify-email";
-  data?: SignupData;
+  data?: SignUpData;
 }
 
-export function Signup() {
-  const [signupState, setSignupState] = useState<SignupState>({ step: "create-account" });
+export function SignUp() {
+  const [signUpState, setSignUpState] = useState<SignUpState>({ step: "create-account" });
 
   const search = useSearch({ from: "/(auth)/signup" });
 
-  return signupState.step === "create-account" ? (
+  return signUpState.step === "create-account" ? (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
       <CardHeader>
         <CardTitle>
@@ -33,10 +33,10 @@ export function Signup() {
         <CardDescription>Enter your information to create an account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <SignupForm
+        <SignUpForm
           redirect={search.redirect}
-          data={signupState.data}
-          onSignup={(data) => setSignupState({ step: "verify-email", data })}
+          data={signUpState.data}
+          onSignUp={(data) => setSignUpState({ step: "verify-email", data })}
         />
         <OAuthButtons />
       </CardContent>
@@ -55,8 +55,8 @@ export function Signup() {
     </Card>
   ) : (
     <CheckEmail
-      email={signupState.data!.email}
-      onBackToSignup={() => setSignupState((prev) => ({ ...prev, step: "create-account" }))}
+      email={signUpState.data!.email}
+      onBackToSignup={() => setSignUpState((prev) => ({ ...prev, step: "create-account" }))}
     />
   );
 }

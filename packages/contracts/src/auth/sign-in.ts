@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const SigninSchema = z.object({
+export const SignInSchema = z.object({
   email: z.email({
     error: (issue) => {
       if (issue.code === "invalid_type") return;
@@ -12,4 +12,4 @@ export const SigninSchema = z.object({
   password: z.string().nonempty("Please enter your password"),
 });
 
-export type SigninInput = z.infer<typeof SigninSchema>;
+export type SignInInput = z.infer<typeof SignInSchema>;

@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService, Provider, VerificationType } from "src/prisma/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { JsonWebTokenError, JwtService, TokenExpiredError } from "@nestjs/jwt";
-import { SigninDto, SignupDto, VerifyEmailDto } from "./dto";
+import { SignInDto, SignUpDto, VerifyEmailDto } from "./dto";
 import {
   AccessTokenExpiredException,
   AccessTokenInvalidException,
@@ -28,7 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signup(dto: SignupDto, redirect?: string) {
+  async signUp(dto: SignUpDto, redirect?: string) {
     const normalizedEmail = dto.email.toLowerCase();
 
     const existingUser = await this.prismaService.user.findUnique({
@@ -109,7 +109,7 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
 
-  async signin(dto: SigninDto, userAgent: string | undefined) {
+  async signIn(dto: SignInDto, userAgent: string | undefined) {
     const user = await this.prismaService.user.findUnique({
       where: { email: dto.email.toLowerCase() },
     });
@@ -176,7 +176,7 @@ export class AuthService {
     return { user: session.user, accessToken, refreshToken: newRefreshToken };
   }
 
-  async signout(refreshToken: string | undefined) {
+  async signOut(refreshToken: string | undefined) {
     if (!refreshToken) return;
 
     await this.prismaService.session.deleteMany({

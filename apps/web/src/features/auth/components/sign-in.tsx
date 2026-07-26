@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@bola/ui/components/card";
-import { SigninForm } from "./signin-form";
+import { SignInForm } from "./sign-in-form";
 import { OAuthButtons } from "./oauth-buttons";
 
-export function Signin() {
+export function SignIn() {
   const search = useSearch({ from: "/(auth)/signin" });
 
   return (
@@ -22,7 +22,7 @@ export function Signin() {
         <CardDescription>Enter your credentials to sign in to your account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <SigninForm redirect={search.redirect} />
+        <SignInForm redirect={search.redirect} />
         <OAuthButtons />
       </CardContent>
       <CardFooter className="py-3">

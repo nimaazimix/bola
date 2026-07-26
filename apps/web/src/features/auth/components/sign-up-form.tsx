@@ -3,19 +3,19 @@ import { Input } from "@bola/ui/components/input";
 import { Button } from "@bola/ui/components/button";
 
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { SignupSchema } from "@bola/contracts/auth";
+import { SignUpSchema } from "@bola/contracts/auth";
 import { handleSubmitError } from "#/shared/lib";
-import { useSignup } from "../api/use-signup";
-import type { SignupData } from "../types";
+import { useSignUp } from "../api/use-sign-up";
+import type { SignUpData } from "../types";
 
-interface SignupFormProps {
+interface SignUpFormProps {
   redirect?: string;
-  data?: SignupData;
-  onSignup: (data: SignupData) => void;
+  data?: SignUpData;
+  onSignUp: (data: SignUpData) => void;
 }
 
-export function SignupForm({ redirect, data, onSignup }: SignupFormProps) {
-  const { mutateAsync: signup } = useSignup();
+export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
+  const { mutateAsync: signUp } = useSignUp();
 
   const form = useForm({
     defaultValues: {
@@ -25,12 +25,12 @@ export function SignupForm({ redirect, data, onSignup }: SignupFormProps) {
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: SignupSchema,
+      onDynamic: SignUpSchema,
     },
     onSubmit: async ({ value }) => {
       try {
-        await signup({ input: value, query: { redirect } });
-        onSignup({ name: value.name, email: value.email });
+        await signUp({ input: value, query: { redirect } });
+        onSignUp({ name: value.name, email: value.email });
       } catch (error) {
         handleSubmitError(error);
       }
