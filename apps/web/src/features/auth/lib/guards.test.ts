@@ -1,9 +1,17 @@
 import { redirect } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
+import { resolveDestination } from "./resolve-destination";
 import { requireAuth, requireGuest } from "./guards";
 
 vi.mock("@tanstack/react-router", () => ({
-  redirect: vi.fn(() => new Error()),
+  redirect: vi.fn((options) => ({
+    type: "redirect",
+    ...options,
+  })),
+}));
+
+vi.mock("./resolve-destination", () => ({
+  resolveDestination: vi.fn(),
 }));
 
 afterEach(() => {
@@ -16,7 +24,7 @@ describe("requireAuth", () => {
     useAuthStore.setState({ isAuthenticated: true });
 
     // Act, Assert
-    expect(() => requireAuth("/app/settings")).not.toThrow();
+    expect(() => requireAuth("/acme")).not.toThrow();
   });
 
   it("should throw redirect to /signin and set visited route as redirect when user is unauthenticated", () => {
@@ -24,39 +32,35 @@ describe("requireAuth", () => {
     useAuthStore.setState({ isAuthenticated: false });
 
     // Act, Arrange
-    expect(() => requireAuth("/app/settings")).toThrow();
-    expect(redirect).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "/signin", search: { redirect: "/app/settings" } }),
-    );
-  });
-
-  it("should not set visited route as redirect when it is /app", () => {
-    // Arrange
-    useAuthStore.setState({ isAuthenticated: false });
-
-    // Act, Arrange
-    expect(() => requireAuth("/app")).toThrow();
-    expect(redirect).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "/signin", search: { redirect: undefined } }),
-    );
+    expect(() => requireAuth("/acme")).toThrow();
+    expect(redirect).toHaveBeenCalledWith({
+      to: "/signin",
+      search: { redirect: "/acme" },
+      replace: true,
+    });
   });
 });
 
 describe("requireGuest", () => {
-  it("should pass when user is unauthenticated", () => {
+  it("should pass when user is unauthenticated", async () => {
     // Arrange
     useAuthStore.setState({ isAuthenticated: false });
 
     // Act, Assert
-    expect(() => requireGuest()).not.toThrow();
+    await expect(requireGuest({} as never)).resolves.toBeUndefined();
+    expect(resolveDestination).not.toHaveBeenCalled();
   });
 
-  it("should throw redirect to /app when user is authenticated", () => {
+  it("should throw redirect to the resolved route when user is authenticated", () => {
     // Arrange
     useAuthStore.setState({ isAuthenticated: true });
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/onboarding" });
 
     // Act, Assert
-    expect(() => requireGuest()).toThrow();
-    expect(redirect).toHaveBeenCalledWith(expect.objectContaining({ to: "/app" }));
+    expect(requireGuest({} as never)).rejects.toMatchObject({
+      type: "redirect",
+      to: "/onboarding",
+      replace: true,
+    });
   });
 });

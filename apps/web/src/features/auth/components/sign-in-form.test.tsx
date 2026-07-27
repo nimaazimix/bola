@@ -2,6 +2,7 @@ import { render, screen, userEvent, waitFor } from "#/test/utils";
 import { AuthRoutes, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
+import { resolveDestination } from "../lib/resolve-destination";
 import { SignInForm } from "./sign-in-form";
 
 const navigateMock = vi.fn();
@@ -9,12 +10,16 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
 }));
 
+vi.mock("../lib/resolve-destination", () => ({
+  resolveDestination: vi.fn(),
+}));
+
 describe("SignInForm", () => {
   afterEach(() => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
 
-  it("should authenticate user and navigate to provided redirect route", async () => {
+  it("should authenticate user and navigate to the resolved route", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
@@ -26,8 +31,9 @@ describe("SignInForm", () => {
         });
       }),
     );
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
-    render(<SignInForm redirect="/app/settings" />);
+    render(<SignInForm redirect="/acme" />);
     const user = userEvent.setup();
 
     // Act
@@ -38,26 +44,9 @@ describe("SignInForm", () => {
     // Assert
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
-      expect(navigateMock).toHaveBeenCalledWith(expect.objectContaining({ to: "/app/settings" }));
+      expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
     expect(requestBody).toEqual({ email: "test@example.com", password: "password" });
-  });
-
-  it("should authenticate user and navigate to /app when redirect route is not provided", async () => {
-    // Arrange
-    render(<SignInForm />);
-    const user = userEvent.setup();
-
-    // Act
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
-
-    // Assert
-    await waitFor(() => {
-      expect(useAuthStore.getState().isAuthenticated).toBe(true);
-      expect(navigateMock).toHaveBeenCalledWith(expect.objectContaining({ to: "/app" }));
-    });
   });
 
   it("should not submit values when validation fails", async () => {

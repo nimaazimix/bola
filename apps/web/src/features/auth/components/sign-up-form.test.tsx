@@ -46,7 +46,7 @@ describe("SignUpForm", () => {
     );
 
     const onSignUp = vi.fn();
-    render(<SignUpForm onSignUp={onSignUp} redirect="/app/settings" />);
+    render(<SignUpForm onSignUp={onSignUp} redirect="/acme" />);
     const user = userEvent.setup();
 
     // Act
@@ -59,7 +59,7 @@ describe("SignUpForm", () => {
     await waitFor(() => {
       expect(onSignUp).toHaveBeenCalled();
     });
-    expect(requestUrl).toContain("redirect=%2Fapp%2Fsettings");
+    expect(requestUrl).toContain("redirect=%2Facme");
   });
 
   it("should prefill provided data", async () => {

@@ -6,8 +6,8 @@ export const Route = createFileRoute("/(auth)/signin")({
   validateSearch: z.object({
     redirect: z.string().nonempty().optional().catch(undefined),
   }),
-  beforeLoad: () => {
-    requireGuest();
+  beforeLoad: async ({ context }) => {
+    await requireGuest(context.queryClient);
   },
   component: RouteComponent,
 });

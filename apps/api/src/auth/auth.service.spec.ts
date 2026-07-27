@@ -146,12 +146,12 @@ describe("AuthService", () => {
       jest.mocked(generateToken).mockReturnValue("vrf-token");
 
       // Act
-      await service.signUp(dto, "/app/settings");
+      await service.signUp(dto, "/acme");
 
       // Assert
       expect(mailServiceMock.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        "http://localhost:3000/verify-email?token=vrf-token&redirect=%2Fapp%2Fsettings",
+        "http://localhost:3000/verify-email?token=vrf-token&redirect=%2Facme",
       );
     });
 

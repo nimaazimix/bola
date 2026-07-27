@@ -2,6 +2,7 @@ import { AllTheProviders, renderHook, waitFor } from "#/test/utils";
 import { AuthRoutes, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
+import { resolveDestination } from "../lib/resolve-destination";
 import { useEmailVerification } from "./use-email-verification";
 
 const navigateMock = vi.fn();
@@ -9,34 +10,26 @@ vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
 }));
 
+vi.mock("../lib/resolve-destination", () => ({
+  resolveDestination: vi.fn(),
+}));
+
 describe("useEmailVerification", () => {
   afterEach(() => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
 
-  it("should authenticate user and navigate to provided redirect route", async () => {
+  it("should authenticate user and navigate to the resolved route", async () => {
     // Arrange
-    renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/app/settings" }), {
+    renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
     // Assert
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
-      expect(navigateMock).toHaveBeenCalledWith(expect.objectContaining({ to: "/app/settings" }));
-    });
-  });
-
-  it("should authenticate user and navigate to /app when redirect route is not provided", async () => {
-    // Arrange
-    renderHook(() => useEmailVerification({ token: "vrf-token" }), {
-      wrapper: AllTheProviders,
-    });
-
-    // Assert
-    await waitFor(() => {
-      expect(useAuthStore.getState().isAuthenticated).toBe(true);
-      expect(navigateMock).toHaveBeenCalledWith(expect.objectContaining({ to: "/app" }));
+      expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
   });
 
@@ -48,33 +41,31 @@ describe("useEmailVerification", () => {
       }),
     );
 
-    renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/app/settings" }), {
+    renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
 
     // Assert
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          to: "/signin",
-          search: { redirect: "/app/settings" },
-        }),
-      );
+      expect(navigateMock).toHaveBeenCalledWith({
+        to: "/signin",
+        search: { redirect: "/acme" },
+        replace: true,
+      });
     });
   });
 
   it("should navigate to /signin and set redirect route when token is not provided", async () => {
     // Arrange
-    renderHook(() => useEmailVerification({ redirect: "/app/settings" }), {
+    renderHook(() => useEmailVerification({ redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
 
     // Assert
-    expect(navigateMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: "/signin",
-        search: { redirect: "/app/settings" },
-      }),
-    );
+    expect(navigateMock).toHaveBeenCalledWith({
+      to: "/signin",
+      search: { redirect: "/acme" },
+      replace: true,
+    });
   });
 });

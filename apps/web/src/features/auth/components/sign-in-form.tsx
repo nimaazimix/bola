@@ -4,9 +4,11 @@ import { Button } from "@bola/ui/components/button";
 
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { SignInSchema } from "@bola/contracts/auth";
 import { handleSubmitError } from "#/shared/lib";
 import { useSignIn } from "../api/use-sign-in";
+import { resolveDestination } from "../lib/resolve-destination";
 
 interface SignInFormProps {
   redirect?: string;
@@ -14,6 +16,7 @@ interface SignInFormProps {
 
 export function SignInForm({ redirect }: SignInFormProps) {
   const { mutateAsync: signIn } = useSignIn();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -28,7 +31,9 @@ export function SignInForm({ redirect }: SignInFormProps) {
     onSubmit: async ({ value }) => {
       try {
         await signIn({ input: value });
-        navigate({ to: redirect || "/app" });
+
+        const destination = await resolveDestination(queryClient, redirect);
+        navigate({ ...destination, replace: true });
       } catch (error) {
         handleSubmitError(error);
       }
