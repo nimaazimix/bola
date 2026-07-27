@@ -6,7 +6,8 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { SignInSchema } from "@bola/contracts/auth";
-import { handleSubmitError } from "#/shared/lib";
+import { toast } from "sonner";
+import { getAxiosErrorData } from "#/shared/api";
 import { useSignIn } from "../api/use-sign-in";
 import { resolveDestination } from "../lib/resolve-destination";
 
@@ -35,7 +36,12 @@ export function SignInForm({ redirect }: SignInFormProps) {
         const destination = await resolveDestination(queryClient, redirect);
         navigate({ ...destination, replace: true });
       } catch (error) {
-        handleSubmitError(error);
+        const apiError = getAxiosErrorData(error);
+        if (apiError) {
+          toast.error(apiError.error.message);
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     },
   });

@@ -12,9 +12,10 @@ import { useState } from "react";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
-import { handleSubmitError } from "#/shared/lib";
-import { useCreateWorkspace } from "../api/use-create-workspace";
 import slugify from "slugify";
+import { toast } from "sonner";
+import { getAxiosErrorData } from "#/shared/api";
+import { useCreateWorkspace } from "../api/use-create-workspace";
 
 export function CreateWorkspaceForm() {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
@@ -35,7 +36,12 @@ export function CreateWorkspaceForm() {
         const workspace = await createWorkspace({ input: value });
         navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
       } catch (error) {
-        handleSubmitError(error);
+        const apiError = getAxiosErrorData(error);
+        if (apiError) {
+          toast.error(apiError.error.message);
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     },
   });
