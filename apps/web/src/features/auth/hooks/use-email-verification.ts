@@ -4,12 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useVerifyEmail } from "../api/use-verify-email";
 import { resolveDestination } from "../lib/resolve-destination";
 
-interface EmailVerificationParams {
+interface EmailVerificationParameters {
   token?: string;
   redirect?: string;
 }
 
-export function useEmailVerification({ token, redirect }: EmailVerificationParams) {
+export function useEmailVerification({ token, redirect }: EmailVerificationParameters) {
   const { mutateAsync: verifyEmail } = useVerifyEmail();
 
   const queryClient = useQueryClient();

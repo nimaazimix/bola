@@ -1,13 +1,14 @@
-import { requireGuest, SignIn } from "#/features/auth";
+import { SignIn } from "#/features/auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { requireGuest } from "#/app/guards";
 
 export const Route = createFileRoute("/(auth)/signin")({
   validateSearch: z.object({
     redirect: z.string().nonempty().optional().catch(undefined),
   }),
   beforeLoad: async ({ context }) => {
-    await requireGuest(context.queryClient);
+    await requireGuest({ queryClient: context.queryClient });
   },
   component: RouteComponent,
 });

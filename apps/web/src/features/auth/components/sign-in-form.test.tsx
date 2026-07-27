@@ -1,6 +1,7 @@
 import { render, screen, userEvent, waitFor } from "#/test/utils";
 import { AuthRoutes, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
+import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
 import { resolveDestination } from "../lib/resolve-destination";
 import { SignInForm } from "./sign-in-form";
@@ -31,7 +32,7 @@ describe("SignInForm", () => {
         });
       }),
     );
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" } as unknown as ToOptions);
 
     render(<SignInForm redirect="/acme" />);
     const user = userEvent.setup();
