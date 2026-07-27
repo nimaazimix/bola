@@ -82,7 +82,7 @@ describe("AuthService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("signup", () => {
+  describe("signUp", () => {
     it("should create user with credentials and send verification link successfully", async () => {
       // Arrange
       const dto = {
@@ -98,7 +98,7 @@ describe("AuthService", () => {
       jest.mocked(sha256).mockReturnValue("hashed-vrf-token");
 
       // Act
-      const result = await service.signup(dto);
+      const result = await service.signUp(dto);
 
       // Assert
       expect(prismaServiceMock.user.findUnique).toHaveBeenCalledWith({
@@ -127,7 +127,7 @@ describe("AuthService", () => {
       expect(argon2.hash).toHaveBeenCalledWith(dto.password);
       expect(mailServiceMock.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        "http://localhost:3000/auth/verify-email?token=vrf-token",
+        "http://localhost:3000/verify-email?token=vrf-token",
       );
       expect(result).toEqual(newUser);
     });
@@ -146,12 +146,12 @@ describe("AuthService", () => {
       jest.mocked(generateToken).mockReturnValue("vrf-token");
 
       // Act
-      await service.signup(dto, "/app/settings");
+      await service.signUp(dto, "/acme");
 
       // Assert
       expect(mailServiceMock.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        "http://localhost:3000/auth/verify-email?token=vrf-token&redirect=%2Fapp%2Fsettings",
+        "http://localhost:3000/verify-email?token=vrf-token&redirect=%2Facme",
       );
     });
 
@@ -166,7 +166,7 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(user);
 
       // Act, Assert
-      await expect(service.signup(dto)).rejects.toThrow(EmailAlreadyInUseException);
+      await expect(service.signUp(dto)).rejects.toThrow(EmailAlreadyInUseException);
       expect(prismaServiceMock.user.create).not.toHaveBeenCalled();
       expect(mailServiceMock.sendVerificationEmail).not.toHaveBeenCalled();
     });
@@ -244,7 +244,7 @@ describe("AuthService", () => {
     });
   });
 
-  describe("signin", () => {
+  describe("signIn", () => {
     it("should authenticate user successfully", async () => {
       // Arrange
       const dto = {
@@ -263,7 +263,7 @@ describe("AuthService", () => {
       jest.mocked(sha256).mockReturnValue("hashed-refresh-token");
 
       // Act
-      const result = await service.signin(dto, "agent");
+      const result = await service.signIn(dto, "agent");
 
       // Assert
       expect(prismaServiceMock.user.findUnique).toHaveBeenCalledWith({
@@ -299,7 +299,7 @@ describe("AuthService", () => {
       jest.mocked(argon2.verify).mockResolvedValue(false);
 
       // Act, Assert
-      await expect(service.signin(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
@@ -315,7 +315,7 @@ describe("AuthService", () => {
       prismaServiceMock.account.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.signin(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
@@ -330,7 +330,7 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(user);
 
       // Act, Assert
-      await expect(service.signin(dto, "agent")).rejects.toThrow(EmailNotVerifiedException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(EmailNotVerifiedException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
@@ -343,7 +343,7 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.signin(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
   });
@@ -406,13 +406,13 @@ describe("AuthService", () => {
     });
   });
 
-  describe("signout", () => {
+  describe("signOut", () => {
     it("should delete session successfully", async () => {
       // Arrange
       jest.mocked(sha256).mockReturnValue("hashed-refresh-token");
 
       // Act
-      await service.signout("refresh-token");
+      await service.signOut("refresh-token");
 
       // Assert
       expect(prismaServiceMock.session.deleteMany).toHaveBeenCalledWith({
@@ -422,7 +422,7 @@ describe("AuthService", () => {
 
     it("should do nothing when refresh token does not exist", async () => {
       // Act
-      await service.signout(undefined);
+      await service.signOut(undefined);
 
       // Assert
       expect(prismaServiceMock.session.deleteMany).not.toHaveBeenCalled();

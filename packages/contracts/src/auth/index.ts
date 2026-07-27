@@ -1,5 +1,5 @@
-export * from "./signup";
+export * from "./sign-up";
 export * from "./verify-email";
-export * from "./signin";
+export * from "./sign-in";
 
 export * from "./auth-payload";

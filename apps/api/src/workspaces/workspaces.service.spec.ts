@@ -1,0 +1,99 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { WorkspacesService } from "./workspaces.service";
+import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
+import { Prisma, PrismaService } from "src/prisma/prisma.service";
+import { userFactory, workspaceFactory } from "test/factories";
+import { SlugAlreadyInUseException } from "./exceptions";
+
+describe("WorkspacesService", () => {
+  let service: WorkspacesService;
+
+  let prismaServiceMock: PrismaServiceMock;
+
+  beforeEach(async () => {
+    prismaServiceMock = createPrismaServiceMock();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [WorkspacesService, { provide: PrismaService, useValue: prismaServiceMock }],
+    }).compile();
+
+    service = module.get<WorkspacesService>(WorkspacesService);
+  });
+
+  it("should be defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  describe("create", () => {
+    it("should create workspace for the current user and return it successfully", async () => {
+      // Arrange
+      const dto = { name: "Acme", slug: "acme" };
+      const user = userFactory.build({ emailVerified: true });
+      const workspace = workspaceFactory.build({ name: dto.name, slug: dto.slug });
+
+      prismaServiceMock.workspace.create.mockResolvedValue(workspace);
+
+      // Act
+      const result = await service.create(dto, user);
+
+      // Assert
+      expect(result).toEqual(workspace);
+      expect(prismaServiceMock.workspace.create).toHaveBeenCalledWith({
+        data: {
+          ...dto,
+          memberships: { create: { role: "OWNER", user: { connect: { id: user.id } } } },
+        },
+      });
+    });
+
+    it("should throw SlugAlreadyInUseException when provided slug is not unique", async () => {
+      // Arrange
+      const dto = { name: "Acme", slug: "acme" };
+      const user = userFactory.build({ emailVerified: true });
+      const error = new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+        code: "P2002",
+        clientVersion: "",
+        meta: {
+          modelName: "Workspace",
+        },
+      });
+
+      prismaServiceMock.workspace.create.mockRejectedValue(error);
+
+      // Act, Assert
+      await expect(service.create(dto, user)).rejects.toBeInstanceOf(SlugAlreadyInUseException);
+    });
+
+    it("should rethrow unknown errors", async () => {
+      // Arrange
+      const dto = { name: "Acme", slug: "acme" };
+      const user = userFactory.build({ emailVerified: true });
+      const error = new Error("Unexpected");
+
+      prismaServiceMock.workspace.create.mockRejectedValue(error);
+
+      // Act, Assert
+      await expect(service.create(dto, user)).rejects.toThrow(error);
+    });
+  });
+
+  describe("findAll", () => {
+    it("should return user workspaces in descending order", async () => {
+      // Arrange
+      const user = userFactory.build({ emailVerified: true });
+      const workspaces = workspaceFactory.buildList(3);
+
+      prismaServiceMock.workspace.findMany.mockResolvedValue(workspaces);
+
+      // Act
+      const result = await service.findAll(user);
+
+      // Assert
+      expect(prismaServiceMock.workspace.findMany).toHaveBeenCalledWith({
+        where: { memberships: { some: { userId: user.id } } },
+        orderBy: { createdAt: "desc" },
+      });
+      expect(result).toEqual(workspaces);
+    });
+  });
+});
