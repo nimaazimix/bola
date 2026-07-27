@@ -52,7 +52,7 @@ export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Name:</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -74,7 +74,7 @@ export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Email:</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -96,7 +96,7 @@ export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Password:</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                 <Input
                   type="password"
                   id={field.name}

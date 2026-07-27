@@ -1,39 +1,39 @@
 import { Field, FieldError, FieldGroup, FieldLabel } from "@bola/ui/components/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@bola/ui/components/input-group";
 import { Input } from "@bola/ui/components/input";
 import { Button } from "@bola/ui/components/button";
 
+import { useState } from "react";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { SignInSchema } from "@bola/contracts/auth";
+import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
 import { handleSubmitError } from "#/shared/lib";
-import { useSignIn } from "../api/use-sign-in";
-import { resolveDestination } from "../lib/resolve-destination";
+import { useCreateWorkspace } from "../api/use-create-workspace";
+import slugify from "slugify";
 
-interface SignInFormProps {
-  redirect?: string;
-}
-
-export function SignInForm({ redirect }: SignInFormProps) {
-  const { mutateAsync: signIn } = useSignIn();
-  const queryClient = useQueryClient();
+export function CreateWorkspaceForm() {
+  const { mutateAsync: createWorkspace } = useCreateWorkspace();
   const navigate = useNavigate();
 
+  const [slugEdited, setSlugEdited] = useState(false);
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      name: "",
+      slug: "",
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: SignInSchema,
+      onDynamic: CreateWorkspaceSchema,
     },
     onSubmit: async ({ value }) => {
       try {
-        await signIn({ input: value });
-
-        const destination = await resolveDestination(queryClient, redirect);
-        navigate({ ...destination, replace: true });
+        const workspace = await createWorkspace({ input: value });
+        navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
       } catch (error) {
         handleSubmitError(error);
       }
@@ -46,16 +46,28 @@ export function SignInForm({ redirect }: SignInFormProps) {
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="space-y-4"
+      className="space-y-5"
     >
       <FieldGroup>
         <form.Field
-          name="email"
+          name="name"
+          listeners={{
+            onChange: ({ value }) => {
+              if (slugEdited) return;
+              form.setFieldValue(
+                "slug",
+                slugify(value, {
+                  lower: true,
+                  strict: true,
+                }),
+              );
+            },
+          }}
           children={(field) => {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -63,31 +75,40 @@ export function SignInForm({ redirect }: SignInFormProps) {
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   data-invalid={isInvalid}
-                  placeholder="john.doe@example.com"
+                  placeholder="Acme Inc."
                 />
                 {isInvalid && <FieldError>{field.state.meta.errors[0]!.message}</FieldError>}
               </Field>
             );
           }}
         />
+      </FieldGroup>
 
+      <FieldGroup>
         <form.Field
-          name="password"
+          name="slug"
           children={(field) => {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                <Input
-                  type="password"
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  data-invalid={isInvalid}
-                  placeholder="********"
-                />
+                <FieldLabel htmlFor={field.name}>URL</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon className="border-r pr-1.5">
+                    <InputGroupText>bola.app/</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => {
+                      setSlugEdited(true);
+                      field.handleChange(e.target.value);
+                    }}
+                    data-invalid={isInvalid}
+                    placeholder="acme"
+                  />
+                </InputGroup>
                 {isInvalid && <FieldError>{field.state.meta.errors[0]!.message}</FieldError>}
               </Field>
             );
@@ -99,7 +120,7 @@ export function SignInForm({ redirect }: SignInFormProps) {
         selector={(state) => state.isSubmitting}
         children={(isSubmitting) => (
           <Button size="lg" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "SignIng in" : "Sign in"}
+            {isSubmitting ? "Creating workspace" : "Create workspace"}
           </Button>
         )}
       />

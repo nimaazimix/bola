@@ -1,3 +1,4 @@
+import { WorkspaceOnboarding } from "#/features/workspaces";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -5,5 +6,9 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/_authenticated/onboarding/"!</div>;
+  return (
+    <div className="centered min-h-svh">
+      <WorkspaceOnboarding />
+    </div>
+  );
 }
