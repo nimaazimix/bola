@@ -116,7 +116,7 @@ export function CreateWorkspaceForm() {
                       field.handleChange(e.target.value);
                     }}
                     data-invalid={isInvalid}
-                    placeholder="acme"
+                    placeholder="acme-inc"
                   />
                 </InputGroup>
                 {isInvalid && <FieldError>{field.state.meta.errors[0]!.message}</FieldError>}
