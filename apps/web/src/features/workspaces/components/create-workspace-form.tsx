@@ -30,19 +30,23 @@ export function CreateWorkspaceForm() {
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: CreateWorkspaceSchema,
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        const workspace = await createWorkspace({ input: value });
-        navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
-      } catch (error) {
-        const apiError = getAxiosErrorData(error);
-        if (apiError) {
-          toast.error(apiError.error.message);
-        } else {
-          toast.error("Something went wrong");
+      onSubmitAsync: async ({ value }) => {
+        try {
+          const workspace = await createWorkspace({ input: value });
+          navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
+        } catch (error) {
+          const apiError = getAxiosErrorData(error);
+          if (apiError) {
+            if (apiError.error.code === "workspace.slug_already_in_use") {
+              return { fields: { slug: { message: apiError.error.message } } };
+            } else {
+              toast.error(apiError.error.message);
+            }
+          } else {
+            toast.error("Something went wrong");
+          }
         }
-      }
+      },
     },
   });
 
