@@ -1,6 +1,8 @@
 import type { ToOptions } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
-import { workspaceQueries } from "#/shared/api";
+
+// Intentional cross import
+import { workspaceQueries } from "#/features/workspaces";
 
 export async function resolveDestination(
   queryClient: QueryClient,

@@ -1,7 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { api } from "../client";
-import type { ApiSuccess } from "@bola/contracts/api";
-import type { Workspace } from "@bola/contracts/workspaces";
+import { getWorkspaces } from "./requests";
 
 export const workspaceQueries = {
   all: ["workspaces"],
@@ -12,7 +10,3 @@ export const workspaceQueries = {
       queryFn: () => getWorkspaces(),
     }),
 };
-
-async function getWorkspaces() {
-  return api.get<ApiSuccess<Workspace[]>>("/workspaces").then((res) => res.data.data);
-}
