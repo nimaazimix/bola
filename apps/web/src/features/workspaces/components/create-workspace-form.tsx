@@ -98,24 +98,16 @@ export function CreateWorkspaceForm() {
           validators={{
             onDynamic: CreateWorkspaceSchema.shape.slug,
             onDynamicAsyncDebounceMs: 500,
-            onDynamicAsync: async ({ value }) => {
+            onDynamicAsync: async ({ value, fieldApi }) => {
+              const error = fieldApi.parseValueWithSchema(CreateWorkspaceSchema.shape.slug);
+              if (error) return error;
               try {
                 const available = await checkSlug(value);
                 if (!available) {
                   return { message: "This workspace URL is already in use" };
                 }
-              } catch (error) {
-                const apiError = getAxiosErrorData(error);
-                if (apiError) {
-                  if (apiError.error.code === "common.validation_failed") {
-                    const details = apiError.error.details as Record<string, string[]>;
-                    return { message: details.slug![0] };
-                  } else {
-                    toast.error(apiError.error.message);
-                  }
-                } else {
-                  toast.error("Something went wrong");
-                }
+              } catch {
+                return { message: "Unable to verify slug availability" };
               }
             },
           }}
