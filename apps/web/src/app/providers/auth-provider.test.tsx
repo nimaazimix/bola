@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "#/test/utils";
-import { AuthRoutes, server } from "#/test/mocks";
+import { render, screen, waitFor } from "#/shared/test/utils";
+import { AuthRoutes, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
 import { AuthProvider } from "./auth-provider";

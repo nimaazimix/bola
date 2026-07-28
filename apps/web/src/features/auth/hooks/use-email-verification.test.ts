@@ -1,5 +1,5 @@
-import { AllTheProviders, renderHook, waitFor } from "#/test/utils";
-import { AuthRoutes, server } from "#/test/mocks";
+import { AllTheProviders, renderHook, waitFor } from "#/shared/test/utils";
+import { AuthRoutes, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
