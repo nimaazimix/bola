@@ -77,6 +77,25 @@ describe("WorkspacesService", () => {
     });
   });
 
+  describe("checkSlugAvailability", () => {
+    it("should return true when slug is not in use yet", async () => {
+      // Arrange
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(null);
+
+      // Act, Assert
+      expect(service.checkSlugAvailability("acme")).resolves.toEqual({ available: true });
+    });
+
+    it("should return false when slug is already in use", async () => {
+      // Arrange
+      const workspace = workspaceFactory.build();
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
+
+      // Act, Assert
+      expect(service.checkSlugAvailability("acme")).resolves.toEqual({ available: false });
+    });
+  });
+
   describe("findAll", () => {
     it("should return user workspaces in descending order", async () => {
       // Arrange

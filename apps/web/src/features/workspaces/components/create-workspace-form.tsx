@@ -104,7 +104,7 @@ export function CreateWorkspaceForm() {
               try {
                 const available = await checkSlug(value);
                 if (!available) {
-                  return { message: "This workspace URL is already in use" };
+                  return { message: "This workspace URL is unavailable" };
                 }
               } catch {
                 return { message: "Unable to verify slug availability" };
