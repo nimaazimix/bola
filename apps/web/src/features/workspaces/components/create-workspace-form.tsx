@@ -16,7 +16,7 @@ import slugify from "slugify";
 import { toast } from "sonner";
 import { getAxiosErrorData } from "#/shared/api";
 import { useCreateWorkspace } from "../api/use-create-workspace";
-import { checkSlug } from "../api/check-slug";
+import { checkSlug } from "../api/requests";
 
 export function CreateWorkspaceForm() {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
@@ -102,7 +102,7 @@ export function CreateWorkspaceForm() {
               const error = fieldApi.parseValueWithSchema(CreateWorkspaceSchema.shape.slug);
               if (error) return error;
               try {
-                const available = await checkSlug(value);
+                const { available } = await checkSlug(value);
                 if (!available) {
                   return { message: "This workspace URL is unavailable" };
                 }

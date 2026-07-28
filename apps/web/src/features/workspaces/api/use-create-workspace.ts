@@ -1,14 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, workspaceQueries } from "#/shared/api";
-import type { ApiSuccess } from "@bola/contracts/api";
-import type { CreateWorkspaceInput, Workspace } from "@bola/contracts/workspaces";
+import type { CreateWorkspaceInput } from "@bola/contracts/workspaces";
+import { postWorkspace } from "./requests";
+import { workspaceQueries } from "./workspace-queries";
 
 export function useCreateWorkspace() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ input }: { input: CreateWorkspaceInput }) =>
-      api.post<ApiSuccess<Workspace>>("/workspaces", input).then((res) => res.data.data),
+    mutationFn: ({ input }: { input: CreateWorkspaceInput }) => postWorkspace(input),
 
     onSuccess: (workspace) => {
       queryClient.setQueryData(workspaceQueries.list().queryKey, (oldData) => {
