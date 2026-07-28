@@ -87,7 +87,7 @@ describe("CreateWorkspaceForm", () => {
 
     // Act
     await user.type(screen.getByLabelText(/name/i), "Acme Inc");
-    await user.type(screen.getByLabelText(/url/i), "Invalid Slug");
+    await user.type(screen.getByLabelText(/url/i), "-");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
@@ -97,7 +97,7 @@ describe("CreateWorkspaceForm", () => {
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should show error message when server fails", async () => {
+  it("should show error message when creation fails", async () => {
     // Arrange
     server.use(
       http.post(WorkspaceRoutes.CREATE, () => {
@@ -126,20 +126,11 @@ describe("CreateWorkspaceForm", () => {
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should invalidate url field when server fails with slug_already_in_use", async () => {
+  it("show check slug availability after submission", async () => {
     // Arrange
     server.use(
-      http.post(WorkspaceRoutes.CREATE, () => {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: {
-              code: "workspace.slug_already_in_use",
-              message: "Slug is already in use",
-            },
-          },
-          { status: 409 },
-        );
+      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
+        return HttpResponse.json({ success: true, data: { available: false } });
       }),
     );
 
@@ -152,8 +143,26 @@ describe("CreateWorkspaceForm", () => {
 
     // Assert
     expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/already in use/i)).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(screen.getByText(/unavailable/i)).toBeInTheDocument();
+  });
+
+  it("should show error message when slug availability fails", async () => {
+    server.use(
+      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
+        return HttpResponse.json({ success: false }, { status: 500 });
+      }),
+    );
+
+    render(<CreateWorkspaceForm />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.click(screen.getByRole("button", { name: /create workspace/i }));
+
+    // Assert
+    expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/unable to verify slug availability/i)).toBeInTheDocument();
   });
 
   it("should disable the submit button while submitting values", async () => {

@@ -16,6 +16,7 @@ import slugify from "slugify";
 import { toast } from "sonner";
 import { getAxiosErrorData } from "#/shared/api";
 import { useCreateWorkspace } from "../api/use-create-workspace";
+import { checkSlug } from "../api/check-slug";
 
 export function CreateWorkspaceForm() {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
@@ -28,25 +29,18 @@ export function CreateWorkspaceForm() {
       slug: "",
     },
     validationLogic: revalidateLogic(),
-    validators: {
-      onDynamic: CreateWorkspaceSchema,
-      onSubmitAsync: async ({ value }) => {
-        try {
-          const workspace = await createWorkspace({ input: value });
-          navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
-        } catch (error) {
-          const apiError = getAxiosErrorData(error);
-          if (apiError) {
-            if (apiError.error.code === "workspace.slug_already_in_use") {
-              return { fields: { slug: { message: apiError.error.message } } };
-            } else {
-              toast.error(apiError.error.message);
-            }
-          } else {
-            toast.error("Something went wrong");
-          }
+    onSubmit: async ({ value }) => {
+      try {
+        const workspace = await createWorkspace({ input: value });
+        navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
+      } catch (error) {
+        const apiError = getAxiosErrorData(error);
+        if (apiError) {
+          toast.error(apiError.error.message);
+        } else {
+          toast.error("Something went wrong");
         }
-      },
+      }
     },
   });
 
@@ -61,16 +55,20 @@ export function CreateWorkspaceForm() {
       <FieldGroup>
         <form.Field
           name="name"
+          validators={{
+            onDynamic: CreateWorkspaceSchema.shape.name,
+          }}
           listeners={{
             onChange: ({ value }) => {
-              if (slugEdited) return;
-              form.setFieldValue(
-                "slug",
-                slugify(value, {
-                  lower: true,
-                  strict: true,
-                }),
-              );
+              if (!slugEdited) {
+                form.setFieldValue(
+                  "slug",
+                  slugify(value, {
+                    lower: true,
+                    strict: true,
+                  }),
+                );
+              }
             },
           }}
           children={(field) => {
@@ -97,6 +95,22 @@ export function CreateWorkspaceForm() {
       <FieldGroup>
         <form.Field
           name="slug"
+          validators={{
+            onDynamic: CreateWorkspaceSchema.shape.slug,
+            onDynamicAsyncDebounceMs: 500,
+            onDynamicAsync: async ({ value, fieldApi }) => {
+              const error = fieldApi.parseValueWithSchema(CreateWorkspaceSchema.shape.slug);
+              if (error) return error;
+              try {
+                const available = await checkSlug(value);
+                if (!available) {
+                  return { message: "This workspace URL is unavailable" };
+                }
+              } catch {
+                return { message: "Unable to verify slug availability" };
+              }
+            },
+          }}
           children={(field) => {
             const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
             return (
