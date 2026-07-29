@@ -1,7 +1,6 @@
 import { AllTheProviders, renderHook, waitFor } from "#/shared/test/utils";
 import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
-import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
 import { resolveDestination } from "../lib/resolve-destination";
 import { useEmailVerification } from "./use-email-verification";
@@ -25,7 +24,7 @@ describe("useEmailVerification", () => {
     renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" } as unknown as ToOptions);
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
     // Assert
     await waitFor(() => {

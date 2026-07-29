@@ -14,13 +14,13 @@ const rootElement = document.getElementById("app")!;
 if (!rootElement.innerHTML) {
   const root = createRoot(rootElement);
   root.render(
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
         <AuthProvider>
           <RouterProvider router={getRouter()} />
           <Toaster />
         </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>,
+      </ThemeProvider>
+    </QueryClientProvider>,
   );
 }

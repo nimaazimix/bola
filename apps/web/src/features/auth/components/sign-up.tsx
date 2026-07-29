@@ -22,7 +22,7 @@ interface SignUpState {
 export function SignUp() {
   const [signUpState, setSignUpState] = useState<SignUpState>({ step: "create-account" });
 
-  const search = useSearch({ from: "/(auth)/signup" });
+  const search = useSearch({ from: "/_guest/signup" });
 
   return signUpState.step === "create-account" ? (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
