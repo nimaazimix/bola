@@ -1,5 +1,5 @@
 import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
-import { AuthRoutes, server } from "#/shared/test/mocks";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { SignUpForm } from "./sign-up-form";
 
@@ -8,7 +8,7 @@ describe("SignUpForm", () => {
     // Arrange
     let requestBody: unknown;
     server.use(
-      http.post(AuthRoutes.SIGNUP, async ({ request }) => {
+      http.post(predicates.api.auth.signUp, async ({ request }) => {
         requestBody = await request.json();
         return HttpResponse.json({ success: true });
       }),
@@ -39,7 +39,7 @@ describe("SignUpForm", () => {
     // Arrange
     let requestUrl!: string;
     server.use(
-      http.post(AuthRoutes.SIGNUP, ({ request }) => {
+      http.post(predicates.api.auth.signUp, ({ request }) => {
         requestUrl = request.url;
         return HttpResponse.json({ success: true });
       }),
@@ -76,7 +76,7 @@ describe("SignUpForm", () => {
     // Arrange
     let requestSent = false;
     server.use(
-      http.post(AuthRoutes.SIGNUP, () => {
+      http.post(predicates.api.auth.signUp, () => {
         requestSent = true;
       }),
     );
@@ -102,7 +102,7 @@ describe("SignUpForm", () => {
   it("should show error message when sign up fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.SIGNUP, () => {
+      http.post(predicates.api.auth.signUp, () => {
         return HttpResponse.json(
           {
             success: false,
@@ -135,7 +135,7 @@ describe("SignUpForm", () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(
-      http.post(AuthRoutes.SIGNUP, async () => {
+      http.post(predicates.api.auth.signUp, async () => {
         await new Promise<void>((resolve) => {
           resolveRequest = resolve;
         });

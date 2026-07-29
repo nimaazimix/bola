@@ -1,5 +1,5 @@
 import { AllTheProviders, renderHook, waitFor } from "#/shared/test/utils";
-import { AuthRoutes, server } from "#/shared/test/mocks";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
@@ -37,7 +37,7 @@ describe("useEmailVerification", () => {
   it("should navigate to /signin and set redirect route when verification fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.VERIFY_EMAIL, () => {
+      http.post(predicates.api.auth.verifyEmail, () => {
         return HttpResponse.json({ success: false }, { status: 401 });
       }),
     );

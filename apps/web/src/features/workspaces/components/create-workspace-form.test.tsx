@@ -1,5 +1,5 @@
 import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
-import { server, WorkspaceRoutes } from "#/shared/test/mocks";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { CreateWorkspaceForm } from "./create-workspace-form";
 
@@ -46,7 +46,7 @@ describe("CreateWorkspaceForm", () => {
     // Arrange
     let requestBody: unknown;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, async ({ request }) => {
+      http.post(predicates.api.workspaces.all, async ({ request }) => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
@@ -77,7 +77,7 @@ describe("CreateWorkspaceForm", () => {
     // Arrange
     let requestSent = false;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, () => {
+      http.post(predicates.api.workspaces.all, () => {
         requestSent = true;
       }),
     );
@@ -100,7 +100,7 @@ describe("CreateWorkspaceForm", () => {
   it("should show error message when creation fails", async () => {
     // Arrange
     server.use(
-      http.post(WorkspaceRoutes.CREATE, () => {
+      http.post(predicates.api.workspaces.all, () => {
         return HttpResponse.json(
           {
             success: false,
@@ -129,7 +129,7 @@ describe("CreateWorkspaceForm", () => {
   it("show check slug availability after submission", async () => {
     // Arrange
     server.use(
-      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
+      http.get(predicates.api.workspaces.checkSlug, async () => {
         return HttpResponse.json({ success: true, data: { available: false } });
       }),
     );
@@ -148,7 +148,7 @@ describe("CreateWorkspaceForm", () => {
 
   it("should show error message when slug availability fails", async () => {
     server.use(
-      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
+      http.get(predicates.api.workspaces.checkSlug, async () => {
         return HttpResponse.json({ success: false }, { status: 500 });
       }),
     );
@@ -169,7 +169,7 @@ describe("CreateWorkspaceForm", () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, async () => {
+      http.post(predicates.api.workspaces.all, async () => {
         await new Promise<void>((resolve) => {
           resolveRequest = resolve;
         });

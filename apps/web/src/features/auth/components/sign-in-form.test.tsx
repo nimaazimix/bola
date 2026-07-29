@@ -1,5 +1,5 @@
 import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
-import { AuthRoutes, server } from "#/shared/test/mocks";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
@@ -24,7 +24,7 @@ describe("SignInForm", () => {
     // Arrange
     let requestBody: unknown;
     server.use(
-      http.post(AuthRoutes.SIGNIN, async ({ request }) => {
+      http.post(predicates.api.auth.signIn, async ({ request }) => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
@@ -54,7 +54,7 @@ describe("SignInForm", () => {
     // Arrange
     let requestSent = false;
     server.use(
-      http.post(AuthRoutes.SIGNIN, () => {
+      http.post(predicates.api.auth.signIn, () => {
         requestSent = true;
       }),
     );
@@ -77,7 +77,7 @@ describe("SignInForm", () => {
   it("should show error message when sign in fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.SIGNIN, () => {
+      http.post(predicates.api.auth.signIn, () => {
         return HttpResponse.json(
           {
             success: false,
@@ -108,7 +108,7 @@ describe("SignInForm", () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(
-      http.post(AuthRoutes.SIGNIN, async () => {
+      http.post(predicates.api.auth.signIn, async () => {
         await new Promise<void>((resolve) => {
           resolveRequest = resolve;
         });

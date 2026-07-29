@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "#/shared/test/utils";
-import { AuthRoutes, server } from "#/shared/test/mocks";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
 import { AuthProvider } from "./auth-provider";
@@ -31,7 +31,7 @@ describe("AuthProvider", () => {
   it("should unauthenticate user and render children when refresh fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.REFRESH, () => {
+      http.post(predicates.api.auth.refresh, () => {
         return HttpResponse.json({ success: false }, { status: 401 });
       }),
     );
