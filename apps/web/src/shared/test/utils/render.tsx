@@ -1,4 +1,4 @@
-import { render, type RenderOptions } from "@testing-library/react";
+import { render, type RenderOptions, type RenderResult } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@bola/ui/components/theme-provider";
 import { Toaster } from "@bola/ui/components/sonner";
@@ -26,8 +26,11 @@ export function AllTheProviders({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function customRender(ui: React.ReactElement, options?: Omit<RenderOptions, "wrapper">) {
-  render(ui, { wrapper: AllTheProviders, ...options });
+export function customRender(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, "wrapper">,
+): RenderResult {
+  return render(ui, { wrapper: AllTheProviders, ...options });
 }
 
 export * from "@testing-library/react";

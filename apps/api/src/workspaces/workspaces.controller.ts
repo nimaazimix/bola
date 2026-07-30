@@ -21,15 +21,15 @@ export class WorkspacesController {
     return this.workspacesService.create(dto, user);
   }
 
-  @Get("check-slug")
-  @ZodSerializerDto(CheckSlugResponseDto)
-  async checkSlug(@Query() query: CheckSlugQueryDto) {
-    return this.workspacesService.checkSlugAvailability(query.slug);
-  }
-
   @Get()
   @ZodSerializerDto(WorkspaceListResponseDto)
   async findAll(@CurrentUser() user: User) {
     return this.workspacesService.findAll(user);
+  }
+
+  @Get("check-slug")
+  @ZodSerializerDto(CheckSlugResponseDto)
+  async checkSlug(@Query() query: CheckSlugQueryDto) {
+    return this.workspacesService.checkSlugAvailability(query.slug);
   }
 }

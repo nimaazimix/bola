@@ -23,16 +23,16 @@ export class WorkspacesService {
     }
   }
 
-  async checkSlugAvailability(slug: string) {
-    const workspace = await this.prismaService.workspace.findUnique({ where: { slug } });
-
-    return { available: !workspace };
-  }
-
   async findAll(user: User) {
     return this.prismaService.workspace.findMany({
       where: { memberships: { some: { userId: user.id } } },
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  async checkSlugAvailability(slug: string) {
+    const workspace = await this.prismaService.workspace.findUnique({ where: { slug } });
+
+    return { available: !workspace };
   }
 }

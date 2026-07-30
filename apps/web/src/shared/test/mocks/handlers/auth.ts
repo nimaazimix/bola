@@ -1,33 +1,25 @@
 import { http, HttpResponse } from "msw";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-export const AuthRoutes = {
-  SIGNUP: `${API_URL}/auth/signup`,
-  VERIFY_EMAIL: `${API_URL}/auth/verify-email`,
-  SIGNIN: `${API_URL}/auth/signin`,
-  REFRESH: `${API_URL}/auth/refresh`,
-};
+import { predicates } from "../predicates";
 
 export const authHandlers = [
-  http.post(AuthRoutes.SIGNUP, () => {
+  http.post(predicates.api.auth.signUp, () => {
     return HttpResponse.json({
       success: true,
     });
   }),
-  http.post(AuthRoutes.VERIFY_EMAIL, () => {
-    return HttpResponse.json({
-      success: true,
-      data: { accessToken: "access-token", user: {} },
-    });
-  }),
-  http.post(AuthRoutes.SIGNIN, () => {
+  http.post(predicates.api.auth.verifyEmail, () => {
     return HttpResponse.json({
       success: true,
       data: { accessToken: "access-token", user: {} },
     });
   }),
-  http.post(AuthRoutes.REFRESH, () => {
+  http.post(predicates.api.auth.signIn, () => {
+    return HttpResponse.json({
+      success: true,
+      data: { accessToken: "access-token", user: {} },
+    });
+  }),
+  http.post(predicates.api.auth.refresh, () => {
     return HttpResponse.json({
       success: true,
       data: { accessToken: "access-token", user: {} },

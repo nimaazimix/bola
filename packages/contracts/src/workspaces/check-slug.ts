@@ -1,7 +1,9 @@
 import z from "zod";
-import { CreateWorkspaceSchema } from "./create-workspace";
+import { SlugSchema } from "../common";
 
-export const CheckSlugQuerySchema = CreateWorkspaceSchema.pick({ slug: true });
+export const CheckSlugQuerySchema = z.object({
+  slug: SlugSchema(),
+});
 
 export const CheckSlugResultSchema = z.object({
   available: z.boolean(),

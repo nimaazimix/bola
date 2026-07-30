@@ -15,7 +15,7 @@ export async function signUp(input: SignUpInput, query?: SignUpQuery) {
     .then((res) => res.data.data);
 }
 
-export async function veriftEmail(input: VerifyEmailInput) {
+export async function verifyEmail(input: VerifyEmailInput) {
   return authApi
     .post<ApiSuccess<AuthPayload>>("/auth/verify-email", input)
     .then((res) => res.data.data);

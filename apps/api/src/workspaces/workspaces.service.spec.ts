@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { WorkspacesService } from "./workspaces.service";
 import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
-import { Prisma, PrismaService } from "src/prisma/prisma.service";
 import { userFactory, workspaceFactory } from "test/factories";
+import { WorkspacesService } from "./workspaces.service";
+import { Prisma, PrismaService } from "src/prisma/prisma.service";
 import { SlugAlreadyInUseException } from "./exceptions";
 
 describe("WorkspacesService", () => {
@@ -29,7 +29,7 @@ describe("WorkspacesService", () => {
       // Arrange
       const dto = { name: "Acme", slug: "acme" };
       const user = userFactory.build({ emailVerified: true });
-      const workspace = workspaceFactory.build({ name: dto.name, slug: dto.slug });
+      const workspace = workspaceFactory.build({ ...dto });
 
       prismaServiceMock.workspace.create.mockResolvedValue(workspace);
 
@@ -78,7 +78,7 @@ describe("WorkspacesService", () => {
   });
 
   describe("checkSlugAvailability", () => {
-    it("should return true when slug is not in use yet", async () => {
+    it("should return available when slug is not in use yet", async () => {
       // Arrange
       prismaServiceMock.workspace.findUnique.mockResolvedValue(null);
 
@@ -86,7 +86,7 @@ describe("WorkspacesService", () => {
       expect(service.checkSlugAvailability("acme")).resolves.toEqual({ available: true });
     });
 
-    it("should return false when slug is already in use", async () => {
+    it("should return unavailable when slug is already in use", async () => {
       // Arrange
       const workspace = workspaceFactory.build();
       prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);

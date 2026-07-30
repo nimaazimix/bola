@@ -36,6 +36,8 @@ export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
         const apiError = getAxiosErrorData(error);
         if (apiError) {
           toast.error(apiError.error.message);
+        } else {
+          toast.error("Something went wrong");
         }
       }
     },

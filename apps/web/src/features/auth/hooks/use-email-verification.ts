@@ -16,7 +16,7 @@ export function useEmailVerification({ token, redirect }: EmailVerificationParam
   const navigate = useNavigate();
 
   useEffect(() => {
-    void (async () => {
+    async function verify() {
       if (!token) {
         return navigate({ to: "/signin", search: { redirect }, replace: true });
       }
@@ -29,6 +29,8 @@ export function useEmailVerification({ token, redirect }: EmailVerificationParam
       } catch {
         navigate({ to: "/signin", search: { redirect }, replace: true });
       }
-    })();
+    }
+
+    verify();
   }, [navigate, queryClient, redirect, token, verifyEmail]);
 }

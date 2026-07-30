@@ -11,7 +11,7 @@ import { SignInForm } from "./sign-in-form";
 import { OAuthButtons } from "./oauth-buttons";
 
 export function SignIn() {
-  const search = useSearch({ from: "/(auth)/signin" });
+  const search = useSearch({ from: "/_guest/signin" });
 
   return (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">

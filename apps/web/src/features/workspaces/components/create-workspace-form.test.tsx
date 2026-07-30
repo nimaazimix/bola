@@ -1,5 +1,5 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { server, WorkspaceRoutes } from "#/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { CreateWorkspaceForm } from "./create-workspace-form";
 
@@ -9,7 +9,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 describe("CreateWorkspaceForm", () => {
-  it("should automatically generate slug", async () => {
+  it("should automatically generate the slug", async () => {
     // Arrange
     render(<CreateWorkspaceForm />);
     const user = userEvent.setup();
@@ -21,7 +21,7 @@ describe("CreateWorkspaceForm", () => {
     expect(screen.getByLabelText(/url/i)).toHaveValue("acme-inc");
   });
 
-  it("should stop generating slug when user types manually", async () => {
+  it("should stop auto-generating the slug after the user edits it", async () => {
     // Arrange
     render(<CreateWorkspaceForm />);
     const user = userEvent.setup();
@@ -30,23 +30,22 @@ describe("CreateWorkspaceForm", () => {
     const nameField = screen.getByLabelText(/name/i);
     const slugField = screen.getByLabelText(/url/i);
 
-    await user.type(nameField, "Acme Inc");
+    await user.type(nameField, "Acme");
 
-    await user.clear(slugField);
-    await user.type(slugField, "workspace-1");
+    await user.type(slugField, "-inc");
 
     await user.clear(nameField);
-    await user.type(nameField, "Workspace 2");
+    await user.type(nameField, "Another");
 
     // Assert
-    expect(slugField).toHaveValue("workspace-1");
+    expect(slugField).toHaveValue("acme-inc");
   });
 
   it("should create a workspace and navigate to it", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, async ({ request }) => {
+      http.post(predicates.api.workspaces.all, async ({ request }) => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
@@ -73,11 +72,11 @@ describe("CreateWorkspaceForm", () => {
     expect(requestBody).toEqual({ name: "Acme Inc", slug: "acme-inc" });
   });
 
-  it("should not submit values when validation fails", async () => {
+  it("should prevent form submission when validation fails", async () => {
     // Arrange
     let requestSent = false;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, () => {
+      http.post(predicates.api.workspaces.all, () => {
         requestSent = true;
       }),
     );
@@ -91,22 +90,23 @@ describe("CreateWorkspaceForm", () => {
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
-    expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/non-consecutive hyphens/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should show error message when creation fails", async () => {
+  it("should display server error message when the request fails with an exception", async () => {
     // Arrange
     server.use(
-      http.post(WorkspaceRoutes.CREATE, () => {
+      http.post(predicates.api.workspaces.all, () => {
         return HttpResponse.json(
           {
             success: false,
             error: {
-              code: "common.internal_error",
-              message: "Something went wrong",
+              code: "workspace.slug_already_in_use",
+              message: "Slug is already in use",
             },
           },
           { status: 409 },
@@ -122,14 +122,40 @@ describe("CreateWorkspaceForm", () => {
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
+    expect(await screen.findByText("Slug is already in use")).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it("should display fallback error message when the request fails unexpectedly", async () => {
+    // Arrange
+    server.use(
+      http.post(predicates.api.workspaces.all, () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    render(<CreateWorkspaceForm />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.click(screen.getByRole("button", { name: /create workspace/i }));
+
+    // Assert
     expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("show check slug availability after submission", async () => {
+  it("should prevent form submission when the slug is unavailable", async () => {
     // Arrange
+    let requestSent = false;
     server.use(
-      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
+      http.post(predicates.api.workspaces.all, () => {
+        requestSent = true;
+      }),
+    );
+    server.use(
+      http.get(predicates.api.workspaces.checkSlug, async () => {
         return HttpResponse.json({ success: true, data: { available: false } });
       }),
     );
@@ -144,12 +170,13 @@ describe("CreateWorkspaceForm", () => {
     // Assert
     expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
     expect(screen.getByText(/unavailable/i)).toBeInTheDocument();
+    expect(requestSent).toBe(false);
   });
 
-  it("should show error message when slug availability fails", async () => {
+  it("should display generic validation error when slug availability cannot be verified", async () => {
     server.use(
-      http.get(WorkspaceRoutes.CHECK_SLUG, async () => {
-        return HttpResponse.json({ success: false }, { status: 500 });
+      http.get(predicates.api.workspaces.checkSlug, async () => {
+        return HttpResponse.error();
       }),
     );
 
@@ -165,11 +192,11 @@ describe("CreateWorkspaceForm", () => {
     expect(screen.getByText(/unable to verify slug availability/i)).toBeInTheDocument();
   });
 
-  it("should disable the submit button while submitting values", async () => {
+  it("should disable the submit button during form submission", async () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(
-      http.post(WorkspaceRoutes.CREATE, async () => {
+      http.post(predicates.api.workspaces.all, async () => {
         await new Promise<void>((resolve) => {
           resolveRequest = resolve;
         });

@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "#/test/utils";
-import { AuthRoutes, server } from "#/test/mocks";
+import { render, screen, waitFor } from "#/shared/test/utils";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores";
 import { AuthProvider } from "./auth-provider";
@@ -9,7 +9,7 @@ describe("AuthProvider", () => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
 
-  it("it should render loading initially", () => {
+  it("it should render the loading indicator initially", () => {
     // Arrange
     render(<AuthProvider>children</AuthProvider>);
 
@@ -17,7 +17,7 @@ describe("AuthProvider", () => {
     expect(screen.getByLabelText(/loading/i)).toBeInTheDocument();
   });
 
-  it("should authenticate user and render children after successful refresh", async () => {
+  it("should authenticate user and render the children after successful refresh", async () => {
     // Arrange
     render(<AuthProvider>children</AuthProvider>);
 
@@ -28,10 +28,10 @@ describe("AuthProvider", () => {
     expect(screen.getByText(/children/i)).toBeInTheDocument();
   });
 
-  it("should unauthenticate user and render children when refresh fails", async () => {
+  it("should unauthenticate user and render the children when refresh fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.REFRESH, () => {
+      http.post(predicates.api.auth.refresh, () => {
         return HttpResponse.json({ success: false }, { status: 401 });
       }),
     );

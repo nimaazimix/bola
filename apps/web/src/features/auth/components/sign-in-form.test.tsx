@@ -1,7 +1,6 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { AuthRoutes, server } from "#/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
-import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
 import { resolveDestination } from "../lib/resolve-destination";
 import { SignInForm } from "./sign-in-form";
@@ -24,7 +23,7 @@ describe("SignInForm", () => {
     // Arrange
     let requestBody: unknown;
     server.use(
-      http.post(AuthRoutes.SIGNIN, async ({ request }) => {
+      http.post(predicates.api.auth.signIn, async ({ request }) => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
@@ -32,7 +31,7 @@ describe("SignInForm", () => {
         });
       }),
     );
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" } as unknown as ToOptions);
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
     render(<SignInForm redirect="/acme" />);
     const user = userEvent.setup();
@@ -48,13 +47,14 @@ describe("SignInForm", () => {
       expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
     expect(requestBody).toEqual({ email: "test@example.com", password: "password" });
+    expect(resolveDestination).toHaveBeenCalledWith(expect.anything(), "/acme");
   });
 
-  it("should not submit values when validation fails", async () => {
+  it("should prevent form submission when validation fails", async () => {
     // Arrange
     let requestSent = false;
     server.use(
-      http.post(AuthRoutes.SIGNIN, () => {
+      http.post(predicates.api.auth.signIn, () => {
         requestSent = true;
       }),
     );
@@ -68,16 +68,17 @@ describe("SignInForm", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
-    expect(await screen.findByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should show error message when sign in fails", async () => {
+  it("should display server error message when the request fails with an exception", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.SIGNIN, () => {
+      http.post(predicates.api.auth.signIn, () => {
         return HttpResponse.json(
           {
             success: false,
@@ -100,15 +101,36 @@ describe("SignInForm", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
-    expect(await screen.findByText(/incorrect/i)).toBeInTheDocument();
+    expect(await screen.findByText("Email address or password is incorrect")).toBeInTheDocument();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should disable the submit button while submitting values", async () => {
+  it("should display fallback error message when the request fails unexpectedly", async () => {
+    // Arrange
+    server.use(
+      http.post(predicates.api.auth.signIn, () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    render(<SignInForm />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it("should disable the submit button during form submission", async () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(
-      http.post(AuthRoutes.SIGNIN, async () => {
+      http.post(predicates.api.auth.signIn, async () => {
         await new Promise<void>((resolve) => {
           resolveRequest = resolve;
         });

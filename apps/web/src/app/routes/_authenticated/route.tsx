@@ -1,9 +1,17 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { requireAuth } from "#/app/guards";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useAuthStore } from "#/shared/stores";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ location }) => {
-    requireAuth({ locationHref: location.href });
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+
+    if (!isAuthenticated) {
+      throw redirect({
+        to: "/signin",
+        search: { redirect: location.href },
+        replace: true,
+      });
+    }
   },
   component: Outlet,
 });

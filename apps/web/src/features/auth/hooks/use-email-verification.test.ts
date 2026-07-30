@@ -1,7 +1,6 @@
-import { AllTheProviders, renderHook, waitFor } from "#/test/utils";
-import { AuthRoutes, server } from "#/test/mocks";
+import { AllTheProviders, renderHook, waitFor } from "#/shared/test/utils";
+import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
-import type { ToOptions } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
 import { resolveDestination } from "../lib/resolve-destination";
 import { useEmailVerification } from "./use-email-verification";
@@ -22,22 +21,23 @@ describe("useEmailVerification", () => {
 
   it("should authenticate user and navigate to the resolved route", async () => {
     // Arrange
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
     renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" } as unknown as ToOptions);
 
     // Assert
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
       expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
+    expect(resolveDestination).toHaveBeenCalledWith(expect.anything(), "/acme");
   });
 
   it("should navigate to /signin and set redirect route when verification fails", async () => {
     // Arrange
     server.use(
-      http.post(AuthRoutes.VERIFY_EMAIL, () => {
+      http.post(predicates.api.auth.verifyEmail, () => {
         return HttpResponse.json({ success: false }, { status: 401 });
       }),
     );
