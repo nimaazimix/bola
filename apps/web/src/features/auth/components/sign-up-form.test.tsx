@@ -4,7 +4,7 @@ import { http, HttpResponse } from "msw";
 import { SignUpForm } from "./sign-up-form";
 
 describe("SignUpForm", () => {
-  it("should request sign up and call provided onSignUp", async () => {
+  it("should request sign up and call the provided onSignUp callback", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
@@ -35,7 +35,7 @@ describe("SignUpForm", () => {
     });
   });
 
-  it("should send redirect as request query param when it is provided", async () => {
+  it("should send redirect as the request query param when it is provided", async () => {
     // Arrange
     let requestUrl!: string;
     server.use(
@@ -55,7 +55,7 @@ describe("SignUpForm", () => {
     await user.type(screen.getByLabelText(/password/i), "password");
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
-    // Arrange
+    // Assert
     await waitFor(() => {
       expect(onSignUp).toHaveBeenCalled();
     });
@@ -72,7 +72,7 @@ describe("SignUpForm", () => {
     expect(screen.getByDisplayValue("test@example.com")).toBeInTheDocument();
   });
 
-  it("should not submit values when validation fails", async () => {
+  it("should prevent form submission when validation fails", async () => {
     // Arrange
     let requestSent = false;
     server.use(
@@ -92,14 +92,17 @@ describe("SignUpForm", () => {
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     // Assert
-    expect(await screen.findByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
+
     expect(screen.getByLabelText(/password/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/at least 8 characters/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
     expect(onSignUp).not.toHaveBeenCalled();
   });
 
-  it("should show error message when sign up fails", async () => {
+  it("should display server error message when the request fails with an exception", async () => {
     // Arrange
     server.use(
       http.post(predicates.api.auth.signUp, () => {
@@ -131,7 +134,30 @@ describe("SignUpForm", () => {
     expect(onSignUp).not.toHaveBeenCalled();
   });
 
-  it("should disable the submit button while submitting values", async () => {
+  it("should display fallback error message when the request fails unexpectedly", async () => {
+    // Arrange
+    server.use(
+      http.post(predicates.api.auth.signUp, () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    const onSignUp = vi.fn();
+    render(<SignUpForm onSignUp={onSignUp} />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/name/i), "Test");
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
+    expect(onSignUp).not.toHaveBeenCalled();
+  });
+
+  it("should disable the submit button during form submission", async () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(

@@ -7,7 +7,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 describe("SignUp", () => {
-  it("should render sign up form initially", async () => {
+  it("should render the sign up form initially", async () => {
     // Arrange
     render(<SignUp />);
 
@@ -15,7 +15,7 @@ describe("SignUp", () => {
     expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
   });
 
-  it("should render check email after successful sign up", async () => {
+  it("should transition to the verify email step after successful sign up", async () => {
     // Arrange
     render(<SignUp />);
     const user = userEvent.setup();
@@ -31,7 +31,7 @@ describe("SignUp", () => {
     expect(screen.getByText(/test@example.com/i)).toBeInTheDocument();
   });
 
-  it("should go back to sign up form with prefilled data when user clicks back", async () => {
+  it("should restore the entered data when returning to the sign up form", async () => {
     // Arrange
     render(<SignUp />);
     const user = userEvent.setup();

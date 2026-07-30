@@ -1,9 +1,15 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { requireGuest } from "#/app/guards";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useAuthStore } from "#/shared/stores";
+import { resolveDestination } from "#/features/auth";
 
 export const Route = createFileRoute("/_guest")({
   beforeLoad: async ({ context }) => {
-    await requireGuest({ queryClient: context.queryClient });
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+
+    if (isAuthenticated) {
+      const destination = await resolveDestination(context.queryClient);
+      throw redirect({ ...destination, replace: true });
+    }
   },
   component: Outlet,
 });

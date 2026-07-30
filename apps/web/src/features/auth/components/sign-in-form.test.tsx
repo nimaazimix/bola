@@ -47,9 +47,10 @@ describe("SignInForm", () => {
       expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
     expect(requestBody).toEqual({ email: "test@example.com", password: "password" });
+    expect(resolveDestination).toHaveBeenCalledWith(expect.anything(), "/acme");
   });
 
-  it("should not submit values when validation fails", async () => {
+  it("should prevent form submission when validation fails", async () => {
     // Arrange
     let requestSent = false;
     server.use(
@@ -67,13 +68,14 @@ describe("SignInForm", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
-    expect(await screen.findByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
+    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should show error message when sign in fails", async () => {
+  it("should display server error message when the request fails with an exception", async () => {
     // Arrange
     server.use(
       http.post(predicates.api.auth.signIn, () => {
@@ -99,11 +101,32 @@ describe("SignInForm", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
-    expect(await screen.findByText(/incorrect/i)).toBeInTheDocument();
+    expect(await screen.findByText("Email address or password is incorrect")).toBeInTheDocument();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should disable the submit button while submitting values", async () => {
+  it("should display fallback error message when the request fails unexpectedly", async () => {
+    // Arrange
+    server.use(
+      http.post(predicates.api.auth.signIn, () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    render(<SignInForm />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  it("should disable the submit button during form submission", async () => {
     // Arrange
     let resolveRequest!: () => void;
     server.use(

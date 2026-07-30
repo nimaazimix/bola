@@ -1,4 +1,4 @@
 import { authHandlers } from "./auth";
-import { workspaceHandlers } from "./workspace";
+import { workspacesHandlers } from "./workspaces";
 
-export const handlers = [...authHandlers, ...workspaceHandlers];
+export const handlers = [...authHandlers, ...workspacesHandlers];

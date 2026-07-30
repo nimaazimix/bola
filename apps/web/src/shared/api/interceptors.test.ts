@@ -71,7 +71,7 @@ describe("API interceptors", () => {
       });
     });
 
-    it("should refresh access token on 401 expired and retry request", async () => {
+    it("should refresh access token on 401 expired and retry the request", async () => {
       // Arrange
       apiMock
         .onGet("/data")
@@ -98,7 +98,7 @@ describe("API interceptors", () => {
       expect(useAuthStore.getState().accessToken).toBe("access-token");
     });
 
-    it("should reject the request when it fails with unrelated code", async () => {
+    it("should reject the request when it is failed with unrelated code", async () => {
       // Arrange
       apiMock.onGet("/data").reply(401, { success: false, error: { code: "auth.unknown_error" } });
 
@@ -158,7 +158,7 @@ describe("API interceptors", () => {
       expect(refreshMock.history.post.length).toBe(1);
     });
 
-    it("should reject concurrent request when refresh fails", async () => {
+    it("should reject concurrent requests when refresh fails", async () => {
       // Arrange
       let resolveRefresh!: () => void;
       const refreshPromise = new Promise<void>((resolve) => {

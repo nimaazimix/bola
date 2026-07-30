@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
 
-export const workspaceHandlers = [
+export const workspacesHandlers = [
   http.post(predicates.api.workspaces.all, () => {
     return HttpResponse.json({
       success: true,

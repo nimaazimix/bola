@@ -9,7 +9,7 @@ describe("AuthProvider", () => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
 
-  it("it should render loading initially", () => {
+  it("it should render the loading indicator initially", () => {
     // Arrange
     render(<AuthProvider>children</AuthProvider>);
 
@@ -17,7 +17,7 @@ describe("AuthProvider", () => {
     expect(screen.getByLabelText(/loading/i)).toBeInTheDocument();
   });
 
-  it("should authenticate user and render children after successful refresh", async () => {
+  it("should authenticate user and render the children after successful refresh", async () => {
     // Arrange
     render(<AuthProvider>children</AuthProvider>);
 
@@ -28,7 +28,7 @@ describe("AuthProvider", () => {
     expect(screen.getByText(/children/i)).toBeInTheDocument();
   });
 
-  it("should unauthenticate user and render children when refresh fails", async () => {
+  it("should unauthenticate user and render the children when refresh fails", async () => {
     // Arrange
     server.use(
       http.post(predicates.api.auth.refresh, () => {

@@ -2,7 +2,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { resolveDestination } from "./resolve-destination";
 
 describe("resolveDestination", () => {
-  it("should resolve to the redirected route when provided", async () => {
+  it("should resolve to the redirect route when provided", async () => {
     // Arrange
     const queryClient = {
       ensureQueryData: vi.fn(),

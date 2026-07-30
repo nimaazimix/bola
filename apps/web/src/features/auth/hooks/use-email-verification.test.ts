@@ -21,16 +21,17 @@ describe("useEmailVerification", () => {
 
   it("should authenticate user and navigate to the resolved route", async () => {
     // Arrange
+    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
     renderHook(() => useEmailVerification({ token: "vrf-token", redirect: "/acme" }), {
       wrapper: AllTheProviders,
     });
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
     // Assert
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
       expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
     });
+    expect(resolveDestination).toHaveBeenCalledWith(expect.anything(), "/acme");
   });
 
   it("should navigate to /signin and set redirect route when verification fails", async () => {
