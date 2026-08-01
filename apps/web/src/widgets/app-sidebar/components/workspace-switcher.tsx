@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
+import { getInitial } from "#/shared/lib";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();
@@ -41,7 +42,7 @@ export function WorkspaceSwitcher() {
             >
               <Avatar>
                 <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground rounded-lg">
-                  {activeWorkspace.name[0]!.toUpperCase()}
+                  {getInitial(activeWorkspace.name)}
                 </AvatarFallback>
               </Avatar>
 
@@ -71,7 +72,7 @@ export function WorkspaceSwitcher() {
                     <>
                       <Avatar size="sm" className="after:rounded-md">
                         <AvatarFallback className="text-muted-foreground! rounded-md">
-                          {workspace.name[0]!.toUpperCase()}
+                          {getInitial(workspace.name)}
                         </AvatarFallback>
                       </Avatar>
                       <span>{workspace.name}</span>

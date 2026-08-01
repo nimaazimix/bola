@@ -23,6 +23,7 @@ import {
 } from "@tabler/icons-react";
 
 import { useAuthStore } from "#/shared/stores";
+import { getInitial } from "#/shared/lib";
 
 export function NavUser() {
   const user = useAuthStore((state) => state.user)!;
@@ -38,9 +39,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="after:rounded-lg">
-                <AvatarFallback className="rounded-lg">
-                  {user.name[0]!.toUpperCase()}
-                </AvatarFallback>
+                <AvatarFallback className="rounded-lg">{getInitial(user.name)}</AvatarFallback>
               </Avatar>
               <div className="grid leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -59,9 +58,7 @@ export function NavUser() {
             <DropdownMenuLabel className="text-foreground text-sm font-normal">
               <div className="flex items-center gap-2">
                 <Avatar className="after:rounded-lg">
-                  <AvatarFallback className="rounded-lg">
-                    {user.name[0]!.toUpperCase()}
-                  </AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{getInitial(user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="grid leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
