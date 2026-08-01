@@ -6,6 +6,7 @@ import { queryClient } from "#/shared/api";
 import { AuthProvider } from "./providers/auth-provider";
 
 import { ThemeProvider } from "@bola/ui/components/theme-provider";
+import { TooltipProvider } from "@bola/ui/components/tooltip";
 import { Toaster } from "@bola/ui/components/sonner";
 import "@bola/ui/globals.css";
 
@@ -16,10 +17,12 @@ if (!rootElement.innerHTML) {
   root.render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <RouterProvider router={getRouter()} />
-          <Toaster />
-        </AuthProvider>
+        <TooltipProvider>
+          <AuthProvider>
+            <RouterProvider router={getRouter()} />
+            <Toaster />
+          </AuthProvider>
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>,
   );
