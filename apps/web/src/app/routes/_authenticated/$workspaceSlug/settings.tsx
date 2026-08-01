@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/$workspaceSlug/")({
+export const Route = createFileRoute("/_authenticated/$workspaceSlug/settings")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <div>Home</div>;
+  return <div>Settings</div>;
 }

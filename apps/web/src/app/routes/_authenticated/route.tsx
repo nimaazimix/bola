@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -13,5 +13,4 @@ export const Route = createFileRoute("/_authenticated")({
       });
     }
   },
-  component: Outlet,
 });

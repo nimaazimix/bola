@@ -16,7 +16,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
 import { Route as GuestSigninRouteImport } from './routes/_guest/signin'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedWorkspaceSlugRouteRouteImport } from './routes/_authenticated/$workspaceSlug/route'
 import { Route as AuthenticatedWorkspaceSlugIndexRouteImport } from './routes/_authenticated/$workspaceSlug/index'
+import { Route as AuthenticatedWorkspaceSlugSettingsRouteImport } from './routes/_authenticated/$workspaceSlug/settings'
+import { Route as AuthenticatedWorkspaceSlugInboxRouteImport } from './routes/_authenticated/$workspaceSlug/inbox'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -51,19 +54,40 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWorkspaceSlugRouteRoute =
+  AuthenticatedWorkspaceSlugRouteRouteImport.update({
+    id: '/$workspaceSlug',
+    path: '/$workspaceSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedWorkspaceSlugIndexRoute =
   AuthenticatedWorkspaceSlugIndexRouteImport.update({
-    id: '/$workspaceSlug/',
-    path: '/$workspaceSlug/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedWorkspaceSlugRouteRoute,
+  } as any)
+const AuthenticatedWorkspaceSlugSettingsRoute =
+  AuthenticatedWorkspaceSlugSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedWorkspaceSlugRouteRoute,
+  } as any)
+const AuthenticatedWorkspaceSlugInboxRoute =
+  AuthenticatedWorkspaceSlugInboxRouteImport.update({
+    id: '/inbox',
+    path: '/inbox',
+    getParentRoute: () => AuthenticatedWorkspaceSlugRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/$workspaceSlug': typeof AuthenticatedWorkspaceSlugRouteRouteWithChildren
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/signin': typeof GuestSigninRoute
   '/signup': typeof GuestSignupRoute
+  '/$workspaceSlug/inbox': typeof AuthenticatedWorkspaceSlugInboxRoute
+  '/$workspaceSlug/settings': typeof AuthenticatedWorkspaceSlugSettingsRoute
   '/$workspaceSlug/': typeof AuthenticatedWorkspaceSlugIndexRoute
 }
 export interface FileRoutesByTo {
@@ -72,6 +96,8 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/signin': typeof GuestSigninRoute
   '/signup': typeof GuestSignupRoute
+  '/$workspaceSlug/inbox': typeof AuthenticatedWorkspaceSlugInboxRoute
+  '/$workspaceSlug/settings': typeof AuthenticatedWorkspaceSlugSettingsRoute
   '/$workspaceSlug': typeof AuthenticatedWorkspaceSlugIndexRoute
 }
 export interface FileRoutesById {
@@ -80,9 +106,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_guest': typeof GuestRouteRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/_authenticated/$workspaceSlug': typeof AuthenticatedWorkspaceSlugRouteRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_guest/signin': typeof GuestSigninRoute
   '/_guest/signup': typeof GuestSignupRoute
+  '/_authenticated/$workspaceSlug/inbox': typeof AuthenticatedWorkspaceSlugInboxRoute
+  '/_authenticated/$workspaceSlug/settings': typeof AuthenticatedWorkspaceSlugSettingsRoute
   '/_authenticated/$workspaceSlug/': typeof AuthenticatedWorkspaceSlugIndexRoute
 }
 export interface FileRouteTypes {
@@ -90,9 +119,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/verify-email'
+    | '/$workspaceSlug'
     | '/onboarding'
     | '/signin'
     | '/signup'
+    | '/$workspaceSlug/inbox'
+    | '/$workspaceSlug/settings'
     | '/$workspaceSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -101,6 +133,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/signin'
     | '/signup'
+    | '/$workspaceSlug/inbox'
+    | '/$workspaceSlug/settings'
     | '/$workspaceSlug'
   id:
     | '__root__'
@@ -108,9 +142,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_guest'
     | '/verify-email'
+    | '/_authenticated/$workspaceSlug'
     | '/_authenticated/onboarding'
     | '/_guest/signin'
     | '/_guest/signup'
+    | '/_authenticated/$workspaceSlug/inbox'
+    | '/_authenticated/$workspaceSlug/settings'
     | '/_authenticated/$workspaceSlug/'
   fileRoutesById: FileRoutesById
 }
@@ -172,24 +209,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/$workspaceSlug': {
+      id: '/_authenticated/$workspaceSlug'
+      path: '/$workspaceSlug'
+      fullPath: '/$workspaceSlug'
+      preLoaderRoute: typeof AuthenticatedWorkspaceSlugRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/$workspaceSlug/': {
       id: '/_authenticated/$workspaceSlug/'
-      path: '/$workspaceSlug'
+      path: '/'
       fullPath: '/$workspaceSlug/'
       preLoaderRoute: typeof AuthenticatedWorkspaceSlugIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedWorkspaceSlugRouteRoute
+    }
+    '/_authenticated/$workspaceSlug/settings': {
+      id: '/_authenticated/$workspaceSlug/settings'
+      path: '/settings'
+      fullPath: '/$workspaceSlug/settings'
+      preLoaderRoute: typeof AuthenticatedWorkspaceSlugSettingsRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceSlugRouteRoute
+    }
+    '/_authenticated/$workspaceSlug/inbox': {
+      id: '/_authenticated/$workspaceSlug/inbox'
+      path: '/inbox'
+      fullPath: '/$workspaceSlug/inbox'
+      preLoaderRoute: typeof AuthenticatedWorkspaceSlugInboxRouteImport
+      parentRoute: typeof AuthenticatedWorkspaceSlugRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+interface AuthenticatedWorkspaceSlugRouteRouteChildren {
+  AuthenticatedWorkspaceSlugInboxRoute: typeof AuthenticatedWorkspaceSlugInboxRoute
+  AuthenticatedWorkspaceSlugSettingsRoute: typeof AuthenticatedWorkspaceSlugSettingsRoute
   AuthenticatedWorkspaceSlugIndexRoute: typeof AuthenticatedWorkspaceSlugIndexRoute
 }
 
+const AuthenticatedWorkspaceSlugRouteRouteChildren: AuthenticatedWorkspaceSlugRouteRouteChildren =
+  {
+    AuthenticatedWorkspaceSlugInboxRoute: AuthenticatedWorkspaceSlugInboxRoute,
+    AuthenticatedWorkspaceSlugSettingsRoute:
+      AuthenticatedWorkspaceSlugSettingsRoute,
+    AuthenticatedWorkspaceSlugIndexRoute: AuthenticatedWorkspaceSlugIndexRoute,
+  }
+
+const AuthenticatedWorkspaceSlugRouteRouteWithChildren =
+  AuthenticatedWorkspaceSlugRouteRoute._addFileChildren(
+    AuthenticatedWorkspaceSlugRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedWorkspaceSlugRouteRoute: typeof AuthenticatedWorkspaceSlugRouteRouteWithChildren
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+}
+
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedWorkspaceSlugRouteRoute:
+    AuthenticatedWorkspaceSlugRouteRouteWithChildren,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedWorkspaceSlugIndexRoute: AuthenticatedWorkspaceSlugIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
