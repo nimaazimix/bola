@@ -1,3 +1,4 @@
+import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { mock, MockProxy } from "jest-mock-extended";
 import {
@@ -12,18 +13,6 @@ import { ConfigService } from "@nestjs/config";
 import { PrismaService, Provider, VerificationType } from "src/prisma/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { JsonWebTokenError, JwtService, TokenExpiredError } from "@nestjs/jwt";
-import {
-  AccessTokenExpiredException,
-  AccessTokenInvalidException,
-  CredentialsInvalidException,
-  EmailAlreadyInUseException,
-  EmailNotVerifiedException,
-  SessionExpiredException,
-  SessionInvalidException,
-  UserNotFoundException,
-  VerificationExpiredException,
-  VerificationInvalidException,
-} from "./exceptions";
 import { after, before, generateToken, sha256 } from "src/common/utils";
 import argon2 from "argon2";
 
@@ -155,7 +144,7 @@ describe("AuthService", () => {
       );
     });
 
-    it("should throw EmailAlreadyInUseException when email address is already in use", async () => {
+    it("should throw ConflictException when email address is already in use", async () => {
       // Arrange
       const dto = {
         name: "User",
@@ -166,7 +155,7 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(user);
 
       // Act, Assert
-      await expect(service.signUp(dto)).rejects.toThrow(EmailAlreadyInUseException);
+      await expect(service.signUp(dto)).rejects.toThrow(ConflictException);
       expect(prismaServiceMock.user.create).not.toHaveBeenCalled();
       expect(mailServiceMock.sendVerificationEmail).not.toHaveBeenCalled();
     });
@@ -218,26 +207,26 @@ describe("AuthService", () => {
       });
     });
 
-    it("should throw VerificationExpiredException when verification is expired", async () => {
+    it("should throw BadRequestException when verification is expired", async () => {
       // Arrange
       const dto = { token: "vrf-token" };
       const verification = verificationFactory.build({ expiresAt: before("1h") });
       prismaServiceMock.verification.findUnique.mockResolvedValue(verification);
 
       // Act, Assert
-      await expect(service.verify(dto, "agent")).rejects.toThrow(VerificationExpiredException);
+      await expect(service.verify(dto, "agent")).rejects.toThrow(BadRequestException);
       expect(prismaServiceMock.verification.delete).not.toHaveBeenCalled();
       expect(prismaServiceMock.user.update).not.toHaveBeenCalled();
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
-    it("should throw VerificationInvalidException when verification is not found", async () => {
+    it("should throw BadRequestException when verification is not found", async () => {
       // Arrange
       const dto = { token: "vrf-token" };
       prismaServiceMock.verification.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.verify(dto, "agent")).rejects.toThrow(VerificationInvalidException);
+      await expect(service.verify(dto, "agent")).rejects.toThrow(BadRequestException);
       expect(prismaServiceMock.verification.delete).not.toHaveBeenCalled();
       expect(prismaServiceMock.user.update).not.toHaveBeenCalled();
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
@@ -285,7 +274,7 @@ describe("AuthService", () => {
       });
     });
 
-    it("should throw CredentialsInvalidException when password is incorrect", async () => {
+    it("should throw UnauthorizedException when password is incorrect", async () => {
       // Arrange
       const dto = {
         email: "user@example.com",
@@ -299,11 +288,11 @@ describe("AuthService", () => {
       jest.mocked(argon2.verify).mockResolvedValue(false);
 
       // Act, Assert
-      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
-    it("should throw CredentialsInvalidException when credentials account is not found", async () => {
+    it("should throw UnauthorizedException when credentials account is not found", async () => {
       // Arrange
       const dto = {
         email: "user@example.com",
@@ -315,11 +304,11 @@ describe("AuthService", () => {
       prismaServiceMock.account.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
-    it("should throw EmailNotVerifiedException when email address is not verified", async () => {
+    it("should throw UnauthorizedException when email address is not verified", async () => {
       // Arrange
       const dto = {
         email: "user@example.com",
@@ -330,11 +319,11 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(user);
 
       // Act, Assert
-      await expect(service.signIn(dto, "agent")).rejects.toThrow(EmailNotVerifiedException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
 
-    it("should throw CredentialsInvalidException when user is not found", async () => {
+    it("should throw UnauthorizedException when user is not found", async () => {
       // Arrange
       const dto = {
         email: "user@example.com",
@@ -343,7 +332,7 @@ describe("AuthService", () => {
       prismaServiceMock.user.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.signIn(dto, "agent")).rejects.toThrow(CredentialsInvalidException);
+      await expect(service.signIn(dto, "agent")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.create).not.toHaveBeenCalled();
     });
   });
@@ -380,28 +369,28 @@ describe("AuthService", () => {
       });
     });
 
-    it("should throw SessionExpiredException when session is expired", async () => {
+    it("should throw UnauthorizedException when session is expired", async () => {
       // Arrange
       const session = sessionFactory.build({ expiresAt: before("1h") });
       prismaServiceMock.session.findUnique.mockResolvedValue(session);
 
       // Act, Assert
-      await expect(service.refresh("refresh-token")).rejects.toThrow(SessionExpiredException);
+      await expect(service.refresh("refresh-token")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.update).not.toHaveBeenCalled();
     });
 
-    it("should throw SessionInvalidException when session is not found", async () => {
+    it("should throw UnauthorizedException when session is not found", async () => {
       // Arrange
       prismaServiceMock.session.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.refresh("refresh-token")).rejects.toThrow(SessionInvalidException);
+      await expect(service.refresh("refresh-token")).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.update).not.toHaveBeenCalled();
     });
 
-    it("should throw SessionInvalidException when refresh token does not exist", async () => {
+    it("should throw UnauthorizedException when refresh token does not exist", async () => {
       // Act, Assert
-      await expect(service.refresh(undefined)).rejects.toThrow(SessionInvalidException);
+      await expect(service.refresh(undefined)).rejects.toThrow(UnauthorizedException);
       expect(prismaServiceMock.session.update).not.toHaveBeenCalled();
     });
   });
@@ -443,38 +432,34 @@ describe("AuthService", () => {
       expect(result).toEqual(user);
     });
 
-    it("should throw UserNotFoundException when user is not found", async () => {
+    it("should throw UnauthorizedException when user is not found", async () => {
       // Arrange
       jwtServiceMock.verifyAsync.mockResolvedValue({ sub: "usr_id" });
       prismaServiceMock.user.findUnique.mockResolvedValue(null);
 
       // Act, Assert
-      await expect(service.authenticate("access-token")).rejects.toThrow(UserNotFoundException);
+      await expect(service.authenticate("access-token")).rejects.toThrow(UnauthorizedException);
     });
 
-    it("should throw AccessTokenExpiredException when access token is expired", async () => {
+    it("should throw UnauthorizedException when access token is expired", async () => {
       // Arrange
       jwtServiceMock.verifyAsync.mockRejectedValue(new TokenExpiredError("Expired", new Date()));
 
       // Act, Assert
-      await expect(service.authenticate("access-token")).rejects.toThrow(
-        AccessTokenExpiredException,
-      );
+      await expect(service.authenticate("access-token")).rejects.toThrow(UnauthorizedException);
     });
 
-    it("should throw AccessTokenInvalidException when access token is invalid", async () => {
+    it("should throw UnauthorizedException when access token is invalid", async () => {
       // Arrange
       jwtServiceMock.verifyAsync.mockRejectedValue(new JsonWebTokenError("Invalid"));
 
       // Act, Assert
-      await expect(service.authenticate("access-token")).rejects.toThrow(
-        AccessTokenInvalidException,
-      );
+      await expect(service.authenticate("access-token")).rejects.toThrow(UnauthorizedException);
     });
 
-    it("should throw AccessTokenInvalidException when access token does not exist", async () => {
+    it("should throw UnauthorizedException when access token does not exist", async () => {
       // Act, Assert
-      await expect(service.authenticate(undefined)).rejects.toThrow(AccessTokenInvalidException);
+      await expect(service.authenticate(undefined)).rejects.toThrow(UnauthorizedException);
     });
   });
 });
