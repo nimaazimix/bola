@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { Prisma, PrismaService, User } from "src/prisma/prisma.service";
 import { CreateWorkspaceDto } from "./dto";
-import { SlugAlreadyInUseException } from "./exceptions";
+import { WorkspaceErrors } from "./errors";
 
 @Injectable()
 export class WorkspacesService {
@@ -17,7 +17,7 @@ export class WorkspacesService {
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-        throw new SlugAlreadyInUseException();
+        throw new ConflictException(WorkspaceErrors.SLUG_ALREADY_IN_USE);
       }
       throw error;
     }

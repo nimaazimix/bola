@@ -1,9 +1,9 @@
+import { ConflictException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
 import { userFactory, workspaceFactory } from "test/factories";
 import { WorkspacesService } from "./workspaces.service";
 import { Prisma, PrismaService } from "src/prisma/prisma.service";
-import { SlugAlreadyInUseException } from "./exceptions";
 
 describe("WorkspacesService", () => {
   let service: WorkspacesService;
@@ -46,7 +46,7 @@ describe("WorkspacesService", () => {
       });
     });
 
-    it("should throw SlugAlreadyInUseException when provided slug is not unique", async () => {
+    it("should throw ConflictException when provided slug is not unique", async () => {
       // Arrange
       const dto = { name: "Acme", slug: "acme" };
       const user = userFactory.build({ emailVerified: true });
@@ -61,7 +61,7 @@ describe("WorkspacesService", () => {
       prismaServiceMock.workspace.create.mockRejectedValue(error);
 
       // Act, Assert
-      await expect(service.create(dto, user)).rejects.toBeInstanceOf(SlugAlreadyInUseException);
+      await expect(service.create(dto, user)).rejects.toBeInstanceOf(ConflictException);
     });
 
     it("should rethrow unknown errors", async () => {

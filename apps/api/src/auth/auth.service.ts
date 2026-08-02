@@ -1,21 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService, Provider, VerificationType } from "src/prisma/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { JsonWebTokenError, JwtService, TokenExpiredError } from "@nestjs/jwt";
 import { SignInDto, SignUpDto, VerifyEmailDto } from "./dto";
-import {
-  AccessTokenExpiredException,
-  AccessTokenInvalidException,
-  CredentialsInvalidException,
-  EmailAlreadyInUseException,
-  EmailNotVerifiedException,
-  SessionExpiredException,
-  SessionInvalidException,
-  UserNotFoundException,
-  VerificationExpiredException,
-  VerificationInvalidException,
-} from "./exceptions";
+import { AuthErrors } from "./errors";
 import { after, generateToken, sha256 } from "src/common/utils";
 import argon2 from "argon2";
 
@@ -36,7 +30,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new EmailAlreadyInUseException();
+      throw new ConflictException(AuthErrors.EMAIL_ALREADY_IN_USE);
     }
 
     const hashedPassword = await argon2.hash(dto.password);
@@ -79,11 +73,11 @@ export class AuthService {
     });
 
     if (!verification) {
-      throw new VerificationInvalidException();
+      throw new BadRequestException(AuthErrors.VERIFICATION_INVALID);
     }
 
     if (verification.expiresAt < new Date()) {
-      throw new VerificationExpiredException();
+      throw new BadRequestException(AuthErrors.VERIFICATION_EXPIRED);
     }
 
     const user = await this.prismaService.$transaction(async (tx) => {
@@ -115,11 +109,11 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new CredentialsInvalidException();
+      throw new UnauthorizedException(AuthErrors.CREDENTIALS_INVALID);
     }
 
     if (!user.emailVerified) {
-      throw new EmailNotVerifiedException();
+      throw new UnauthorizedException(AuthErrors.EMAIL_NOT_VERIFIED);
     }
 
     const account = await this.prismaService.account.findUnique({
@@ -129,7 +123,7 @@ export class AuthService {
     });
 
     if (!account || !(await argon2.verify(account.passwordHash!, dto.password))) {
-      throw new CredentialsInvalidException();
+      throw new UnauthorizedException(AuthErrors.CREDENTIALS_INVALID);
     }
 
     const accessToken = await this.jwtService.signAsync({ sub: user.id });
@@ -149,7 +143,7 @@ export class AuthService {
 
   async refresh(refreshToken: string | undefined) {
     if (!refreshToken) {
-      throw new SessionInvalidException();
+      throw new UnauthorizedException(AuthErrors.SESSION_INVALID);
     }
 
     const session = await this.prismaService.session.findUnique({
@@ -158,11 +152,11 @@ export class AuthService {
     });
 
     if (!session) {
-      throw new SessionInvalidException();
+      throw new UnauthorizedException(AuthErrors.SESSION_INVALID);
     }
 
     if (session.expiresAt < new Date()) {
-      throw new SessionExpiredException();
+      throw new UnauthorizedException(AuthErrors.SESSION_EXPIRED);
     }
 
     const accessToken = await this.jwtService.signAsync({ sub: session.userId });
@@ -186,7 +180,7 @@ export class AuthService {
 
   async authenticate(accessToken: string | undefined) {
     if (!accessToken) {
-      throw new AccessTokenInvalidException();
+      throw new UnauthorizedException(AuthErrors.ACCESS_TOKEN_INVALID);
     }
 
     try {
@@ -194,17 +188,17 @@ export class AuthService {
 
       const user = await this.prismaService.user.findUnique({ where: { id: payload.sub } });
       if (!user) {
-        throw new UserNotFoundException();
+        throw new UnauthorizedException(AuthErrors.USER_NOT_FOUND);
       }
 
       return user;
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new AccessTokenExpiredException();
+        throw new UnauthorizedException(AuthErrors.ACCESS_TOKEN_EXPIRED);
       }
 
       if (error instanceof JsonWebTokenError) {
-        throw new AccessTokenInvalidException();
+        throw new UnauthorizedException(AuthErrors.ACCESS_TOKEN_INVALID);
       }
 
       throw error;
