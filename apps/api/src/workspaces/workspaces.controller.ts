@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { WorkspacesService } from "./workspaces.service";
 import { ZodSerializerDto } from "nestjs-zod";
 import { CurrentUser } from "src/common/decorators";
@@ -31,5 +31,11 @@ export class WorkspacesController {
   @ZodSerializerDto(CheckSlugResponseDto)
   async checkSlug(@Query() query: CheckSlugQueryDto) {
     return this.workspacesService.checkSlugAvailability(query.slug);
+  }
+
+  @Get(":slug")
+  @ZodSerializerDto(WorkspaceResponseDto)
+  async findOneBySlug(@Param("slug") slug: string, @CurrentUser() user: User) {
+    return this.workspacesService.findOneBySlug(slug, user);
   }
 }

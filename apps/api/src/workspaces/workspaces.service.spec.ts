@@ -1,9 +1,9 @@
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
-import { userFactory, workspaceFactory } from "test/factories";
+import { userFactory, workspaceFactory, WorkspaceMembershipFactory } from "test/factories";
 import { WorkspacesService } from "./workspaces.service";
-import { Prisma, PrismaService } from "src/prisma/prisma.service";
+import { Prisma, PrismaService, WorkspaceRole } from "src/prisma/prisma.service";
 
 describe("WorkspacesService", () => {
   let service: WorkspacesService;
@@ -29,7 +29,13 @@ describe("WorkspacesService", () => {
       // Arrange
       const dto = { name: "Acme", slug: "acme" };
       const user = userFactory.build({ emailVerified: true });
-      const workspace = workspaceFactory.build({ ...dto });
+      const workspace = {
+        ...workspaceFactory.build({ id: "wsp_id", ...dto }),
+        memberships: WorkspaceMembershipFactory.buildList(1, {
+          workspaceId: "wsp_id",
+          userId: user.id,
+        }),
+      };
 
       prismaServiceMock.workspace.create.mockResolvedValue(workspace);
 
@@ -37,12 +43,20 @@ describe("WorkspacesService", () => {
       const result = await service.create(dto, user);
 
       // Assert
-      expect(result).toEqual(workspace);
+      const { memberships, ...workspaceFields } = workspace;
+      expect(result).toEqual({
+        ...workspaceFields,
+        membership: { role: memberships[0]!.role },
+      });
+
       expect(prismaServiceMock.workspace.create).toHaveBeenCalledWith({
         data: {
           ...dto,
-          memberships: { create: { role: "OWNER", user: { connect: { id: user.id } } } },
+          memberships: {
+            create: { role: WorkspaceRole.OWNER, user: { connect: { id: user.id } } },
+          },
         },
+        include: { memberships: { where: { userId: user.id } } },
       });
     });
 
@@ -77,6 +91,38 @@ describe("WorkspacesService", () => {
     });
   });
 
+  describe("findAll", () => {
+    it("should return user workspaces in descending order including membership data", async () => {
+      // Arrange
+      const user = userFactory.build({ emailVerified: true });
+      const workspaces = workspaceFactory.buildList(3).map((workspace) => ({
+        ...workspace,
+        memberships: WorkspaceMembershipFactory.buildList(1, {
+          workspaceId: workspace.id,
+          userId: user.id,
+        }),
+      }));
+
+      prismaServiceMock.workspace.findMany.mockResolvedValue(workspaces);
+
+      // Act
+      const result = await service.findAll(user);
+
+      // Assert
+      expect(result).toEqual(
+        workspaces.map(({ memberships, ...workspaceFields }) => ({
+          ...workspaceFields,
+          membership: { role: memberships[0]!.role },
+        })),
+      );
+      expect(prismaServiceMock.workspace.findMany).toHaveBeenCalledWith({
+        where: { memberships: { some: { userId: user.id } } },
+        include: { memberships: { where: { userId: user.id } } },
+        orderBy: { createdAt: "desc" },
+      });
+    });
+  });
+
   describe("checkSlugAvailability", () => {
     it("should return available when slug is not in use yet", async () => {
       // Arrange
@@ -96,23 +142,59 @@ describe("WorkspacesService", () => {
     });
   });
 
-  describe("findAll", () => {
-    it("should return user workspaces in descending order", async () => {
+  describe("findOneBySlug", () => {
+    it("should return workspace including membership data", async () => {
       // Arrange
-      const user = userFactory.build({ emailVerified: true });
-      const workspaces = workspaceFactory.buildList(3);
-
-      prismaServiceMock.workspace.findMany.mockResolvedValue(workspaces);
+      const slug = "acme";
+      const user = userFactory.build();
+      const workspace = {
+        ...workspaceFactory.build({ id: "wsp_id", slug }),
+        memberships: WorkspaceMembershipFactory.buildList(1, {
+          workspaceId: "wsp_id",
+          userId: user.id,
+        }),
+      };
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
 
       // Act
-      const result = await service.findAll(user);
+      const result = await service.findOneBySlug(slug, user);
 
-      // Assert
-      expect(prismaServiceMock.workspace.findMany).toHaveBeenCalledWith({
-        where: { memberships: { some: { userId: user.id } } },
-        orderBy: { createdAt: "desc" },
+      // Arrange
+
+      const { memberships, ...workspaceFields } = workspace;
+      expect(result).toEqual({
+        ...workspaceFields,
+        membership: { role: memberships[0]!.role },
       });
-      expect(result).toEqual(workspaces);
+
+      expect(prismaServiceMock.workspace.findUnique).toHaveBeenCalledWith({
+        where: { slug },
+        include: { memberships: { where: { userId: user.id } } },
+      });
+    });
+
+    it("should throw ForbiddenException when user is not a member of the workspace", async () => {
+      // Arrange
+      const slug = "acme";
+      const user = userFactory.build();
+      const workspace = {
+        ...workspaceFactory.build({ slug }),
+        memberships: [],
+      };
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
+
+      // Act, Assert
+      await expect(service.findOneBySlug(slug, user)).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should throw NotFoundException when workspace is not found", async () => {
+      // Arrange
+      const slug = "acme";
+      const user = userFactory.build();
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(null);
+
+      // Act, Assert
+      await expect(service.findOneBySlug(slug, user)).rejects.toThrow(NotFoundException);
     });
   });
 });

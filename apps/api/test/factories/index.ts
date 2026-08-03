@@ -4,3 +4,4 @@ export * from "./verification.factory";
 export * from "./session.factory";
 
 export * from "./workspace.factory";
+export * from "./workspace-membership.factory";
