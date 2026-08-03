@@ -5,8 +5,11 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { workspaceQueries } from "#/features/workspaces";
 
 export const Route = createFileRoute("/_authenticated/$workspaceSlug")({
-  loader: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData(workspaceQueries.list());
+  loader: async ({ context: { queryClient }, params }) => {
+    await Promise.all([
+      queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
+      queryClient.ensureQueryData(workspaceQueries.list()),
+    ]);
   },
   component: RouteComponent,
 });

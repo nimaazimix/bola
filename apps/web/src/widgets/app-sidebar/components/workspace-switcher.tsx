@@ -18,18 +18,14 @@ import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
-import { getInitial } from "#/shared/lib";
+import { capitalize, getInitial } from "#/shared/lib";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();
   const { workspaceSlug } = useParams({ from: "/_authenticated/$workspaceSlug" });
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());
-  const activeWorkspace = workspaces.find((workspace) => workspace.slug === workspaceSlug);
-
-  if (!activeWorkspace) {
-    return null;
-  }
+  const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
 
   return (
     <SidebarMenu>
@@ -48,7 +44,9 @@ export function WorkspaceSwitcher() {
 
               <div className="grid leading-tight">
                 <span className="truncate font-medium">{activeWorkspace.name}</span>
-                <span className="truncate text-xs">Owner</span>
+                <span className="truncate text-xs">
+                  {capitalize(activeWorkspace.membership.role)}
+                </span>
               </div>
               <IconSelector className="ml-auto" />
             </SidebarMenuButton>

@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getWorkspaces } from "./requests";
+import { getWorkspace, getWorkspaces } from "./requests";
 
 export const workspaceQueries = {
   all: ["workspaces"],
@@ -8,5 +8,11 @@ export const workspaceQueries = {
     queryOptions({
       queryKey: [...workspaceQueries.lists()],
       queryFn: () => getWorkspaces(),
+    }),
+  details: () => [...workspaceQueries.all, "detail"],
+  detail: (slug: string) =>
+    queryOptions({
+      queryKey: [workspaceQueries.details(), slug],
+      queryFn: () => getWorkspace(slug),
     }),
 };
