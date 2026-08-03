@@ -15,3 +15,7 @@ export async function checkSlug(slug: string) {
     .get<ApiSuccess<CheckSlugResult>>("/workspaces/check-slug", { params: { slug } })
     .then((res) => res.data.data);
 }
+
+export async function getWorkspace(slug: string) {
+  return api.get<ApiSuccess<Workspace>>(`/workspaces/${slug}`).then((res) => res.data.data);
+}
