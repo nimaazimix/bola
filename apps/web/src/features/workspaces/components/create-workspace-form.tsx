@@ -14,7 +14,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
 import slugify from "slugify";
 import { toast } from "sonner";
-import { getAxiosErrorData } from "#/shared/api";
+import { ApiError } from "#/shared/api";
 import { useCreateWorkspace } from "../api/use-create-workspace";
 import { checkSlug } from "../api/requests";
 
@@ -34,12 +34,10 @@ export function CreateWorkspaceForm() {
         const workspace = await createWorkspace({ input: value });
         navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
       } catch (error) {
-        const apiError = getAxiosErrorData(error);
-        if (apiError) {
-          toast.error(apiError.error.message);
-        } else {
-          toast.error("Something went wrong");
+        if (error instanceof ApiError) {
+          return toast.error(error.message);
         }
+        toast.error("Something went wrong");
       }
     },
   });

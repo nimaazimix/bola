@@ -1,6 +1,7 @@
-import type { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import { useAuthStore } from "../stores";
-import type { ApiError, ApiSuccess } from "@bola/contracts/api";
+import { toApiError } from "./errors";
+import type { ApiSuccess } from "@bola/contracts/api";
 import type { AuthPayload } from "@bola/contracts/auth";
 
 let isRefreshing = false;
@@ -31,12 +32,13 @@ export function setupInterceptors(instance: AxiosInstance, refreshInstance: Axio
 
   instance.interceptors.response.use(
     (response) => response,
-    async (error: AxiosError<ApiError>) => {
+    async (error) => {
       const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+      const apiError = toApiError(error);
 
       if (
-        error.response?.status === 401 &&
-        error.response?.data.error.code === "auth.access_token_expired" &&
+        apiError.status === 401 &&
+        apiError.code === "auth.access_token_expired" &&
         !originalRequest._retry
       ) {
         if (isRefreshing) {
@@ -57,14 +59,15 @@ export function setupInterceptors(instance: AxiosInstance, refreshInstance: Axio
         } catch (refreshError) {
           useAuthStore.getState().clearAuth();
 
-          processQueue(refreshError);
-          return Promise.reject(error);
+          const apiError = toApiError(refreshError);
+          processQueue(apiError);
+          return Promise.reject(apiError);
         } finally {
           isRefreshing = false;
         }
       }
 
-      return Promise.reject(error);
+      return Promise.reject(apiError);
     },
   );
 }

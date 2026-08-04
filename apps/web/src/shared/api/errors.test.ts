@@ -1,43 +1,75 @@
-import { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { getAxiosErrorData } from "./errors";
+import { AxiosError, type AxiosResponse } from "axios";
+import { ApiError, toApiError } from "./errors";
 
-describe("getAxiosErrorData", () => {
-  it("should return response data", () => {
+describe("toApiError", () => {
+  it("should return http error for axios errors that has response", () => {
     // Arrange
-    const apiError = {
-      success: false,
-      error: {
-        code: "common.internal_error",
-        message: "Something went wrong",
-      },
-    };
-
-    const error = new AxiosError();
-    error.response = {
+    const originalError = new AxiosError();
+    originalError.response = {
       status: 500,
-      statusText: "Internal Server Error",
-      data: apiError,
-      headers: {},
-      config: {} as InternalAxiosRequestConfig,
-    };
+      data: {
+        success: false,
+        error: {
+          message: "Internal server error",
+          code: "common.internal_error",
+          details: { reason: "server" },
+        },
+      },
+    } as AxiosResponse;
 
-    // Act, Assert
-    expect(getAxiosErrorData(error)).toEqual(apiError);
+    // Act
+    const result = toApiError(originalError);
+
+    // Assert
+    expect(result).toBeInstanceOf(ApiError);
+    expect(result.kind).toBe("http");
+    expect(result.status).toBe(500);
+    expect(result.message).toBe("Internal server error");
+    expect(result.code).toBe("common.internal_error");
+    expect(result.details).toEqual({ reason: "server" });
+    expect(result.cause).toBe(originalError);
   });
 
-  it("should return undefined when there is no response", () => {
+  it("should return network error for axios errors that has request", () => {
     // Arrange
-    const error = new AxiosError();
+    const originalError = new AxiosError();
+    originalError.request = {};
 
-    // Act, Assert
-    expect(getAxiosErrorData(error)).toBeUndefined();
+    // Act
+    const result = toApiError(originalError);
+
+    // Assert
+    expect(result).toBeInstanceOf(ApiError);
+    expect(result.kind).toBe("network");
+    expect(result.message).toBe("Unable to connect to the server");
+    expect(result.cause).toBe(originalError);
   });
 
-  it("should return undefined when the error is not from axios", () => {
+  it("should return unknown error for unexpected axios errors", () => {
     // Arrange
-    const error = new Error();
+    const originalError = new AxiosError();
 
-    // Act, Assert
-    expect(getAxiosErrorData(error)).toBeUndefined();
+    // Act
+    const result = toApiError(originalError);
+
+    // Assert
+    expect(result).toBeInstanceOf(ApiError);
+    expect(result.kind).toBe("unknown");
+    expect(result.message).toBe("Something went wrong");
+    expect(result.cause).toBe(originalError);
+  });
+
+  it("should return unknown error for non axios errors", () => {
+    // Arrange
+    const originalError = new Error();
+
+    // Act
+    const result = toApiError(originalError);
+
+    // Assert
+    expect(result).toBeInstanceOf(ApiError);
+    expect(result.kind).toBe("unknown");
+    expect(result.message).toBe("Something went wrong");
+    expect(result.cause).toBe(originalError);
   });
 });
