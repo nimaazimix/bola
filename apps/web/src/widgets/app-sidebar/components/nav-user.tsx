@@ -23,11 +23,15 @@ import {
 } from "@tabler/icons-react";
 
 import { useAuthStore } from "#/shared/stores/auth.store";
+import { useSignOut } from "#/features/auth";
 import { getInitial } from "#/shared/lib/string";
 
 export function NavUser() {
-  const user = useAuthStore((state) => state.user)!;
+  const user = useAuthStore((state) => state.user);
+  const { mutate: signOut } = useSignOut();
   const { isMobile } = useSidebar();
+
+  if (!user) return;
 
   return (
     <SidebarMenu>
@@ -84,7 +88,7 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
               <IconLogout />
               Sign out
             </DropdownMenuItem>

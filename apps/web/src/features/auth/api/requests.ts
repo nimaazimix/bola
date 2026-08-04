@@ -32,3 +32,9 @@ export async function refresh() {
     .post<ApiSuccess<AuthPayload>>("/auth/refresh", undefined, { withCredentials: true })
     .then((res) => res.data.data);
 }
+
+export async function signOut() {
+  return api
+    .post<ApiSuccess<never>>("/auth/signout", undefined, { withCredentials: true })
+    .then((res) => res.data.data);
+}
