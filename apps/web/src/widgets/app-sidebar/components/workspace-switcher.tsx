@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
-import { capitalize, getInitial } from "#/shared/lib";
+import { capitalize, getInitial } from "#/shared/lib/string";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();

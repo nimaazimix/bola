@@ -7,7 +7,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { SignInSchema } from "@bola/contracts/auth";
 import { toast } from "sonner";
-import { ApiError } from "#/shared/api";
+import { ApiError } from "#/shared/api/errors";
 import { useSignIn } from "../api/use-sign-in";
 import { resolveDestination } from "../lib/resolve-destination";
 

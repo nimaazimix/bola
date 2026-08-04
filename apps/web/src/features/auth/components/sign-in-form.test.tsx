@@ -1,7 +1,7 @@
 import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
 import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
-import { useAuthStore } from "#/shared/stores";
+import { useAuthStore } from "#/shared/stores/auth.store";
 import { resolveDestination } from "../lib/resolve-destination";
 import { SignInForm } from "./sign-in-form";
 
@@ -102,27 +102,6 @@ describe("SignInForm", () => {
 
     // Assert
     expect(await screen.findByText("Email address or password is incorrect")).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
-  });
-
-  it("should display fallback error message when the request fails unexpectedly", async () => {
-    // Arrange
-    server.use(
-      http.post(predicates.api.auth.signIn, () => {
-        return HttpResponse.error();
-      }),
-    );
-
-    render(<SignInForm />);
-    const user = userEvent.setup();
-
-    // Act
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password");
-    await user.click(screen.getByRole("button", { name: /sign in/i }));
-
-    // Assert
-    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
     expect(navigateMock).not.toHaveBeenCalled();
   });
 

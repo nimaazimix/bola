@@ -1,6 +1,6 @@
 import type { AxiosInstance, AxiosRequestConfig } from "axios";
-import { useAuthStore } from "../stores";
 import { toApiError } from "./errors";
+import { useAuthStore } from "../stores/auth.store";
 import type { ApiSuccess } from "@bola/contracts/api";
 import type { AuthPayload } from "@bola/contracts/auth";
 

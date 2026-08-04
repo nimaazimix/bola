@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useAuthStore } from "#/shared/stores";
+import { useAuthStore } from "#/shared/stores/auth.store";
 import { resolveDestination } from "#/features/auth";
 
 export const Route = createFileRoute("/_guest")({

@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { setupInterceptors } from "./interceptors";
-import { useAuthStore } from "../stores";
+import { useAuthStore } from "../stores/auth.store";
 import { ApiError } from "./errors";
 
 describe("API interceptors", () => {

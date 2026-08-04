@@ -22,8 +22,8 @@ import {
   IconUserHexagon,
 } from "@tabler/icons-react";
 
-import { useAuthStore } from "#/shared/stores";
-import { getInitial } from "#/shared/lib";
+import { useAuthStore } from "#/shared/stores/auth.store";
+import { getInitial } from "#/shared/lib/string";
 
 export function NavUser() {
   const user = useAuthStore((state) => state.user)!;

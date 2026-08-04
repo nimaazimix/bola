@@ -17,7 +17,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { workspaceQueries } from "#/features/workspaces";
-import { ApiError } from "#/shared/api";
+import { ApiError } from "#/shared/api/errors";
 import { useQueryClient } from "@tanstack/react-query";
 import { resolveDestination } from "#/features/auth";
 

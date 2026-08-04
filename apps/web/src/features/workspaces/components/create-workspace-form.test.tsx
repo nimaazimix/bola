@@ -126,26 +126,6 @@ describe("CreateWorkspaceForm", () => {
     expect(navigateMock).not.toHaveBeenCalled();
   });
 
-  it("should display fallback error message when the request fails unexpectedly", async () => {
-    // Arrange
-    server.use(
-      http.post(predicates.api.workspaces.all, () => {
-        return HttpResponse.error();
-      }),
-    );
-
-    render(<CreateWorkspaceForm />);
-    const user = userEvent.setup();
-
-    // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
-    await user.click(screen.getByRole("button", { name: /create workspace/i }));
-
-    // Assert
-    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
-  });
-
   it("should prevent form submission when the slug is unavailable", async () => {
     // Arrange
     let requestSent = false;

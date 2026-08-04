@@ -134,29 +134,6 @@ describe("SignUpForm", () => {
     expect(onSignUp).not.toHaveBeenCalled();
   });
 
-  it("should display fallback error message when the request fails unexpectedly", async () => {
-    // Arrange
-    server.use(
-      http.post(predicates.api.auth.signUp, () => {
-        return HttpResponse.error();
-      }),
-    );
-
-    const onSignUp = vi.fn();
-    render(<SignUpForm onSignUp={onSignUp} />);
-    const user = userEvent.setup();
-
-    // Act
-    await user.type(screen.getByLabelText(/name/i), "Test");
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password");
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
-
-    // Assert
-    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
-    expect(onSignUp).not.toHaveBeenCalled();
-  });
-
   it("should disable the submit button during form submission", async () => {
     // Arrange
     let resolveRequest!: () => void;

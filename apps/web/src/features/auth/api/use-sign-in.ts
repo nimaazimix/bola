@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAuthStore } from "#/shared/stores";
+import { useAuthStore } from "#/shared/stores/auth.store";
 import type { SignInInput } from "@bola/contracts/auth";
 import { signIn } from "./requests";
 

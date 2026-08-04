@@ -5,7 +5,7 @@ import { Button } from "@bola/ui/components/button";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { SignUpSchema } from "@bola/contracts/auth";
 import { toast } from "sonner";
-import { ApiError } from "#/shared/api";
+import { ApiError } from "#/shared/api/errors";
 import { useSignUp } from "../api/use-sign-up";
 import type { SignUpData } from "../types";
 
