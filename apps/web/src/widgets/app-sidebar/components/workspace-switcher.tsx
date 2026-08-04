@@ -22,7 +22,7 @@ import { capitalize, getInitial } from "#/shared/lib";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();
-  const { workspaceSlug } = useParams({ from: "/_authenticated/$workspaceSlug" });
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());
   const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));

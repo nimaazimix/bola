@@ -4,7 +4,7 @@ import { AppSidebar } from "#/widgets/app-sidebar";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { workspaceQueries } from "#/features/workspaces";
 
-export const Route = createFileRoute("/_authenticated/$workspaceSlug")({
+export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
