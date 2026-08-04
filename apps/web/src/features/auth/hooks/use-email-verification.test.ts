@@ -1,7 +1,7 @@
 import { AllTheProviders, renderHook, waitFor } from "#/shared/test/utils";
 import { predicates, server } from "#/shared/test/mocks";
 import { http, HttpResponse } from "msw";
-import { useAuthStore } from "#/shared/stores";
+import { useAuthStore } from "#/shared/stores/auth.store";
 import { resolveDestination } from "../lib/resolve-destination";
 import { useEmailVerification } from "./use-email-verification";
 

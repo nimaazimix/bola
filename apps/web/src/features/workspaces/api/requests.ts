@@ -1,4 +1,4 @@
-import { api } from "#/shared/api";
+import { api } from "#/shared/api/client";
 import type { ApiSuccess } from "@bola/contracts/api";
 import type { CheckSlugResult, CreateWorkspaceInput, Workspace } from "@bola/contracts/workspaces";
 

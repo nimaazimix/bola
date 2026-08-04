@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { getRouter } from "./router";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "#/shared/api";
+import { queryClient } from "#/shared/api/query-client";
 import { AuthProvider } from "./providers/auth-provider";
 
 import { ThemeProvider } from "@bola/ui/components/theme-provider";

@@ -5,7 +5,7 @@ import { Button } from "@bola/ui/components/button";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { SignUpSchema } from "@bola/contracts/auth";
 import { toast } from "sonner";
-import { getAxiosErrorData } from "#/shared/api";
+import { ApiError } from "#/shared/api/errors";
 import { useSignUp } from "../api/use-sign-up";
 import type { SignUpData } from "../types";
 
@@ -33,12 +33,10 @@ export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
         await signUp({ input: value, query: { redirect } });
         onSignUp({ name: value.name, email: value.email });
       } catch (error) {
-        const apiError = getAxiosErrorData(error);
-        if (apiError) {
-          toast.error(apiError.error.message);
-        } else {
-          toast.error("Something went wrong");
+        if (error instanceof ApiError) {
+          return toast.error(error.message);
         }
+        toast.error("Something went wrong");
       }
     },
   });

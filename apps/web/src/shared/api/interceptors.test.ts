@@ -1,7 +1,8 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { setupInterceptors } from "./interceptors";
-import { useAuthStore } from "../stores";
+import { useAuthStore } from "../stores/auth.store";
+import { ApiError } from "./errors";
 
 describe("API interceptors", () => {
   let api: AxiosInstance;
@@ -94,7 +95,7 @@ describe("API interceptors", () => {
         .reply(401, { success: false, error: { code: "auth.access_token_expired" } });
 
       // Act, Assert
-      await expect(api.get("/data")).rejects.toBeDefined();
+      await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
       expect(useAuthStore.getState().accessToken).toBe("access-token");
     });
 
@@ -103,20 +104,23 @@ describe("API interceptors", () => {
       apiMock.onGet("/data").reply(401, { success: false, error: { code: "auth.unknown_error" } });
 
       // Act, Assert
-      await expect(api.get("/data")).rejects.toBeDefined();
+      await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
       expect(useAuthStore.getState().accessToken).toBe("expired-access-token");
     });
 
     it("should clear access token and reject the request when refresh fails", async () => {
       // Arrange
-      refreshMock.onPost("/auth/refresh").reply(401);
+      refreshMock.onPost("/auth/refresh").reply(401, {
+        success: false,
+        error: { code: "auth.session_invalid", message: "Session is missing or invalid" },
+      });
 
       apiMock
         .onGet("/data")
         .reply(401, { success: false, error: { code: "auth.access_token_expired" } });
 
       // Act, Assert
-      await expect(api.get("/data")).rejects.toBeDefined();
+      await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
       expect(useAuthStore.getState().accessToken).toBeNull();
     });
 
@@ -167,7 +171,13 @@ describe("API interceptors", () => {
 
       refreshMock.onPost("/auth/refresh").reply(async () => {
         await refreshPromise;
-        return [401];
+        return [
+          401,
+          {
+            success: false,
+            error: { code: "auth.session_invalid", message: "Session is missing or invalid" },
+          },
+        ];
       });
 
       apiMock
@@ -187,7 +197,7 @@ describe("API interceptors", () => {
 
       resolveRefresh();
 
-      await expect(Promise.all([req1, req2, req3])).rejects.toBeDefined();
+      await expect(Promise.all([req1, req2, req3])).rejects.toBeInstanceOf(ApiError);
       expect(refreshMock.history.post.length).toBe(1);
     });
   });
