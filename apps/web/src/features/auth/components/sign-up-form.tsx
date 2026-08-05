@@ -10,12 +10,12 @@ import { useSignUp } from "../api/use-sign-up";
 import type { SignUpData } from "../types";
 
 interface SignUpFormProps {
-  redirect?: string;
-  data?: SignUpData;
   onSignUp: (data: SignUpData) => void;
+  data?: SignUpData;
+  redirect?: string;
 }
 
-export function SignUpForm({ redirect, data, onSignUp }: SignUpFormProps) {
+export function SignUpForm({ onSignUp, data, redirect }: SignUpFormProps) {
   const { mutateAsync: signUp } = useSignUp();
 
   const form = useForm({

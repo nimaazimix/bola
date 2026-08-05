@@ -1,13 +1,13 @@
 import { WorkspaceOnboarding } from "#/features/workspaces";
 
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { resolveDestination } from "#/features/auth";
+import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   beforeLoad: async ({ context: { queryClient } }) => {
-    const destination = await resolveDestination(queryClient);
-    if (destination.to !== "/onboarding") {
-      throw redirect({ ...destination, replace: true });
+    const entry = await resolveEntryRoute(queryClient);
+    if (entry.to !== "/onboarding") {
+      throw redirect({ ...entry, replace: true });
     }
   },
   component: RouteComponent,

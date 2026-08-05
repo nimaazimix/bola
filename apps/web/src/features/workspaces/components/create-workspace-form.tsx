@@ -10,7 +10,6 @@ import { Button } from "@bola/ui/components/button";
 
 import { useState } from "react";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
 import slugify from "slugify";
 import { toast } from "sonner";
@@ -18,9 +17,12 @@ import { ApiError } from "#/shared/api/errors";
 import { useCreateWorkspace } from "../api/use-create-workspace";
 import { checkSlug } from "../api/requests";
 
-export function CreateWorkspaceForm() {
+interface CreateWorkspaceFormProps {
+  onCreateWorkspace: (slug: string) => void;
+}
+
+export function CreateWorkspaceForm({ onCreateWorkspace }: CreateWorkspaceFormProps) {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
-  const navigate = useNavigate();
 
   const [slugEdited, setSlugEdited] = useState(false);
   const form = useForm({
@@ -32,7 +34,7 @@ export function CreateWorkspaceForm() {
     onSubmit: async ({ value }) => {
       try {
         const workspace = await createWorkspace({ input: value });
-        navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
+        onCreateWorkspace(workspace.slug);
       } catch (error) {
         if (error instanceof ApiError) {
           return toast.error(error.message);

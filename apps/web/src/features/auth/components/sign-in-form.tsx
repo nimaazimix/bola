@@ -3,22 +3,17 @@ import { Input } from "@bola/ui/components/input";
 import { Button } from "@bola/ui/components/button";
 
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { SignInSchema } from "@bola/contracts/auth";
 import { toast } from "sonner";
 import { ApiError } from "#/shared/api/errors";
 import { useSignIn } from "../api/use-sign-in";
-import { resolveDestination } from "../lib/resolve-destination";
 
 interface SignInFormProps {
-  redirect?: string;
+  onSignIn: () => void;
 }
 
-export function SignInForm({ redirect }: SignInFormProps) {
+export function SignInForm({ onSignIn }: SignInFormProps) {
   const { mutateAsync: signIn } = useSignIn();
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const form = useForm({
     defaultValues: {
@@ -32,9 +27,7 @@ export function SignInForm({ redirect }: SignInFormProps) {
     onSubmit: async ({ value }) => {
       try {
         await signIn({ input: value });
-
-        const destination = await resolveDestination(queryClient, redirect);
-        navigate({ ...destination, replace: true });
+        onSignIn();
       } catch (error) {
         if (error instanceof ApiError) {
           return toast.error(error.message);

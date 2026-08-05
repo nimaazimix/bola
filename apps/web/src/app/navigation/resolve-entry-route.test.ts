@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { resolveDestination } from "./resolve-destination";
+import { resolveEntryRoute } from "./resolve-entry-route";
 
-describe("resolveDestination", () => {
+describe("resolveEntryRoute", () => {
   it("should resolve to the redirect route when provided", async () => {
     // Arrange
     const queryClient = {
@@ -9,7 +9,7 @@ describe("resolveDestination", () => {
     } as unknown as QueryClient;
 
     // Act
-    const result = await resolveDestination(queryClient, "/acme");
+    const result = await resolveEntryRoute(queryClient, "/acme");
 
     // Assert
     expect(result).toEqual({ to: "/acme" });
@@ -23,7 +23,7 @@ describe("resolveDestination", () => {
     } as unknown as QueryClient;
 
     // Act
-    const result = await resolveDestination(queryClient);
+    const result = await resolveEntryRoute(queryClient);
 
     // Assert
     expect(result).toEqual({ to: "/onboarding" });
@@ -37,7 +37,7 @@ describe("resolveDestination", () => {
     } as unknown as QueryClient;
 
     // Act
-    const result = await resolveDestination(queryClient);
+    const result = await resolveEntryRoute(queryClient);
 
     // Assert
     expect(result).toEqual({

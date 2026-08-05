@@ -19,7 +19,7 @@ import {
 import { workspaceQueries } from "#/features/workspaces";
 import { ApiError } from "#/shared/api/errors";
 import { useQueryClient } from "@tanstack/react-query";
-import { resolveDestination } from "#/features/auth";
+import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
   loader: async ({ context: { queryClient }, params }) => {
@@ -50,8 +50,8 @@ function ErrorComponent({ error }: ErrorComponentProps) {
   const queryClient = useQueryClient();
 
   async function handleNavigateToWorkspace() {
-    const destination = await resolveDestination(queryClient);
-    navigate(destination);
+    const entry = await resolveEntryRoute(queryClient);
+    navigate(entry);
   }
 
   if (error instanceof ApiError) {
