@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateWorkspaceInput } from "@bola/contracts/workspaces";
-import { postWorkspace } from "./requests";
-import { workspaceQueries } from "./workspace-queries";
+import { postWorkspace } from "../api/requests";
+import { workspaceQueries } from "../api/queries";
 
 export function useCreateWorkspace() {
   const queryClient = useQueryClient();

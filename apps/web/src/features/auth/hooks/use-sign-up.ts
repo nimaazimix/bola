@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { SignUpInput, SignUpQuery } from "@bola/contracts/auth";
-import { signUp } from "./requests";
+import { signUp } from "../api/requests";
 
 export function useSignUp() {
   return useMutation({

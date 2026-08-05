@@ -1,19 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "#/shared/stores/auth.store";
-import { refresh } from "./requests";
+import type { VerifyEmailInput } from "@bola/contracts/auth";
+import { verifyEmail } from "../api/requests";
 
-export function useRefresh() {
+export function useVerifyEmail() {
   const setAuth = useAuthStore((state) => state.setAuth);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
 
   return useMutation({
-    mutationFn: () => refresh(),
+    mutationFn: ({ input }: { input: VerifyEmailInput }) => verifyEmail(input),
 
     onSuccess: ({ accessToken, user }) => {
       setAuth(accessToken, user);
-    },
-    onError: () => {
-      clearAuth();
     },
   });
 }

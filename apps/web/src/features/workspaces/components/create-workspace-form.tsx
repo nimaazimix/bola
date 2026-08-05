@@ -14,7 +14,7 @@ import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
 import slugify from "slugify";
 import { toast } from "sonner";
 import { ApiError } from "#/shared/api/errors";
-import { useCreateWorkspace } from "../api/use-create-workspace";
+import { useCreateWorkspace } from "../hooks/use-create-workspace";
 import { checkSlug } from "../api/requests";
 
 interface CreateWorkspaceFormProps {

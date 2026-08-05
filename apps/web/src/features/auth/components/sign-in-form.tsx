@@ -6,7 +6,7 @@ import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { SignInSchema } from "@bola/contracts/auth";
 import { toast } from "sonner";
 import { ApiError } from "#/shared/api/errors";
-import { useSignIn } from "../api/use-sign-in";
+import { useSignIn } from "../hooks/use-sign-in";
 
 interface SignInFormProps {
   onSignIn: () => void;

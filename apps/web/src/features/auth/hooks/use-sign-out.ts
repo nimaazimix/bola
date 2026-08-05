@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "#/shared/stores/auth.store";
-import { signOut } from "./requests";
+import { signOut } from "../api/requests";
 
 export function useSignOut() {
   const navigate = useNavigate();

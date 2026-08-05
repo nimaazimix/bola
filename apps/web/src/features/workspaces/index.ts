@@ -1,2 +1,2 @@
 export * from "./components/workspace-onboarding";
-export * from "./api/workspace-queries";
+export * from "./api/queries";
