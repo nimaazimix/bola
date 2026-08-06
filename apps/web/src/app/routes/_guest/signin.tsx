@@ -1,7 +1,5 @@
 import { SignIn } from "#/features/auth";
-
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 import { z } from "zod";
 
@@ -15,10 +13,9 @@ export const Route = createFileRoute("/_guest/signin")({
 function RouteComponent() {
   const { redirect } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const queryClient = useQueryClient();
 
   async function handleSignIn() {
-    const entry = await resolveEntryRoute(queryClient, redirect);
+    const entry = await resolveEntryRoute(redirect);
     navigate({ ...entry, replace: true });
   }
 

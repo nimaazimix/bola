@@ -18,7 +18,6 @@ import {
 } from "@tanstack/react-router";
 import { workspaceQueries } from "#/features/workspaces";
 import { ApiError } from "#/shared/api/errors";
-import { useQueryClient } from "@tanstack/react-query";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
@@ -47,10 +46,9 @@ function RouteComponent() {
 function ErrorComponent({ error }: ErrorComponentProps) {
   const navigate = Route.useNavigate();
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   async function handleNavigateToWorkspace() {
-    const entry = await resolveEntryRoute(queryClient);
+    const entry = await resolveEntryRoute();
     navigate(entry);
   }
 

@@ -1,8 +1,7 @@
 import { Loader } from "@bola/ui/components/loader";
 
-import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useVerifyEmail } from "#/features/auth";
 import { resolveEntryRoute } from "../navigation/resolve-entry-route";
 import { z } from "zod";
@@ -18,7 +17,6 @@ export const Route = createFileRoute("/verify-email")({
 function RouteComponent() {
   const { token, redirect } = Route.useSearch();
   const navigate = Route.useNavigate();
-  const queryClient = useQueryClient();
 
   const { mutateAsync: verifyEmail } = useVerifyEmail();
 
@@ -31,7 +29,7 @@ function RouteComponent() {
       try {
         await verifyEmail({ input: { token } });
 
-        const entry = await resolveEntryRoute(queryClient, redirect);
+        const entry = await resolveEntryRoute(redirect);
         navigate({ ...entry, replace: true });
       } catch {
         navigate({ to: "/signin", search: { redirect }, replace: true });
@@ -39,7 +37,7 @@ function RouteComponent() {
     }
 
     verify();
-  }, [navigate, queryClient, redirect, token, verifyEmail]);
+  }, [navigate, redirect, token, verifyEmail]);
 
   return (
     <div className="centered min-h-screen">
