@@ -27,9 +27,10 @@ import { useSignOut } from "#/features/auth";
 import { getInitial } from "#/shared/lib/string";
 
 export function NavUser() {
+  const { isMobile } = useSidebar();
+
   const user = useAuthStore((state) => state.user);
   const { mutate: signOut } = useSignOut();
-  const { isMobile } = useSidebar();
 
   if (!user) return;
 
@@ -59,15 +60,13 @@ export function NavUser() {
             align="end"
             className="min-w-56"
           >
-            <DropdownMenuLabel className="text-foreground text-sm font-normal">
-              <div className="flex items-center gap-2">
-                <Avatar className="after:rounded-lg">
-                  <AvatarFallback className="rounded-lg">{getInitial(user.name)}</AvatarFallback>
-                </Avatar>
-                <div className="grid leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
+            <DropdownMenuLabel className="text-foreground flex items-center gap-2 text-sm font-normal">
+              <Avatar className="after:rounded-lg">
+                <AvatarFallback className="rounded-lg">{getInitial(user.name)}</AvatarFallback>
+              </Avatar>
+              <div className="grid leading-tight">
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
