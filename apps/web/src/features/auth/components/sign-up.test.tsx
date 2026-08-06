@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from "#/shared/test/utils";
+import { render, screen, userEvent } from "#/test/utils";
 import { SignUp } from "./sign-up";
 
 vi.mock("@tanstack/react-router", () => ({

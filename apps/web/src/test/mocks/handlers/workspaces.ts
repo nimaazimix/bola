@@ -5,7 +5,7 @@ export const workspacesHandlers = [
   http.post(predicates.api.workspaces.all, () => {
     return HttpResponse.json({
       success: true,
-      data: { name: "Acme Inc.", slug: "acme-inc" },
+      data: { name: "Acme Inc", slug: "acme-inc" },
     });
   }),
   http.get(predicates.api.workspaces.all, () => {
