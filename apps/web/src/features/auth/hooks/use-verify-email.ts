@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "#/shared/stores/auth.store";
-import type { VerifyEmailInput } from "@bola/contracts/auth";
 import { verifyEmail } from "../api/requests";
+import type { VerifyEmailInput } from "@bola/contracts/auth";
 
 export function useVerifyEmail() {
   const setAuth = useAuthStore((state) => state.setAuth);

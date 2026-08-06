@@ -16,8 +16,8 @@ export function CheckEmail({ email, onBackToSignup }: CheckEmailProps) {
   return (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant="icon" className="size-9">
-          <IconMail className="size-5" />
+        <EmptyMedia variant="icon">
+          <IconMail />
         </EmptyMedia>
         <EmptyTitle className="text-lg">Check your email</EmptyTitle>
         <EmptyDescription>

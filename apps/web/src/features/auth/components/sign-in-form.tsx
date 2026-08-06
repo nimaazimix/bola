@@ -4,9 +4,9 @@ import { Button } from "@bola/ui/components/button";
 
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { SignInSchema } from "@bola/contracts/auth";
-import { toast } from "sonner";
-import { ApiError } from "#/shared/api/errors";
 import { useSignIn } from "../hooks/use-sign-in";
+import { ApiError } from "#/shared/api/errors";
+import { toast } from "sonner";
 
 interface SignInFormProps {
   onSignIn: () => void;
@@ -96,7 +96,7 @@ export function SignInForm({ onSignIn }: SignInFormProps) {
         selector={(state) => state.isSubmitting}
         children={(isSubmitting) => (
           <Button size="lg" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "SignIng in" : "Sign in"}
+            {isSubmitting ? "signing in" : "Sign in"}
           </Button>
         )}
       />

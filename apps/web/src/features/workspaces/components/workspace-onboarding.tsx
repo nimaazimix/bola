@@ -12,9 +12,9 @@ export function WorkspaceOnboarding() {
   const navigate = useNavigate();
 
   return (
-    <div className="m-4 w-full max-w-md space-y-6">
+    <div className="m-4 w-full max-w-md space-y-5">
       <h1 className="text-center text-3xl font-medium">Let's setup your first workspace</h1>
-      <Card>
+      <Card className="bg-background">
         <CardHeader>
           <CardTitle>Create workspace</CardTitle>
           <CardDescription>
