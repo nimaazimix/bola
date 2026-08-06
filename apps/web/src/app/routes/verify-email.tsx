@@ -3,14 +3,11 @@ import { Loader } from "@bola/ui/components/loader";
 import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useVerifyEmail } from "#/features/auth";
+import { VerifyEmailSearchSchema } from "../navigation/schema";
 import { resolveEntryRoute } from "../navigation/resolve-entry-route";
-import { z } from "zod";
 
 export const Route = createFileRoute("/verify-email")({
-  validateSearch: z.object({
-    token: z.string().nonempty().optional().catch(undefined),
-    redirect: z.string().nonempty().optional().catch(undefined),
-  }),
+  validateSearch: VerifyEmailSearchSchema,
   component: RouteComponent,
 });
 
