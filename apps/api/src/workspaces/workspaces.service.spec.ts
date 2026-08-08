@@ -1,9 +1,9 @@
-import { ConflictException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
 import { userFactory, workspaceFactory, WorkspaceMembershipFactory } from "test/factories";
-import { WorkspacesService } from "./workspaces.service";
+import { ConflictException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { Prisma, PrismaService, WorkspaceRole } from "src/prisma/prisma.service";
+import { WorkspacesService } from "./workspaces.service";
 
 describe("WorkspacesService", () => {
   let service: WorkspacesService;

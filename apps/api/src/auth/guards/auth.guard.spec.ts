@@ -1,9 +1,9 @@
-import { ExecutionContext } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
 import { mock, MockProxy } from "jest-mock-extended";
 import { userFactory } from "test/factories";
-import { AuthGuard } from "./auth.guard";
+import { ExecutionContext } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
 import { AuthService } from "../auth.service";
+import { AuthGuard } from "./auth.guard";
 
 describe("AuthGuard", () => {
   let guard: AuthGuard;

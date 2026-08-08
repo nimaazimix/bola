@@ -1,4 +1,3 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { mock, MockProxy } from "jest-mock-extended";
 import {
@@ -8,13 +7,15 @@ import {
   PrismaServiceMock,
 } from "test/mocks";
 import { accountFactory, sessionFactory, userFactory, verificationFactory } from "test/factories";
-import { AuthService } from "./auth.service";
+
+import { BadRequestException, ConflictException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService, Provider, VerificationType } from "src/prisma/prisma.service";
 import { MailService } from "src/mail/mail.service";
 import { JsonWebTokenError, JwtService, TokenExpiredError } from "@nestjs/jwt";
 import { after, before, generateToken, sha256 } from "src/common/utils";
 import argon2 from "argon2";
+import { AuthService } from "./auth.service";
 
 jest.mock("src/common/utils", () => ({
   ...jest.requireActual("src/common/utils"),
