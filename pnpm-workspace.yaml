@@ -11,4 +11,4 @@ allowBuilds:
   unrs-resolver: true
 
 minimumReleaseAgeExclude:
-  - '@tanstack/router-core@1.171.19'
+  - "@tanstack/router-core@1.171.19"

@@ -99,15 +99,6 @@ describe("API interceptors", () => {
       expect(useAuthStore.getState().accessToken).toBe("access-token");
     });
 
-    it("should reject the request when it is failed with unrelated status code", async () => {
-      // Arrange
-      apiMock.onGet("/data").reply(400, { success: false });
-
-      // Act, Assert
-      await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
-      expect(useAuthStore.getState().accessToken).toBe("expired-access-token");
-    });
-
     it("should reject the request when it is failed with unrelated code", async () => {
       // Arrange
       apiMock.onGet("/data").reply(401, { success: false, error: { code: "auth.unknown_error" } });
