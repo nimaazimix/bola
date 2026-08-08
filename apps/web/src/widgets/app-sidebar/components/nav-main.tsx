@@ -5,12 +5,12 @@ import {
   SidebarMenuItem,
 } from "@bola/ui/components/sidebar";
 import { Link } from "@tanstack/react-router";
-import { IconHome, IconInbox, IconSettings } from "@tabler/icons-react";
+import { HouseIcon, InboxIcon, SettingsIcon } from "lucide-react";
 
 const items = [
-  { title: "Home", url: "/", icon: IconHome },
-  { title: "Inbox", url: "/inbox", icon: IconInbox },
-  { title: "Settings", url: "/settings", icon: IconSettings },
+  { title: "Home", url: "/", icon: HouseIcon },
+  { title: "Inbox", url: "/inbox", icon: InboxIcon },
+  { title: "Settings", url: "/settings", icon: SettingsIcon },
 ];
 
 export function NavMain() {

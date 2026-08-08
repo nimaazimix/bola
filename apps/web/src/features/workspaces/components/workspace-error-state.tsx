@@ -1,7 +1,7 @@
 import { ApiError } from "#/shared/api/errors";
 import { ErrorState, type ErrorStateProps } from "#/shared/components/error-state";
 import { Button } from "@bola/ui/components/button";
-import { IconAlertTriangle, IconCloudOff, IconFolderOff, IconShoeOff } from "@tabler/icons-react";
+import { CloudOffIcon, FolderXIcon, LockKeyholeIcon, TriangleAlert } from "lucide-react";
 
 interface WorkspaceErrorStateProps {
   error: unknown;
@@ -21,7 +21,7 @@ function getErrorStateProps({
   if (error instanceof ApiError) {
     if (error.status === 404) {
       return {
-        icon: IconFolderOff,
+        icon: FolderXIcon,
         title: "Workspace not found",
         message:
           "We couldn't find the workspace you're trying to access. It may have been deleted, moved, or the link might be incorrect.",
@@ -31,7 +31,7 @@ function getErrorStateProps({
 
     if (error.status === 403) {
       return {
-        icon: IconShoeOff,
+        icon: LockKeyholeIcon,
         title: "You don't have access to this workspace",
         message:
           "You don't have permission to view this workspace. Ask the owner or an administrator to grant you access.",
@@ -41,7 +41,7 @@ function getErrorStateProps({
 
     if (error.kind === "network") {
       return {
-        icon: IconCloudOff,
+        icon: CloudOffIcon,
         title: "Unable to connect to the server",
         message:
           "We couldn't load this workspace because there was a problem connecting to the server. Check your connection and try again.",
@@ -51,7 +51,7 @@ function getErrorStateProps({
   }
 
   return {
-    icon: IconAlertTriangle,
+    icon: TriangleAlert,
     title: "Something went wrong",
     message:
       "We couldn't load this workspace due to an unexpected error. Please try again, and if the problem continues, contact support.",

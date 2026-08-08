@@ -6,10 +6,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@bola/ui/components/empty";
-import type { IconProps } from "@tabler/icons-react";
+import type { LucideIcon } from "lucide-react";
 
 export interface ErrorStateProps extends React.ComponentProps<typeof Empty> {
-  icon: React.ComponentType<IconProps>;
+  icon: LucideIcon;
   title: string;
   message: string;
 }

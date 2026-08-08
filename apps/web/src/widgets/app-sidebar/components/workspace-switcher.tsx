@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@bola/ui/components/dropdown-menu";
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
-import { IconCheck, IconPlus, IconSelector } from "@tabler/icons-react";
+import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -48,7 +48,7 @@ export function WorkspaceSwitcher() {
                   {capitalize(activeWorkspace.membership.role)}
                 </span>
               </div>
-              <IconSelector className="ml-auto" />
+              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -74,7 +74,7 @@ export function WorkspaceSwitcher() {
                         </AvatarFallback>
                       </Avatar>
                       <span>{workspace.name}</span>
-                      {isActive && <IconCheck className="ml-auto" />}
+                      {isActive && <CheckIcon className="ml-auto" />}
                     </>
                   )}
                 />
@@ -83,7 +83,7 @@ export function WorkspaceSwitcher() {
 
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
-              <IconPlus />
+              <PlusIcon />
               <span>Add workspace</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
