@@ -1,21 +1,24 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
+import { workspaceFactory } from "#/test/factories";
 
 export const workspacesHandlers = [
   http.post(predicates.api.workspaces.all, () => {
     return HttpResponse.json({
       success: true,
-      data: { name: "Acme Inc", slug: "acme-inc" },
+      data: workspaceFactory.build(),
     });
   }),
   http.get(predicates.api.workspaces.all, () => {
     return HttpResponse.json({
       success: true,
-      data: [
-        { name: "Workspace 1", slug: "workspace-1" },
-        { name: "Workspace 2", slug: "workspace-2" },
-        { name: "Workspace 3", slug: "workspace-3" },
-      ],
+      data: workspaceFactory.buildList(3),
+    });
+  }),
+  http.get<{ slug: string }>(predicates.api.workspaces.one, ({ params }) => {
+    return HttpResponse.json({
+      success: true,
+      data: workspaceFactory.build({ slug: params.slug }),
     });
   }),
   http.get(predicates.api.workspaces.checkSlug, () => {

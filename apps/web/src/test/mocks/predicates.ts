@@ -7,9 +7,11 @@ export const predicates = {
       verifyEmail: `${API_URL}/auth/verify-email`,
       signIn: `${API_URL}/auth/signin`,
       refresh: `${API_URL}/auth/refresh`,
+      signOut: `${API_URL}/auth/signout`,
     },
     workspaces: {
       all: `${API_URL}/workspaces`,
+      one: `${API_URL}/workspaces/:slug`,
       checkSlug: `${API_URL}/workspaces/check-slug`,
     },
   },

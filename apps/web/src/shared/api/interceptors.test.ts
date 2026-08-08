@@ -3,6 +3,7 @@ import MockAdapter from "axios-mock-adapter";
 import { setupInterceptors } from "./interceptors";
 import { useAuthStore } from "../stores/auth.store";
 import { ApiError } from "./errors";
+import { userFactory } from "#/test/factories";
 
 describe("API interceptors", () => {
   let api: AxiosInstance;
@@ -68,7 +69,7 @@ describe("API interceptors", () => {
       // Default refresh response
       refreshMock.onPost("/auth/refresh").reply(200, {
         success: true,
-        data: { accessToken: "access-token", user: {} },
+        data: { accessToken: "access-token", user: userFactory.build() },
       });
     });
 
@@ -133,7 +134,13 @@ describe("API interceptors", () => {
 
       refreshMock.onPost("/auth/refresh").reply(async () => {
         await refreshPromise;
-        return [200, { success: true, data: { accessToken: "access-token", user: {} } }];
+        return [
+          200,
+          {
+            success: true,
+            data: { accessToken: "access-token", user: userFactory.build() },
+          },
+        ];
       });
 
       apiMock
