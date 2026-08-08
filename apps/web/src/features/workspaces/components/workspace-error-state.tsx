@@ -42,7 +42,7 @@ function getErrorStateProps({
     if (error.kind === "network") {
       return {
         icon: IconCloudOff,
-        title: "Unable to connect",
+        title: "Unable to connect to the server",
         message:
           "We couldn't load this workspace because there was a problem connecting to the server. Check your connection and try again.",
         children: <Button onClick={onRetry}>Retry loading</Button>,

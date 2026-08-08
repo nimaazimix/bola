@@ -15,16 +15,16 @@ export const workspacesHandlers = [
       data: workspaceFactory.buildList(3),
     });
   }),
-  http.get<{ slug: string }>(predicates.api.workspaces.one, ({ params }) => {
-    return HttpResponse.json({
-      success: true,
-      data: workspaceFactory.build({ slug: params.slug }),
-    });
-  }),
   http.get(predicates.api.workspaces.checkSlug, () => {
     return HttpResponse.json({
       success: true,
       data: { available: true },
+    });
+  }),
+  http.get<{ slug: string }>(predicates.api.workspaces.one, ({ params }) => {
+    return HttpResponse.json({
+      success: true,
+      data: workspaceFactory.build({ slug: params.slug }),
     });
   }),
 ];

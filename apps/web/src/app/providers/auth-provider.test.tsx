@@ -15,6 +15,7 @@ describe("AuthProvider", () => {
 
     // Assert
     expect(screen.getByLabelText(/loading/i)).toBeInTheDocument();
+    expect(screen.queryByText(/children/i)).not.toBeInTheDocument();
   });
 
   it("should authenticate user and render the children after successful refresh", async () => {

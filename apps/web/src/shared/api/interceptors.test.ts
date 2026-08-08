@@ -1,9 +1,9 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { setupInterceptors } from "./interceptors";
+import { userFactory } from "#/test/factories";
 import { useAuthStore } from "../stores/auth.store";
 import { ApiError } from "./errors";
-import { userFactory } from "#/test/factories";
+import { setupInterceptors } from "./interceptors";
 
 describe("API interceptors", () => {
   let api: AxiosInstance;
@@ -66,7 +66,6 @@ describe("API interceptors", () => {
     beforeEach(() => {
       useAuthStore.setState({ accessToken: "expired-access-token" });
 
-      // Default refresh response
       refreshMock.onPost("/auth/refresh").reply(200, {
         success: true,
         data: { accessToken: "access-token", user: userFactory.build() },
@@ -98,6 +97,15 @@ describe("API interceptors", () => {
       // Act, Assert
       await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
       expect(useAuthStore.getState().accessToken).toBe("access-token");
+    });
+
+    it("should reject the request when it is failed with unrelated status code", async () => {
+      // Arrange
+      apiMock.onGet("/data").reply(400, { success: false });
+
+      // Act, Assert
+      await expect(api.get("/data")).rejects.toBeInstanceOf(ApiError);
+      expect(useAuthStore.getState().accessToken).toBe("expired-access-token");
     });
 
     it("should reject the request when it is failed with unrelated code", async () => {

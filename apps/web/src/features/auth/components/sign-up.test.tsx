@@ -2,7 +2,6 @@ import { render, screen, userEvent } from "#/test/utils";
 import { SignUp } from "./sign-up";
 
 vi.mock("@tanstack/react-router", () => ({
-  useSearch: vi.fn(() => ({})),
   Link: ({ children }: React.PropsWithChildren) => <a>{children}</a>,
 }));
 
@@ -15,7 +14,7 @@ describe("SignUp", () => {
     expect(screen.getByRole("button", { name: /sign up/i })).toBeInTheDocument();
   });
 
-  it("should transition to the verify email step after successful sign up", async () => {
+  it("should transition to the check email view after successful sign up", async () => {
     // Arrange
     render(<SignUp />);
     const user = userEvent.setup();

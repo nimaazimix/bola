@@ -30,7 +30,7 @@ describe("toApiError", () => {
     expect(result.cause).toBe(originalError);
   });
 
-  it("should return network error for axios errors that has request", () => {
+  it("should return network error for axios errors that has request and no response", () => {
     // Arrange
     const originalError = new AxiosError();
     originalError.request = {};
@@ -59,7 +59,7 @@ describe("toApiError", () => {
     expect(result.cause).toBe(originalError);
   });
 
-  it("should return unknown error for non axios errors", () => {
+  it("should return unknown error for non-axios errors", () => {
     // Arrange
     const originalError = new Error();
 

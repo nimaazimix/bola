@@ -26,7 +26,7 @@ describe("SignUpForm", () => {
 
     // Assert
     await waitFor(() => {
-      expect(onSignUp).toHaveBeenCalled();
+      expect(onSignUp).toHaveBeenCalledWith({ name: "Test", email: "test@example.com" });
     });
     expect(requestBody).toEqual({
       name: "Test",
@@ -87,16 +87,16 @@ describe("SignUpForm", () => {
 
     // Act
     await user.type(screen.getByLabelText(/name/i), "Test");
-    await user.type(screen.getByLabelText(/email/i), "invalid-email");
-    await user.type(screen.getByLabelText(/password/i), "weak");
+    await user.type(screen.getByLabelText(/email/i), "test");
+    await user.type(screen.getByLabelText(/password/i), "pass");
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     // Assert
     expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
+    expect(screen.getByText(/enter a valid email address/i)).toBeInTheDocument();
 
     expect(screen.getByLabelText(/password/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/at least 8 characters/i)).toBeInTheDocument();
+    expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
     expect(onSignUp).not.toHaveBeenCalled();
@@ -130,8 +130,24 @@ describe("SignUpForm", () => {
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     // Assert
-    expect(await screen.findByText(/already in use/i)).toBeInTheDocument();
+    expect(await screen.findByText("Email address is already in use")).toBeInTheDocument();
     expect(onSignUp).not.toHaveBeenCalled();
+  });
+
+  it("should display generic error message when something unexpected happens", async () => {
+    // Arrange
+    const onSignUp = vi.fn().mockThrow(new Error());
+    render(<SignUpForm onSignUp={onSignUp} />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/name/i), "Test");
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
   });
 
   it("should disable the submit button during form submission", async () => {
