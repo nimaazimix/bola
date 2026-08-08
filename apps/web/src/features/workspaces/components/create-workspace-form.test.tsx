@@ -1,17 +1,14 @@
-import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
-import { predicates, server } from "#/shared/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/test/utils";
+import { predicates, server } from "#/test/mocks";
+import { workspaceFactory } from "#/test/factories";
 import { http, HttpResponse } from "msw";
 import { CreateWorkspaceForm } from "./create-workspace-form";
-
-const navigateMock = vi.fn();
-vi.mock("@tanstack/react-router", () => ({
-  useNavigate: () => navigateMock,
-}));
 
 describe("CreateWorkspaceForm", () => {
   it("should automatically generate the slug", async () => {
     // Arrange
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -21,27 +18,27 @@ describe("CreateWorkspaceForm", () => {
     expect(screen.getByLabelText(/url/i)).toHaveValue("acme-inc");
   });
 
-  it("should stop auto-generating the slug after the user edits it", async () => {
+  it("should stop auto-generating the slug after user changes it manually", async () => {
     // Arrange
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
     const nameField = screen.getByLabelText(/name/i);
     const slugField = screen.getByLabelText(/url/i);
 
-    await user.type(nameField, "Acme");
-
-    await user.type(slugField, "-inc");
+    await user.type(nameField, "Acme"); // slug: acme
+    await user.type(slugField, "-inc"); // slug: acme-inc
 
     await user.clear(nameField);
-    await user.type(nameField, "Another");
+    await user.type(nameField, "Acme");
 
     // Assert
     expect(slugField).toHaveValue("acme-inc");
   });
 
-  it("should create a workspace and navigate to it", async () => {
+  it("should create a workspace and call the provided onCreateWorkspace callback", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
@@ -49,27 +46,23 @@ describe("CreateWorkspaceForm", () => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
-          data: { name: "Acme Inc", slug: "acme-inc" },
+          data: workspaceFactory.build({ name: "Acme", slug: "acme" }),
         });
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.type(screen.getByLabelText(/name/i), "Acme");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith({
-        to: "/$workspaceSlug",
-        params: {
-          workspaceSlug: "acme-inc",
-        },
-      });
+      expect(onCreateWorkspace).toHaveBeenCalledWith("acme");
     });
-    expect(requestBody).toEqual({ name: "Acme Inc", slug: "acme-inc" });
+    expect(requestBody).toEqual({ name: "Acme", slug: "acme" });
   });
 
   it("should prevent form submission when validation fails", async () => {
@@ -81,20 +74,25 @@ describe("CreateWorkspaceForm", () => {
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
-    await user.type(screen.getByLabelText(/url/i), "-");
+    await user.type(screen.getByLabelText(/name/i), "Acme"); // slug: acme
+    await user.type(screen.getByLabelText(/url/i), "-"); // slug: acme-
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
     expect(screen.getByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/non-consecutive hyphens/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /slug must contain lowercase letters, numbers, and non-consecutive hyphens/i,
+      ),
+    ).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(onCreateWorkspace).not.toHaveBeenCalled();
   });
 
   it("should display server error message when the request fails with an exception", async () => {
@@ -114,16 +112,17 @@ describe("CreateWorkspaceForm", () => {
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.type(screen.getByLabelText(/name/i), "Acme");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
     expect(await screen.findByText("Slug is already in use")).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(onCreateWorkspace).not.toHaveBeenCalled();
   });
 
   it("should prevent form submission when the slug is unavailable", async () => {
@@ -140,36 +139,55 @@ describe("CreateWorkspaceForm", () => {
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.type(screen.getByLabelText(/name/i), "Acme");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
     expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/unavailable/i)).toBeInTheDocument();
+    expect(screen.getByText(/this workspace url is unavailable/i)).toBeInTheDocument();
+
     expect(requestSent).toBe(false);
+    expect(onCreateWorkspace).not.toHaveBeenCalled();
   });
 
   it("should display generic validation error when slug availability cannot be verified", async () => {
+    // Arrange
     server.use(
       http.get(predicates.api.workspaces.checkSlug, async () => {
         return HttpResponse.error();
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.type(screen.getByLabelText(/name/i), "Acme");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert
     expect(await screen.findByLabelText(/url/i)).toHaveAttribute("data-invalid", "true");
     expect(screen.getByText(/unable to verify slug availability/i)).toBeInTheDocument();
+  });
+
+  it("should display generic error message when something unexpected happens", async () => {
+    // Arrange
+    const onCreateWorkspace = vi.fn().mockThrow(new Error());
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/name/i), "Acme");
+    await user.click(screen.getByRole("button", { name: /create workspace/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
   });
 
   it("should disable the submit button during form submission", async () => {
@@ -184,11 +202,12 @@ describe("CreateWorkspaceForm", () => {
       }),
     );
 
-    render(<CreateWorkspaceForm />);
+    const onCreateWorkspace = vi.fn();
+    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/name/i), "Acme Inc");
+    await user.type(screen.getByLabelText(/name/i), "Acme");
     await user.click(screen.getByRole("button", { name: /create workspace/i }));
 
     // Assert

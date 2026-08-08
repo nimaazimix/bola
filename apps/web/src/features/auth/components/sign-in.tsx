@@ -1,4 +1,4 @@
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -10,9 +10,12 @@ import {
 import { SignInForm } from "./sign-in-form";
 import { OAuthButtons } from "./oauth-buttons";
 
-export function SignIn() {
-  const search = useSearch({ from: "/_guest/signin" });
+interface SignInProps {
+  onSignIn: () => void;
+  redirect?: string;
+}
 
+export function SignIn({ onSignIn, redirect }: SignInProps) {
   return (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
       <CardHeader>
@@ -22,17 +25,13 @@ export function SignIn() {
         <CardDescription>Enter your credentials to sign in to your account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <SignInForm redirect={search.redirect} />
+        <SignInForm onSignIn={onSignIn} />
         <OAuthButtons />
       </CardContent>
       <CardFooter className="py-3">
         <p className="text-muted-foreground mx-auto">
           Doesn&apos;t have an account?{" "}
-          <Link
-            to="/signup"
-            search={{ redirect: search.redirect }}
-            className="text-primary underline"
-          >
+          <Link to="/signup" search={{ redirect }} className="text-primary underline">
             Sign up
           </Link>
         </p>

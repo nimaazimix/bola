@@ -1,18 +1,18 @@
-import { useRouter } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuthStore } from "#/shared/stores/auth.store";
-import { signOut } from "./requests";
+import { signOut } from "../api/requests";
 
 export function useSignOut() {
-  const router = useRouter();
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: () => signOut(),
 
     onSuccess: () => {
       clearAuth();
-      router.navigate({ to: "/signin" });
+      navigate({ to: "/signin" });
     },
   });
 }

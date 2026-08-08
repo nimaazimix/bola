@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "#/shared/test/utils";
-import { predicates, server } from "#/shared/test/mocks";
+import { render, screen, waitFor } from "#/test/utils";
+import { predicates, server } from "#/test/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores/auth.store";
 import { AuthProvider } from "./auth-provider";
@@ -15,6 +15,7 @@ describe("AuthProvider", () => {
 
     // Assert
     expect(screen.getByLabelText(/loading/i)).toBeInTheDocument();
+    expect(screen.queryByText(/children/i)).not.toBeInTheDocument();
   });
 
   it("should authenticate user and render the children after successful refresh", async () => {

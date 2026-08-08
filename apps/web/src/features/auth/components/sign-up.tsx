@@ -1,4 +1,4 @@
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -14,15 +14,17 @@ import { CheckEmail } from "./check-email";
 import { useState } from "react";
 import type { SignUpData } from "../types";
 
+interface SignupProps {
+  redirect?: string;
+}
+
 interface SignUpState {
   step: "create-account" | "verify-email";
   data?: SignUpData;
 }
 
-export function SignUp() {
+export function SignUp({ redirect }: SignupProps) {
   const [signUpState, setSignUpState] = useState<SignUpState>({ step: "create-account" });
-
-  const search = useSearch({ from: "/_guest/signup" });
 
   return signUpState.step === "create-account" ? (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
@@ -34,20 +36,16 @@ export function SignUp() {
       </CardHeader>
       <CardContent className="space-y-3">
         <SignUpForm
-          redirect={search.redirect}
-          data={signUpState.data}
           onSignUp={(data) => setSignUpState({ step: "verify-email", data })}
+          data={signUpState.data}
+          redirect={redirect}
         />
         <OAuthButtons />
       </CardContent>
       <CardFooter className="py-3">
         <p className="text-muted-foreground mx-auto">
           Already have an account?{" "}
-          <Link
-            to="/signin"
-            search={{ redirect: search.redirect }}
-            className="text-primary underline"
-          >
+          <Link to="/signin" search={{ redirect }} className="text-primary underline">
             Sign in
           </Link>
         </p>

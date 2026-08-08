@@ -27,11 +27,11 @@ describe("getInitial", () => {
     expect(getInitial("john  doe")).toBe("J");
   });
 
-  it("should return ? for an empty string", () => {
-    expect(getInitial("")).toBe("?");
-  });
-
   it("should support unicode characters", () => {
     expect(getInitial("éclair")).toBe("É");
+  });
+
+  it("should return ? for an empty string", () => {
+    expect(getInitial("")).toBe("?");
   });
 });

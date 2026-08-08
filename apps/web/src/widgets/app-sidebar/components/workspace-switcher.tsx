@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@bola/ui/components/dropdown-menu";
-import { IconCheck, IconPlus, IconSelector } from "@tabler/icons-react";
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
+import { IconCheck, IconPlus, IconSelector } from "@tabler/icons-react";
 
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";

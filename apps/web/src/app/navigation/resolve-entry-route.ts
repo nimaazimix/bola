@@ -1,18 +1,16 @@
 import { linkOptions } from "@tanstack/react-router";
-import type { QueryClient } from "@tanstack/react-query";
-
-// Intentional cross import
+import { queryClient } from "#/shared/api/query-client";
 import { workspaceQueries } from "#/features/workspaces";
 
-export async function resolveDestination(queryClient: QueryClient, redirect?: string) {
-  if (redirect) {
-    return linkOptions({ to: redirect });
-  }
-
+export async function resolveEntryRoute(redirect?: string) {
   const workspaces = await queryClient.ensureQueryData(workspaceQueries.list());
 
   if (!workspaces.length) {
     return linkOptions({ to: "/onboarding" });
+  }
+
+  if (redirect) {
+    return linkOptions({ to: redirect });
   }
 
   return linkOptions({

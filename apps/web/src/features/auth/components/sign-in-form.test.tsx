@@ -1,25 +1,16 @@
-import { render, screen, userEvent, waitFor } from "#/shared/test/utils";
-import { predicates, server } from "#/shared/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/test/utils";
+import { predicates, server } from "#/test/mocks";
+import { userFactory } from "#/test/factories";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores/auth.store";
-import { resolveDestination } from "../lib/resolve-destination";
 import { SignInForm } from "./sign-in-form";
-
-const navigateMock = vi.fn();
-vi.mock("@tanstack/react-router", () => ({
-  useNavigate: () => navigateMock,
-}));
-
-vi.mock("../lib/resolve-destination", () => ({
-  resolveDestination: vi.fn(),
-}));
 
 describe("SignInForm", () => {
   afterEach(() => {
     useAuthStore.setState(useAuthStore.getInitialState(), true);
   });
 
-  it("should authenticate user and navigate to the resolved route", async () => {
+  it("should authenticate user and call the provided onSignIn callback", async () => {
     // Arrange
     let requestBody: unknown;
     server.use(
@@ -27,13 +18,13 @@ describe("SignInForm", () => {
         requestBody = await request.json();
         return HttpResponse.json({
           success: true,
-          data: { accessToken: "access-token", user: {} },
+          data: { accessToken: "access-token", user: userFactory.build() },
         });
       }),
     );
-    vi.mocked(resolveDestination).mockResolvedValue({ to: "/acme" });
 
-    render(<SignInForm redirect="/acme" />);
+    const onSignIn = vi.fn();
+    render(<SignInForm onSignIn={onSignIn} />);
     const user = userEvent.setup();
 
     // Act
@@ -44,10 +35,9 @@ describe("SignInForm", () => {
     // Assert
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true);
-      expect(navigateMock).toHaveBeenCalledWith({ to: "/acme", replace: true });
+      expect(onSignIn).toHaveBeenCalled();
     });
     expect(requestBody).toEqual({ email: "test@example.com", password: "password" });
-    expect(resolveDestination).toHaveBeenCalledWith(expect.anything(), "/acme");
   });
 
   it("should prevent form submission when validation fails", async () => {
@@ -59,20 +49,21 @@ describe("SignInForm", () => {
       }),
     );
 
-    render(<SignInForm />);
+    const onSignIn = vi.fn();
+    render(<SignInForm onSignIn={onSignIn} />);
     const user = userEvent.setup();
 
     // Act
-    await user.type(screen.getByLabelText(/email/i), "invalid-email");
+    await user.type(screen.getByLabelText(/email/i), "test");
     await user.type(screen.getByLabelText(/password/i), "password");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
     expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
-    expect(screen.getByText(/valid email address/i)).toBeInTheDocument();
+    expect(screen.getByText(/enter a valid email address/i)).toBeInTheDocument();
 
     expect(requestSent).toBe(false);
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(onSignIn).not.toHaveBeenCalled();
   });
 
   it("should display server error message when the request fails with an exception", async () => {
@@ -92,17 +83,33 @@ describe("SignInForm", () => {
       }),
     );
 
-    render(<SignInForm />);
+    const onSignIn = vi.fn();
+    render(<SignInForm onSignIn={onSignIn} />);
     const user = userEvent.setup();
 
     // Act
     await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "wrong-password");
+    await user.type(screen.getByLabelText(/password/i), "password");
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
     expect(await screen.findByText("Email address or password is incorrect")).toBeInTheDocument();
-    expect(navigateMock).not.toHaveBeenCalled();
+    expect(onSignIn).not.toHaveBeenCalled();
+  });
+
+  it("should display generic error message when something unexpected happens", async () => {
+    // Arrange
+    const onSignIn = vi.fn().mockThrow(new Error());
+    render(<SignInForm onSignIn={onSignIn} />);
+    const user = userEvent.setup();
+
+    // Act
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "password");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    // Assert
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
   });
 
   it("should disable the submit button during form submission", async () => {
@@ -117,7 +124,8 @@ describe("SignInForm", () => {
       }),
     );
 
-    render(<SignInForm />);
+    const onSignIn = vi.fn();
+    render(<SignInForm onSignIn={onSignIn} />);
     const user = userEvent.setup();
 
     // Act

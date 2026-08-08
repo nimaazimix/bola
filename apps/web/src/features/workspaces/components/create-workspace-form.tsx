@@ -10,17 +10,22 @@ import { Button } from "@bola/ui/components/button";
 
 import { useState } from "react";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
 import { CreateWorkspaceSchema } from "@bola/contracts/workspaces";
-import slugify from "slugify";
-import { toast } from "sonner";
-import { ApiError } from "#/shared/api/errors";
-import { useCreateWorkspace } from "../api/use-create-workspace";
+import { useCreateWorkspace } from "../hooks/use-create-workspace";
 import { checkSlug } from "../api/requests";
+import { ApiError } from "#/shared/api/errors";
+import { toast } from "sonner";
+import slugify from "slugify";
 
-export function CreateWorkspaceForm() {
+interface CreateWorkspaceFormProps {
+  onCreateWorkspace: (slug: string) => void;
+}
+
+export function CreateWorkspaceForm({ onCreateWorkspace }: CreateWorkspaceFormProps) {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
-  const navigate = useNavigate();
+
+  const NameSchema = CreateWorkspaceSchema.shape.name;
+  const SlugSchema = CreateWorkspaceSchema.shape.slug;
 
   const [slugEdited, setSlugEdited] = useState(false);
   const form = useForm({
@@ -32,7 +37,7 @@ export function CreateWorkspaceForm() {
     onSubmit: async ({ value }) => {
       try {
         const workspace = await createWorkspace({ input: value });
-        navigate({ to: "/$workspaceSlug", params: { workspaceSlug: workspace.slug } });
+        onCreateWorkspace(workspace.slug);
       } catch (error) {
         if (error instanceof ApiError) {
           return toast.error(error.message);
@@ -54,7 +59,7 @@ export function CreateWorkspaceForm() {
         <form.Field
           name="name"
           validators={{
-            onDynamic: CreateWorkspaceSchema.shape.name,
+            onDynamic: NameSchema,
           }}
           listeners={{
             onChange: ({ value }) => {
@@ -94,10 +99,10 @@ export function CreateWorkspaceForm() {
         <form.Field
           name="slug"
           validators={{
-            onDynamic: CreateWorkspaceSchema.shape.slug,
+            onDynamic: SlugSchema,
             onDynamicAsyncDebounceMs: 500,
             onDynamicAsync: async ({ value, fieldApi }) => {
-              const error = fieldApi.parseValueWithSchema(CreateWorkspaceSchema.shape.slug);
+              const error = fieldApi.parseValueWithSchema(SlugSchema);
               if (error) return error;
               try {
                 const { available } = await checkSlug(value);

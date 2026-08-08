@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { postWorkspace } from "../api/requests";
+import { workspaceQueries } from "../api/queries";
 import type { CreateWorkspaceInput } from "@bola/contracts/workspaces";
-import { postWorkspace } from "./requests";
-import { workspaceQueries } from "./workspace-queries";
 
 export function useCreateWorkspace() {
   const queryClient = useQueryClient();
@@ -9,11 +9,8 @@ export function useCreateWorkspace() {
   return useMutation({
     mutationFn: ({ input }: { input: CreateWorkspaceInput }) => postWorkspace(input),
 
-    onSuccess: (workspace) => {
-      queryClient.setQueryData(workspaceQueries.list().queryKey, (oldData) => {
-        if (!oldData) return [workspace];
-        return [workspace, ...oldData];
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: workspaceQueries.list().queryKey });
     },
   });
 }
