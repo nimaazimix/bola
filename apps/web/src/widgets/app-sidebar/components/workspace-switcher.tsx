@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@bola/ui/components/dropdown-menu";
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
-import { IconCheck, IconPlus, IconSelector } from "@tabler/icons-react";
+import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
 import { Link, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -22,10 +22,10 @@ import { capitalize, getInitial } from "#/shared/lib/string";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();
-  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
+  const { slug } = useParams({ from: "/_authenticated/_onboarded/$slug" });
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());
-  const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
+  const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(slug));
 
   return (
     <SidebarMenu>
@@ -48,7 +48,7 @@ export function WorkspaceSwitcher() {
                   {capitalize(activeWorkspace.membership.role)}
                 </span>
               </div>
-              <IconSelector className="ml-auto" />
+              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -63,27 +63,24 @@ export function WorkspaceSwitcher() {
             {workspaces.map((workspace) => (
               <DropdownMenuItem key={workspace.name} className="gap-2 p-2" asChild>
                 <Link
-                  to="/$workspaceSlug"
-                  params={{ workspaceSlug: workspace.slug }}
+                  to="/$slug/home"
+                  params={{ slug: workspace.slug }}
                   className="focus-visible:ring-0"
-                  children={({ isActive }) => (
-                    <>
-                      <Avatar size="sm" className="after:rounded-md">
-                        <AvatarFallback className="text-muted-foreground! rounded-md">
-                          {getInitial(workspace.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span>{workspace.name}</span>
-                      {isActive && <IconCheck className="ml-auto" />}
-                    </>
-                  )}
-                />
+                >
+                  <Avatar size="sm" className="after:rounded-md">
+                    <AvatarFallback className="text-muted-foreground! rounded-md">
+                      {getInitial(workspace.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{workspace.name}</span>
+                  {workspace.slug === slug && <CheckIcon className="ml-auto" />}
+                </Link>
               </DropdownMenuItem>
             ))}
 
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
-              <IconPlus />
+              <PlusIcon />
               <span>Add workspace</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

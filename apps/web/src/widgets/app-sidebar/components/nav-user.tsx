@@ -15,12 +15,12 @@ import {
 } from "@bola/ui/components/dropdown-menu";
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import {
-  IconAdjustments,
-  IconLogout,
-  IconSelector,
-  IconSettings,
-  IconUserHexagon,
-} from "@tabler/icons-react";
+  ChevronsUpDown,
+  CircleUserIcon,
+  LogOutIcon,
+  Settings2Icon,
+  SettingsIcon,
+} from "lucide-react";
 
 import { useAuthStore } from "#/shared/stores/auth.store";
 import { useSignOut } from "#/features/auth";
@@ -50,7 +50,7 @@ export function NavUser() {
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <IconSelector className="ml-auto" />
+              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -73,22 +73,22 @@ export function NavUser() {
 
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <IconUserHexagon />
+                <CircleUserIcon />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconAdjustments />
+                <Settings2Icon />
                 Preferences
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <IconSettings />
+                <SettingsIcon />
                 Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => signOut()}>
-              <IconLogout />
+            <DropdownMenuItem variant="destructive" onClick={() => signOut()}>
+              <LogOutIcon />
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>

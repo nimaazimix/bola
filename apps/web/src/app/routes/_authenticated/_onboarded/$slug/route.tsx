@@ -1,4 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@bola/ui/components/sidebar";
+import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
+import { AppHeader } from "#/widgets/app-header";
 import { AppSidebar } from "#/widgets/app-sidebar";
 
 import {
@@ -10,10 +11,10 @@ import {
 import { WorkspaceErrorState, workspaceQueries } from "#/features/workspaces";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
-export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
+export const Route = createFileRoute("/_authenticated/_onboarded/$slug")({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
-      queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
+      queryClient.ensureQueryData(workspaceQueries.detail(params.slug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
     ]);
   },
@@ -25,10 +26,12 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="px-4">
-        <SidebarTrigger />
-        <Outlet />
-      </main>
+      <SidebarInset>
+        <AppHeader />
+        <main className="p-4">
+          <Outlet />
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

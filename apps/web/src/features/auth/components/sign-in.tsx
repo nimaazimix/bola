@@ -20,7 +20,7 @@ export function SignIn({ onSignIn, redirect }: SignInProps) {
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
       <CardHeader>
         <CardTitle>
-          <h1 className="text-lg">Welcome back</h1>
+          <h1>Welcome back</h1>
         </CardTitle>
         <CardDescription>Enter your credentials to sign in to your account</CardDescription>
       </CardHeader>

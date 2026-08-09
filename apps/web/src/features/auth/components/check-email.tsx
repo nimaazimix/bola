@@ -5,7 +5,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@bola/ui/components/empty";
-import { IconArrowLeft, IconMail } from "@tabler/icons-react";
+import { ArrowLeftIcon, MailIcon } from "lucide-react";
 
 interface CheckEmailProps {
   email: string;
@@ -17,9 +17,9 @@ export function CheckEmail({ email, onBackToSignup }: CheckEmailProps) {
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <IconMail />
+          <MailIcon />
         </EmptyMedia>
-        <EmptyTitle className="text-lg">Check your email</EmptyTitle>
+        <EmptyTitle className="text-base">Check your email</EmptyTitle>
         <EmptyDescription>
           <p>We&apos;ve sent you a temporary verification link</p>
           <p>
@@ -28,7 +28,7 @@ export function CheckEmail({ email, onBackToSignup }: CheckEmailProps) {
         </EmptyDescription>
       </EmptyHeader>
       <button onClick={onBackToSignup} className="flex cursor-pointer items-center gap-1 text-sm">
-        <IconArrowLeft className="size-4" />
+        <ArrowLeftIcon className="size-4" />
         Back to sign up
       </button>
     </Empty>
