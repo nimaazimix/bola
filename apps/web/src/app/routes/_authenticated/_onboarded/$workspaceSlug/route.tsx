@@ -1,4 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@bola/ui/components/sidebar";
+import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
+import { AppHeader } from "#/widgets/app-header";
 import { AppSidebar } from "#/widgets/app-sidebar";
 
 import {
@@ -25,10 +26,12 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="px-4">
-        <SidebarTrigger />
-        <Outlet />
-      </main>
+      <SidebarInset>
+        <AppHeader />
+        <main className="p-4">
+          <Outlet />
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
