@@ -21,6 +21,7 @@ import { Route as AuthenticatedOnboardedWorkspaceSlugRouteRouteImport } from './
 import { Route as AuthenticatedOnboardedWorkspaceSlugIndexRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/index'
 import { Route as AuthenticatedOnboardedWorkspaceSlugSettingsRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/settings'
 import { Route as AuthenticatedOnboardedWorkspaceSlugInboxRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/inbox'
+import { Route as AuthenticatedOnboardedWorkspaceSlugHomeRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/home'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -84,6 +85,12 @@ const AuthenticatedOnboardedWorkspaceSlugInboxRoute =
     path: '/inbox',
     getParentRoute: () => AuthenticatedOnboardedWorkspaceSlugRouteRoute,
   } as any)
+const AuthenticatedOnboardedWorkspaceSlugHomeRoute =
+  AuthenticatedOnboardedWorkspaceSlugHomeRouteImport.update({
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => AuthenticatedOnboardedWorkspaceSlugRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof GuestSigninRoute
   '/signup': typeof GuestSignupRoute
   '/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugRouteRouteWithChildren
+  '/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   '/$workspaceSlug/inbox': typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   '/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/$workspaceSlug/': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/signin': typeof GuestSigninRoute
   '/signup': typeof GuestSignupRoute
+  '/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   '/$workspaceSlug/inbox': typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   '/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
@@ -117,6 +126,7 @@ export interface FileRoutesById {
   '/_guest/signin': typeof GuestSigninRoute
   '/_guest/signup': typeof GuestSignupRoute
   '/_authenticated/_onboarded/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugRouteRouteWithChildren
+  '/_authenticated/_onboarded/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   '/_authenticated/_onboarded/$workspaceSlug/inbox': typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   '/_authenticated/_onboarded/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/_authenticated/_onboarded/$workspaceSlug/': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/$workspaceSlug'
+    | '/$workspaceSlug/home'
     | '/$workspaceSlug/inbox'
     | '/$workspaceSlug/settings'
     | '/$workspaceSlug/'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/signin'
     | '/signup'
+    | '/$workspaceSlug/home'
     | '/$workspaceSlug/inbox'
     | '/$workspaceSlug/settings'
     | '/$workspaceSlug'
@@ -154,6 +166,7 @@ export interface FileRouteTypes {
     | '/_guest/signin'
     | '/_guest/signup'
     | '/_authenticated/_onboarded/$workspaceSlug'
+    | '/_authenticated/_onboarded/$workspaceSlug/home'
     | '/_authenticated/_onboarded/$workspaceSlug/inbox'
     | '/_authenticated/_onboarded/$workspaceSlug/settings'
     | '/_authenticated/_onboarded/$workspaceSlug/'
@@ -252,10 +265,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardedWorkspaceSlugInboxRouteImport
       parentRoute: typeof AuthenticatedOnboardedWorkspaceSlugRouteRoute
     }
+    '/_authenticated/_onboarded/$workspaceSlug/home': {
+      id: '/_authenticated/_onboarded/$workspaceSlug/home'
+      path: '/home'
+      fullPath: '/$workspaceSlug/home'
+      preLoaderRoute: typeof AuthenticatedOnboardedWorkspaceSlugHomeRouteImport
+      parentRoute: typeof AuthenticatedOnboardedWorkspaceSlugRouteRoute
+    }
   }
 }
 
 interface AuthenticatedOnboardedWorkspaceSlugRouteRouteChildren {
+  AuthenticatedOnboardedWorkspaceSlugHomeRoute: typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   AuthenticatedOnboardedWorkspaceSlugInboxRoute: typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   AuthenticatedOnboardedWorkspaceSlugSettingsRoute: typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   AuthenticatedOnboardedWorkspaceSlugIndexRoute: typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
@@ -263,6 +284,8 @@ interface AuthenticatedOnboardedWorkspaceSlugRouteRouteChildren {
 
 const AuthenticatedOnboardedWorkspaceSlugRouteRouteChildren: AuthenticatedOnboardedWorkspaceSlugRouteRouteChildren =
   {
+    AuthenticatedOnboardedWorkspaceSlugHomeRoute:
+      AuthenticatedOnboardedWorkspaceSlugHomeRoute,
     AuthenticatedOnboardedWorkspaceSlugInboxRoute:
       AuthenticatedOnboardedWorkspaceSlugInboxRoute,
     AuthenticatedOnboardedWorkspaceSlugSettingsRoute:

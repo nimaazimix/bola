@@ -1,12 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/")({
-  staticData: {
-    title: "Home",
-  },
-  component: RouteComponent,
+  component: () => <Navigate from="/$workspaceSlug/" to="/$workspaceSlug/home" replace />,
 });
-
-function RouteComponent() {
-  return <div></div>;
-}
