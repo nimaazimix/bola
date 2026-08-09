@@ -63,21 +63,18 @@ export function WorkspaceSwitcher() {
             {workspaces.map((workspace) => (
               <DropdownMenuItem key={workspace.name} className="gap-2 p-2" asChild>
                 <Link
-                  to="/$slug"
+                  to="/$slug/home"
                   params={{ slug: workspace.slug }}
                   className="focus-visible:ring-0"
-                  children={({ isActive }) => (
-                    <>
-                      <Avatar size="sm" className="after:rounded-md">
-                        <AvatarFallback className="text-muted-foreground! rounded-md">
-                          {getInitial(workspace.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span>{workspace.name}</span>
-                      {isActive && <CheckIcon className="ml-auto" />}
-                    </>
-                  )}
-                />
+                >
+                  <Avatar size="sm" className="after:rounded-md">
+                    <AvatarFallback className="text-muted-foreground! rounded-md">
+                      {getInitial(workspace.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{workspace.name}</span>
+                  {workspace.slug === slug && <CheckIcon className="ml-auto" />}
+                </Link>
               </DropdownMenuItem>
             ))}
 
