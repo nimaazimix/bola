@@ -14,7 +14,7 @@ export async function resolveEntryRoute(redirect?: string) {
   }
 
   return linkOptions({
-    to: "/$workspaceSlug",
-    params: { workspaceSlug: workspaces[0]!.slug },
+    to: "/$slug",
+    params: { slug: workspaces[0]!.slug },
   });
 }

@@ -11,10 +11,10 @@ import {
 import { WorkspaceErrorState, workspaceQueries } from "#/features/workspaces";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
-export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
+export const Route = createFileRoute("/_authenticated/_onboarded/$slug")({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
-      queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
+      queryClient.ensureQueryData(workspaceQueries.detail(params.slug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
     ]);
   },
