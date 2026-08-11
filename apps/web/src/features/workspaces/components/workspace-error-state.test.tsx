@@ -22,25 +22,6 @@ describe("WorkspaceErrorState", () => {
     expect(onNavigate).toHaveBeenCalled();
   });
 
-  it("should display access denied when error status is 403", async () => {
-    // Arrange
-    const error = new ApiError({ kind: "http", status: 403, message: "..." });
-
-    const onNavigate = vi.fn();
-    const onRetry = vi.fn();
-    render(<WorkspaceErrorState error={error} onNavigate={onNavigate} onRetry={onRetry} />);
-    const user = userEvent.setup();
-
-    // Act, Assert
-    expect(screen.getByText(/you don't have access to this workspace/i)).toBeInTheDocument();
-
-    const button = screen.getByRole("button", { name: /go to your workspace/i });
-    expect(button).toBeInTheDocument();
-    await user.click(button);
-
-    expect(onNavigate).toHaveBeenCalled();
-  });
-
   it("should display network issue when error kind is network", async () => {
     // Arrange
     const error = new ApiError({ kind: "network", message: "..." });

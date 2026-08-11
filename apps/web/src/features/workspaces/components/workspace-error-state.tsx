@@ -1,7 +1,7 @@
 import { ApiError } from "#/shared/api/errors";
 import { ErrorState, type ErrorStateProps } from "#/shared/components/error-state";
 import { Button } from "@bola/ui/components/button";
-import { CloudOffIcon, FolderXIcon, LockKeyholeIcon, TriangleAlert } from "lucide-react";
+import { CloudOffIcon, DatabaseXIcon, TriangleAlert } from "lucide-react";
 
 interface WorkspaceErrorStateProps {
   error: unknown;
@@ -21,20 +21,10 @@ function getErrorStateProps({
   if (error instanceof ApiError) {
     if (error.status === 404) {
       return {
-        icon: FolderXIcon,
+        icon: DatabaseXIcon,
         title: "Workspace not found",
         message:
-          "We couldn't find the workspace you're trying to access. It may have been deleted, moved, or the link might be incorrect.",
-        children: <Button onClick={onNavigate}>Go to your workspace</Button>,
-      };
-    }
-
-    if (error.status === 403) {
-      return {
-        icon: LockKeyholeIcon,
-        title: "You don't have access to this workspace",
-        message:
-          "You don't have permission to view this workspace. Ask the owner or an administrator to grant you access.",
+          "We couldn't find the workspace you're trying to access. It may have been deleted, moved, or you may not have access to it.",
         children: <Button onClick={onNavigate}>Go to your workspace</Button>,
       };
     }
