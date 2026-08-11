@@ -73,6 +73,7 @@ model Workspace {
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
   memberships WorkspaceMembership[]
+  boards      Board[]
 }
 
 model WorkspaceMembership {
@@ -90,4 +91,13 @@ model WorkspaceMembership {
 enum WorkspaceRole {
   OWNER
   MEMBER
+}
+
+model Board {
+  id          String    @id @default(ulid())
+  workspaceId String
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
