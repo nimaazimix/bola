@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { createPrismaServiceMock, PrismaServiceMock } from "test/mocks";
 import { userFactory, workspaceFactory, WorkspaceMembershipFactory } from "test/factories";
-import { ConflictException, ForbiddenException, NotFoundException } from "@nestjs/common";
+import { ConflictException, NotFoundException } from "@nestjs/common";
 import { Prisma, PrismaService, WorkspaceRole } from "src/prisma/prisma.service";
 import { WorkspacesService } from "./workspaces.service";
 
@@ -43,20 +43,27 @@ describe("WorkspacesService", () => {
       const result = await service.create(dto, user);
 
       // Assert
-      const { memberships, ...workspaceFields } = workspace;
+      const { memberships, ...fields } = workspace;
       expect(result).toEqual({
-        ...workspaceFields,
-        membership: { role: memberships[0]!.role },
+        ...fields,
+        membership: memberships[0],
       });
 
       expect(prismaServiceMock.workspace.create).toHaveBeenCalledWith({
         data: {
           ...dto,
           memberships: {
-            create: { role: WorkspaceRole.OWNER, user: { connect: { id: user.id } } },
+            create: {
+              role: WorkspaceRole.OWNER,
+              user: { connect: { id: user.id } },
+            },
           },
         },
-        include: { memberships: { where: { userId: user.id } } },
+        include: {
+          memberships: {
+            where: { userId: user.id },
+          },
+        },
       });
     });
 
@@ -91,8 +98,8 @@ describe("WorkspacesService", () => {
     });
   });
 
-  describe("findAll", () => {
-    it("should return user workspaces in descending order including membership data", async () => {
+  describe("findAllAccessible", () => {
+    it("should return user's accessible workspaces ordered by their name", async () => {
       // Arrange
       const user = userFactory.build({ emailVerified: true });
       const workspaces = workspaceFactory.buildList(3).map((workspace) => ({
@@ -106,20 +113,74 @@ describe("WorkspacesService", () => {
       prismaServiceMock.workspace.findMany.mockResolvedValue(workspaces);
 
       // Act
-      const result = await service.findAll(user);
+      const result = await service.findAllAccessible(user);
 
       // Assert
       expect(result).toEqual(
-        workspaces.map(({ memberships, ...workspaceFields }) => ({
-          ...workspaceFields,
-          membership: { role: memberships[0]!.role },
+        workspaces.map(({ memberships, ...fields }) => ({
+          ...fields,
+          membership: memberships[0],
         })),
       );
       expect(prismaServiceMock.workspace.findMany).toHaveBeenCalledWith({
-        where: { memberships: { some: { userId: user.id } } },
-        include: { memberships: { where: { userId: user.id } } },
-        orderBy: { createdAt: "desc" },
+        where: {
+          memberships: { some: { userId: user.id } },
+        },
+        include: {
+          memberships: {
+            where: { userId: user.id },
+          },
+        },
+        orderBy: { name: "asc" },
       });
+    });
+  });
+
+  describe("findOneAccessible", () => {
+    it("should find and return accessible workspace by its slug", async () => {
+      // Arrange
+      const slug = "acme";
+      const user = userFactory.build();
+      const workspace = {
+        ...workspaceFactory.build({ id: "wsp_id", slug }),
+        memberships: WorkspaceMembershipFactory.buildList(1, {
+          workspaceId: "wsp_id",
+          userId: user.id,
+        }),
+      };
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
+
+      // Act
+      const result = await service.findOneAccessible(slug, user);
+
+      // Arrange
+      const { memberships, ...fields } = workspace;
+      expect(result).toEqual({
+        ...fields,
+        membership: memberships[0],
+      });
+
+      expect(prismaServiceMock.workspace.findUnique).toHaveBeenCalledWith({
+        where: {
+          slug,
+          memberships: { some: { userId: user.id } },
+        },
+        include: {
+          memberships: {
+            where: { userId: user.id },
+          },
+        },
+      });
+    });
+
+    it("should throw NotFoundException when workspace is not found", async () => {
+      // Arrange
+      const slug = "acme";
+      const user = userFactory.build();
+      prismaServiceMock.workspace.findUnique.mockResolvedValue(null);
+
+      // Act, Assert
+      await expect(service.findOneAccessible(slug, user)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -139,62 +200,6 @@ describe("WorkspacesService", () => {
 
       // Act, Assert
       expect(service.checkSlugAvailability("acme")).resolves.toEqual({ available: false });
-    });
-  });
-
-  describe("findOneBySlug", () => {
-    it("should return workspace including membership data", async () => {
-      // Arrange
-      const slug = "acme";
-      const user = userFactory.build();
-      const workspace = {
-        ...workspaceFactory.build({ id: "wsp_id", slug }),
-        memberships: WorkspaceMembershipFactory.buildList(1, {
-          workspaceId: "wsp_id",
-          userId: user.id,
-        }),
-      };
-      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
-
-      // Act
-      const result = await service.findOneBySlug(slug, user);
-
-      // Arrange
-
-      const { memberships, ...workspaceFields } = workspace;
-      expect(result).toEqual({
-        ...workspaceFields,
-        membership: { role: memberships[0]!.role },
-      });
-
-      expect(prismaServiceMock.workspace.findUnique).toHaveBeenCalledWith({
-        where: { slug },
-        include: { memberships: { where: { userId: user.id } } },
-      });
-    });
-
-    it("should throw ForbiddenException when user is not a member of the workspace", async () => {
-      // Arrange
-      const slug = "acme";
-      const user = userFactory.build();
-      const workspace = {
-        ...workspaceFactory.build({ slug }),
-        memberships: [],
-      };
-      prismaServiceMock.workspace.findUnique.mockResolvedValue(workspace);
-
-      // Act, Assert
-      await expect(service.findOneBySlug(slug, user)).rejects.toThrow(ForbiddenException);
-    });
-
-    it("should throw NotFoundException when workspace is not found", async () => {
-      // Arrange
-      const slug = "acme";
-      const user = userFactory.build();
-      prismaServiceMock.workspace.findUnique.mockResolvedValue(null);
-
-      // Act, Assert
-      await expect(service.findOneBySlug(slug, user)).rejects.toThrow(NotFoundException);
     });
   });
 });

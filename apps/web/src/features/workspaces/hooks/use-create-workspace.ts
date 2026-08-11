@@ -9,8 +9,13 @@ export function useCreateWorkspace() {
   return useMutation({
     mutationFn: ({ input }: { input: CreateWorkspaceInput }) => postWorkspace(input),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: workspaceQueries.list().queryKey });
+    onSuccess: (workspace) => {
+      queryClient.setQueryData(workspaceQueries.list().queryKey, (oldData) => {
+        if (!oldData) {
+          return [workspace];
+        }
+        return [...oldData, workspace].sort((ws1, ws2) => ws1.name.localeCompare(ws2.name));
+      });
     },
   });
 }

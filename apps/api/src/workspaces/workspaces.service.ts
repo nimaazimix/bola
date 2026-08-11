@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, PrismaService, User, WorkspaceRole } from "src/prisma/prisma.service";
 import { CreateWorkspaceDto } from "./dto";
 import { WorkspaceErrors } from "./errors";
@@ -14,19 +9,26 @@ export class WorkspacesService {
 
   async create(dto: CreateWorkspaceDto, user: User) {
     try {
-      const { memberships, ...workspaceFields } = await this.prismaService.workspace.create({
+      const { memberships, ...fields } = await this.prismaService.workspace.create({
         data: {
           ...dto,
           memberships: {
-            create: { role: WorkspaceRole.OWNER, user: { connect: { id: user.id } } },
+            create: {
+              role: WorkspaceRole.OWNER,
+              user: { connect: { id: user.id } },
+            },
           },
         },
-        include: { memberships: { where: { userId: user.id } } },
+        include: {
+          memberships: {
+            where: { userId: user.id },
+          },
+        },
       });
 
       return {
-        ...workspaceFields,
-        membership: { role: memberships[0]!.role },
+        ...fields,
+        membership: memberships[0]!,
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
@@ -36,44 +38,52 @@ export class WorkspacesService {
     }
   }
 
-  async findAll(user: User) {
+  async findAllAccessible(user: User) {
     const workspaces = await this.prismaService.workspace.findMany({
-      where: { memberships: { some: { userId: user.id } } },
-      include: { memberships: { where: { userId: user.id } } },
-      orderBy: { createdAt: "desc" },
+      where: {
+        memberships: { some: { userId: user.id } },
+      },
+      include: {
+        memberships: {
+          where: { userId: user.id },
+        },
+      },
+      orderBy: { name: "asc" },
     });
 
-    return workspaces.map(({ memberships, ...workspaceFields }) => ({
-      ...workspaceFields,
-      membership: { role: memberships[0]!.role },
+    return workspaces.map(({ memberships, ...fields }) => ({
+      ...fields,
+      membership: memberships[0]!,
     }));
   }
 
-  async checkSlugAvailability(slug: string) {
-    const workspace = await this.prismaService.workspace.findUnique({ where: { slug } });
-
-    return { available: !workspace };
-  }
-
-  async findOneBySlug(slug: string, user: User) {
+  async findOneAccessible(slug: string, user: User) {
     const workspace = await this.prismaService.workspace.findUnique({
-      where: { slug },
-      include: { memberships: { where: { userId: user.id } } },
+      where: {
+        slug,
+        memberships: { some: { userId: user.id } },
+      },
+      include: {
+        memberships: {
+          where: { userId: user.id },
+        },
+      },
     });
 
     if (!workspace) {
       throw new NotFoundException(WorkspaceErrors.NOT_FOUND);
     }
 
-    const { memberships, ...workspaceFields } = workspace;
-
-    if (!memberships[0]) {
-      throw new ForbiddenException(WorkspaceErrors.ACCESS_DENIED);
-    }
-
+    const { memberships, ...fields } = workspace;
     return {
-      ...workspaceFields,
-      membership: { role: memberships[0].role },
+      ...fields,
+      membership: memberships[0]!,
     };
+  }
+
+  async checkSlugAvailability(slug: string) {
+    const workspace = await this.prismaService.workspace.findUnique({ where: { slug } });
+
+    return { available: !workspace };
   }
 }

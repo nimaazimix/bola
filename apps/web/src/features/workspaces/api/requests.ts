@@ -10,7 +10,7 @@ export async function getWorkspaces() {
   return api.get<ApiSuccess<Workspace[]>>("/workspaces").then((res) => res.data.data);
 }
 
-export async function getWorkspaceBySlug(slug: string) {
+export async function getWorkspace(slug: string) {
   return api.get<ApiSuccess<Workspace>>(`/workspaces/${slug}`).then((res) => res.data.data);
 }
 

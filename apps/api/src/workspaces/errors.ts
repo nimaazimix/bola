@@ -10,9 +10,4 @@ export const WorkspaceErrors = {
     code: "workspace.not_found",
     message: "Workspace is not found",
   },
-
-  ACCESS_DENIED: {
-    code: "workspace.access_denied",
-    message: "Workspace cannot be accessed",
-  },
 } satisfies Record<string, ApiErrorPayload>;

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authenticated/_onboarded/$slug/settings")({
+export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/inbox")({
   staticData: {
-    title: "Settings",
+    title: "Inbox",
   },
   component: RouteComponent,
 });

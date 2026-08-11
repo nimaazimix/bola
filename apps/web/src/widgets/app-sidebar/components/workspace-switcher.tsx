@@ -22,10 +22,10 @@ import { capitalize, getInitial } from "#/shared/lib/string";
 
 export function WorkspaceSwitcher() {
   const { isMobile } = useSidebar();
-  const { slug } = useParams({ from: "/_authenticated/_onboarded/$slug" });
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());
-  const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(slug));
+  const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
 
   return (
     <SidebarMenu>
@@ -63,8 +63,8 @@ export function WorkspaceSwitcher() {
             {workspaces.map((workspace) => (
               <DropdownMenuItem key={workspace.name} className="gap-2 p-2" asChild>
                 <Link
-                  to="/$slug/home"
-                  params={{ slug: workspace.slug }}
+                  to="/$workspaceSlug/home"
+                  params={{ workspaceSlug: workspace.slug }}
                   className="focus-visible:ring-0"
                 >
                   <Avatar size="sm" className="after:rounded-md">
@@ -73,7 +73,7 @@ export function WorkspaceSwitcher() {
                     </AvatarFallback>
                   </Avatar>
                   <span>{workspace.name}</span>
-                  {workspace.slug === slug && <CheckIcon className="ml-auto" />}
+                  {workspace.slug === workspaceSlug && <CheckIcon className="ml-auto" />}
                 </Link>
               </DropdownMenuItem>
             ))}
