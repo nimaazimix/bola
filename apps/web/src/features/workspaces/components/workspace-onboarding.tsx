@@ -23,7 +23,9 @@ export function WorkspaceOnboarding() {
         </CardHeader>
         <CardContent>
           <CreateWorkspaceForm
-            onCreateWorkspace={(slug) => navigate({ to: "/$slug", params: { slug } })}
+            onCreateWorkspace={(workspaceSlug) =>
+              navigate({ to: "/$workspaceSlug/home", params: { workspaceSlug } })
+            }
           />
         </CardContent>
       </Card>

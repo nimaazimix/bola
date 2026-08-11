@@ -21,8 +21,8 @@ export function NavMain() {
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton tooltip={item.title} asChild>
               <Link
-                from="/$slug"
-                to={`/$slug/${item.url}`}
+                from="/$workspaceSlug"
+                to={`/$workspaceSlug/${item.url}`}
                 activeProps={{
                   className: "bg-sidebar-accent text-sidebar-accent-foreground border",
                 }}

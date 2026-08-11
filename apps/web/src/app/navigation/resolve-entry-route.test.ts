@@ -13,8 +13,8 @@ describe("resolveEntryRoute", () => {
 
     // Assert
     expect(result).toEqual({
-      to: "/$slug",
-      params: { slug: workspaces[0]!.slug },
+      to: "/$workspaceSlug/home",
+      params: { workspaceSlug: workspaces[0]!.slug },
     });
     expect(queryClient.ensureQueryData).toHaveBeenCalled();
   });
