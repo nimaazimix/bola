@@ -24,7 +24,7 @@ export class WorkspacesController {
   @Get()
   @ZodSerializerDto(WorkspaceListResponseDto)
   async findAll(@CurrentUser() user: User) {
-    return this.workspacesService.findAll(user);
+    return this.workspacesService.findAllAccessible(user);
   }
 
   @Get("check-slug")
@@ -36,6 +36,6 @@ export class WorkspacesController {
   @Get(":slug")
   @ZodSerializerDto(WorkspaceResponseDto)
   async findOneBySlug(@Param("slug") slug: string, @CurrentUser() user: User) {
-    return this.workspacesService.findOneBySlug(slug, user);
+    return this.workspacesService.findOneAccessible(slug, user);
   }
 }
