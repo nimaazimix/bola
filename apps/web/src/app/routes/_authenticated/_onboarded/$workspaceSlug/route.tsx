@@ -10,12 +10,14 @@ import {
 } from "@tanstack/react-router";
 import { WorkspaceErrorState, workspaceQueries } from "#/features/workspaces";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
+import { boardQueries } from "#/features/boards";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
+      queryClient.ensureQueryData(boardQueries.list(params.workspaceSlug)),
     ]);
   },
   component: RouteComponent,

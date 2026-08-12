@@ -6,3 +6,5 @@ export const BoardSchema = z.object({
   createdAt: z.date().transform((arg) => arg.toISOString()),
   updatedAt: z.date().transform((arg) => arg.toISOString()),
 });
+
+export type Board = z.infer<typeof BoardSchema>;
