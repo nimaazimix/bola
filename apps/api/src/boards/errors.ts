@@ -5,4 +5,9 @@ export const BoardErrors = {
     code: "board.not_found",
     message: "Board is not found",
   },
+
+  CREATE_FORBIDDEN: {
+    code: "board.create_forbidden",
+    message: "You do not have permission to create boards in this workspace",
+  },
 } satisfies Record<string, ApiErrorPayload>;
