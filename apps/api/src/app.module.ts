@@ -5,6 +5,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { MailModule } from "./mail/mail.module";
 import { AuthModule } from "./auth/auth.module";
 import { WorkspacesModule } from "./workspaces/workspaces.module";
+import { BoardsModule } from "./boards/boards.module";
 
 @Module({
   providers: AppProviders,
@@ -14,6 +15,7 @@ import { WorkspacesModule } from "./workspaces/workspaces.module";
     MailModule,
     AuthModule,
     WorkspacesModule,
+    BoardsModule,
   ],
 })
 export class AppModule {}
