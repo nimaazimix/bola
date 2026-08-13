@@ -15,9 +15,8 @@ export function Breadcrumbs() {
   const breadcrumbs = matches
     .filter((match) => match.staticData.title)
     .map((match) => {
-      const staticTitle = match.staticData.title;
       return {
-        title: staticTitle === "Board" ? (match.loaderData?.name ?? staticTitle) : staticTitle,
+        title: match.staticData.title!(match.loaderData),
         url: match.pathname,
       };
     });
