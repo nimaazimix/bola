@@ -14,10 +14,12 @@ export function Breadcrumbs() {
 
   const breadcrumbs = matches
     .filter((match) => match.staticData.title)
-    .map((match) => ({
-      title: match.staticData.title,
-      url: match.pathname,
-    }));
+    .map((match) => {
+      return {
+        title: match.staticData.title!(match.loaderData),
+        url: match.pathname,
+      };
+    });
 
   return (
     <Breadcrumb>

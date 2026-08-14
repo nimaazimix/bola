@@ -15,14 +15,17 @@ import {
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
-import { Link, useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
 import { capitalize, getInitial } from "#/shared/lib/string";
 
-export function WorkspaceSwitcher() {
+export interface WorkspaceSwitcherProps {
+  workspaceSlug: string;
+}
+
+export function WorkspaceSwitcher({ workspaceSlug }: WorkspaceSwitcherProps) {
   const { isMobile } = useSidebar();
-  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());
   const { data: activeWorkspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
