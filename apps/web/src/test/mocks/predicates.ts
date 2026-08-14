@@ -14,5 +14,9 @@ export const predicates = {
       checkSlug: `${API_URL}/workspaces/check-slug`,
       one: `${API_URL}/workspaces/:slug`,
     },
+    boards: {
+      all: `${API_URL}/workspaces/:workspaceSlug/boards`,
+      one: `${API_URL}/workspaces/:workspaceSlug/boards/:boardId`,
+    },
   },
 };
