@@ -1,7 +1,7 @@
-import { ApiError } from "#/shared/api/errors";
 import { ErrorState, type ErrorStateProps } from "#/shared/components/error-state";
 import { Button } from "@bola/ui/components/button";
 import { CloudOffIcon, DatabaseXIcon, TriangleAlert } from "lucide-react";
+import { ApiError } from "#/shared/api/errors";
 
 interface WorkspaceErrorStateProps {
   error: unknown;
