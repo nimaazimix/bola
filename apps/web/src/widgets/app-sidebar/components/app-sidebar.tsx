@@ -10,7 +10,7 @@ export function AppSidebar() {
   const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar variant="inset">
       <SidebarHeader>
         <WorkspaceSwitcher workspaceSlug={workspaceSlug} />
       </SidebarHeader>
