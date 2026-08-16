@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/
 
 function RouteComponent() {
   return (
-    <div className="h-[calc(100svh-4rem)] group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-3rem)]">
+    <div className="h-[calc(100svh-5rem)]">
       <BoardViewport />;
     </div>
   );

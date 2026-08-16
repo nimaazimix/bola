@@ -4,7 +4,7 @@ import { Breadcrumbs } from "./breadcrumbs";
 
 export function AppHeader() {
   return (
-    <header className="flex h-16 items-center border-b group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+    <header className="flex h-16 items-center border-b">
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator

@@ -38,7 +38,7 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
 
       <SidebarGroupContent>
         <SidebarMenu className="gap-0.5">
-          {boards.slice(0, 5).map((board) => (
+          {boards.map((board) => (
             <SidebarMenuItem key={board.name}>
               <SidebarMenuButton asChild>
                 <Link
