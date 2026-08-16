@@ -30,7 +30,7 @@ function RouteComponent() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="p-4">
+        <main className="w-full overflow-hidden">
           <Outlet />
         </main>
       </SidebarInset>

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   SidebarGroup,
   SidebarGroupAction,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -23,11 +24,11 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Boards</SidebarGroupLabel>
+      <SidebarGroupLabel>Recent</SidebarGroupLabel>
 
       <SidebarGroupAction>
         <CreateBoardDialog
-          trigger={<PlusIcon />}
+          trigger={<PlusIcon className="text-muted-foreground" />}
           workspaceSlug={workspaceSlug}
           onCreateBoard={(boardId) =>
             navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
@@ -35,24 +36,26 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
         />
       </SidebarGroupAction>
 
-      <SidebarMenu>
-        {boards.map((board) => (
-          <SidebarMenuItem key={board.name}>
-            <SidebarMenuButton asChild>
-              <Link
-                from="/$workspaceSlug"
-                to="/$workspaceSlug/boards/$boardId"
-                params={{ boardId: board.id }}
-                activeProps={{
-                  className: "bg-sidebar-accent text-sidebar-accent-foreground border",
-                }}
-              >
-                <span>{board.name}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
+      <SidebarGroupContent>
+        <SidebarMenu className="gap-0.5">
+          {boards.slice(0, 5).map((board) => (
+            <SidebarMenuItem key={board.name}>
+              <SidebarMenuButton asChild>
+                <Link
+                  from="/$workspaceSlug"
+                  to="/$workspaceSlug/boards/$boardId"
+                  params={{ boardId: board.id }}
+                  activeProps={{
+                    className: "bg-sidebar-accent text-sidebar-accent-foreground border",
+                  }}
+                >
+                  <span>{board.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
     </SidebarGroup>
   );
 }

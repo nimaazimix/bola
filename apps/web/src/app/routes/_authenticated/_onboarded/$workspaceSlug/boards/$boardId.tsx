@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { boardQueries } from "#/features/boards";
+import { BoardViewport } from "#/widgets/board-viewport";
 import type { Board } from "@bola/contracts/boards";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/$boardId")({
@@ -13,5 +14,9 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/
 });
 
 function RouteComponent() {
-  return <div></div>;
+  return (
+    <div className="h-[calc(100svh-4rem)] group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-3rem)]">
+      <BoardViewport />;
+    </div>
+  );
 }
