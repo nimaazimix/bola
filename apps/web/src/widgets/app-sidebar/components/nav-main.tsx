@@ -29,6 +29,7 @@ export function NavMain() {
                   activeProps={{
                     className: "bg-sidebar-accent text-sidebar-accent-foreground border",
                   }}
+                  activeOptions={{ exact: true }}
                 >
                   <item.icon />
                   <span>{item.title}</span>
