@@ -11,6 +11,7 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PrismaService, WorkspaceRole } from "src/prisma/prisma.service";
 import { WorkspacesService } from "src/workspaces/workspaces.service";
 import { AbilityFactory } from "src/casl/ability.factory";
+import { ApiResult } from "src/common/interceptors";
 import { BoardsService } from "./boards.service";
 
 describe("BoardsService", () => {
@@ -107,8 +108,9 @@ describe("BoardsService", () => {
   });
 
   describe("findAll", () => {
-    it("should return all boards scoped to the workspace", async () => {
+    it("should return paginated boards scoped to the workspace", async () => {
       // Arrange
+      const query = { page: 1, limit: 4 };
       const user = userFactory.build();
       const workspace = {
         ...workspaceFactory.build({ id: "wsp_id" }),
@@ -118,25 +120,37 @@ describe("BoardsService", () => {
 
       workspacesServiceMock.findOneAccessible.mockResolvedValue(workspace);
       prismaServiceMock.board.findMany.mockResolvedValue(boards);
+      prismaServiceMock.board.count.mockResolvedValue(3);
 
       // Act
-      const result = await service.findAll(workspace.slug, user);
+      const result = await service.findAll(workspace.slug, query, user);
 
       // Arrange
-      expect(result).toEqual(boards);
+      expect(result).toBeInstanceOf(ApiResult);
+      expect(result).toEqual({
+        data: boards,
+        meta: {
+          pagination: { page: 1, limit: 4, total: 3 },
+        },
+      });
       expect(prismaServiceMock.board.findMany).toHaveBeenCalledWith({
         where: { workspaceId: workspace.id },
+
+        orderBy: { createdAt: "desc" },
+        skip: 0,
+        take: 4,
       });
     });
 
     it("should throw exceptions from findOneAccessible", async () => {
       // Arrange
+      const query = { page: 1, limit: 4 };
       const user = userFactory.build();
       const error = new NotFoundException();
       workspacesServiceMock.findOneAccessible.mockRejectedValue(error);
 
       // Act, Assert
-      await expect(service.findAll("acme", user)).rejects.toThrow(error);
+      await expect(service.findAll("acme", query, user)).rejects.toThrow(error);
     });
   });
 
