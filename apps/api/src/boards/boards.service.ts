@@ -3,7 +3,7 @@ import { PrismaService, User } from "src/prisma/prisma.service";
 import { WorkspacesService } from "src/workspaces/workspaces.service";
 import { AbilityFactory } from "src/casl/ability.factory";
 import { Action } from "src/common/constants";
-import { CreateBoardDto } from "./dto";
+import { BoardListQueryDto, CreateBoardDto } from "./dto";
 import { BoardErrors } from "./errors";
 
 @Injectable()
@@ -30,12 +30,22 @@ export class BoardsService {
     });
   }
 
-  async findAll(workspaceSlug: string, user: User) {
+  async findAll(workspaceSlug: string, query: BoardListQueryDto, user: User) {
     const workspace = await this.workspacesService.findOneAccessible(workspaceSlug, user);
 
-    return this.prismaService.board.findMany({
-      where: { workspaceId: workspace.id },
-    });
+    const [data, total] = await Promise.all([
+      this.prismaService.board.findMany({
+        where: { workspaceId: workspace.id },
+
+        orderBy: { createdAt: "desc" },
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      this.prismaService.board.count(),
+    ]);
+
+    // TODO: return page, limit, total as meta
+    return data;
   }
 
   async findOne(boardId: string, workspaceSlug: string, user: User) {
