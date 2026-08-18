@@ -1,4 +1,4 @@
-import { ApiErrorPayload } from "@bola/contracts/api";
+import { ApiError } from "@bola/contracts/api";
 
 export const BoardErrors = {
   NOT_FOUND: {
@@ -10,4 +10,4 @@ export const BoardErrors = {
     code: "board.create_forbidden",
     message: "You do not have permission to create boards in this workspace",
   },
-} satisfies Record<string, ApiErrorPayload>;
+} satisfies Record<string, ApiError>;

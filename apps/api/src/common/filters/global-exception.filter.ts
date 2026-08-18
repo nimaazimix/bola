@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from "@nestjs/common";
-import { ApiError, ApiErrorPayload } from "@bola/contracts/api";
+import { ApiFailure, ApiError } from "@bola/contracts/api";
 import { Response } from "express";
 
 @Catch()
@@ -12,7 +12,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse<Response>();
 
     let status = 500;
-    let error: ApiErrorPayload = {
+    let error: ApiError = {
       code: "common.internal_error",
       message: "Something went wrong",
     };
@@ -27,7 +27,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           message: payload,
         };
       } else {
-        const typedPayload = payload as Partial<ApiErrorPayload>;
+        const typedPayload = payload as Partial<ApiError>;
         error = {
           code: typedPayload.code ?? "common.unknown_error",
           message: typedPayload.message ?? exception.message.slice(0, -10),
@@ -39,6 +39,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     response.status(status).json({
       success: false,
       error,
-    } satisfies ApiError);
+    } satisfies ApiFailure);
   }
 }

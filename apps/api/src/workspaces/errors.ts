@@ -1,4 +1,4 @@
-import { ApiErrorPayload } from "@bola/contracts/api";
+import { ApiError } from "@bola/contracts/api";
 
 export const WorkspaceErrors = {
   SLUG_ALREADY_IN_USE: {
@@ -10,4 +10,4 @@ export const WorkspaceErrors = {
     code: "workspace.not_found",
     message: "Workspace is not found",
   },
-} satisfies Record<string, ApiErrorPayload>;
+} satisfies Record<string, ApiError>;

@@ -3,6 +3,7 @@ import { PrismaService, User } from "src/prisma/prisma.service";
 import { WorkspacesService } from "src/workspaces/workspaces.service";
 import { AbilityFactory } from "src/casl/ability.factory";
 import { Action } from "src/common/constants";
+import { ApiResult } from "src/common/interceptors";
 import { BoardListQueryDto, CreateBoardDto } from "./dto";
 import { BoardErrors } from "./errors";
 
@@ -44,8 +45,13 @@ export class BoardsService {
       this.prismaService.board.count(),
     ]);
 
-    // TODO: return page, limit, total as meta
-    return data;
+    return new ApiResult(data, {
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+      },
+    });
   }
 
   async findOne(boardId: string, workspaceSlug: string, user: User) {
