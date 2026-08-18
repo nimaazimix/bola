@@ -9,11 +9,9 @@ describe("CreateBoardDialog", () => {
     // Arrange
     const onCreateBoard = vi.fn();
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 
@@ -40,11 +38,9 @@ describe("CreateBoardDialog", () => {
 
     const onCreateBoard = vi.fn();
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 
@@ -72,11 +68,9 @@ describe("CreateBoardDialog", () => {
 
     const onCreateBoard = vi.fn();
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 
@@ -111,11 +105,9 @@ describe("CreateBoardDialog", () => {
 
     const onCreateBoard = vi.fn();
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 
@@ -135,11 +127,9 @@ describe("CreateBoardDialog", () => {
     // Arrange
     const onCreateBoard = vi.fn().mockThrow(new Error());
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 
@@ -166,11 +156,9 @@ describe("CreateBoardDialog", () => {
 
     const onCreateBoard = vi.fn();
     render(
-      <CreateBoardDialog
-        trigger={<button>Open Dialog</button>}
-        workspaceSlug="acme"
-        onCreateBoard={onCreateBoard}
-      />,
+      <CreateBoardDialog workspaceSlug="acme" onCreateBoard={onCreateBoard}>
+        <button>Open Dialog</button>
+      </CreateBoardDialog>,
     );
     const user = userEvent.setup();
 

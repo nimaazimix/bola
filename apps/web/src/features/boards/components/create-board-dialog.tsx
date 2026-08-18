@@ -12,23 +12,22 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@bola/ui/components/f
 import { Input } from "@bola/ui/components/input";
 import { Button } from "@bola/ui/components/button";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { CreateBoardSchema } from "@bola/contracts/boards";
 import { useCreateBoard } from "../hooks/use-create-board";
 import { ApiError } from "#/shared/api/errors";
 import { toast } from "sonner";
 
-interface CreateBoardDialogProps {
-  trigger: React.ReactNode;
+interface CreateBoardDialogProps extends React.PropsWithChildren {
   workspaceSlug: string;
   onCreateBoard: (boardId: string) => void;
 }
 
 export function CreateBoardDialog({
-  trigger,
   workspaceSlug,
   onCreateBoard,
+  children,
 }: CreateBoardDialogProps) {
   const [open, setOpen] = useState(false);
   const { mutateAsync: CreateBoard } = useCreateBoard(workspaceSlug);
@@ -59,8 +58,8 @@ export function CreateBoardDialog({
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create board</DialogTitle>
           <DialogDescription>

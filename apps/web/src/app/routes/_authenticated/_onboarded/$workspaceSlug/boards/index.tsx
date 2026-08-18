@@ -22,17 +22,16 @@ function RouteComponent() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">{workspace.name}'s boards</h1>
           <CreateBoardDialog
-            trigger={
-              <Button>
-                <PlusIcon />
-                Create board
-              </Button>
-            }
             workspaceSlug={workspaceSlug}
             onCreateBoard={(boardId) =>
               navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
             }
-          />
+          >
+            <Button>
+              <PlusIcon />
+              Create board
+            </Button>
+          </CreateBoardDialog>
         </div>
         <p className="text-muted-foreground text-sm">
           Discover and search all the boards available in this workspace

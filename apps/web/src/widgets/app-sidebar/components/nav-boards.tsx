@@ -28,12 +28,13 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
 
       <SidebarGroupAction>
         <CreateBoardDialog
-          trigger={<PlusIcon className="text-muted-foreground" />}
           workspaceSlug={workspaceSlug}
           onCreateBoard={(boardId) =>
             navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
           }
-        />
+        >
+          <PlusIcon className="text-muted-foreground" />
+        </CreateBoardDialog>
       </SidebarGroupAction>
 
       <SidebarGroupContent>
