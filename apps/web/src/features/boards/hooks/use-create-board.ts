@@ -9,14 +9,8 @@ export function useCreateBoard(workspaceSlug: string) {
   return useMutation({
     mutationFn: ({ input }: { input: CreateBoardInput }) => postBoard(workspaceSlug, input),
 
-    onSuccess: (board) => {
-      queryClient.setQueryData(boardQueries.list(workspaceSlug).queryKey, (oldData) => {
-        if (!oldData) {
-          return [board];
-        }
-
-        return [...oldData, board];
-      });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: boardQueries.list(workspaceSlug).queryKey });
     },
   });
 }

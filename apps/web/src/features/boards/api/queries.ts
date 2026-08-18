@@ -1,14 +1,15 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getBoard, getBoards } from "./requests";
+import type { BoardListQueryIn } from "@bola/contracts/boards";
 
 export const boardQueries = {
   all: ["boards"],
 
   lists: () => [...boardQueries.all, "list"],
-  list: (workspacesSlug: string) =>
+  list: (workspacesSlug: string, query?: BoardListQueryIn) =>
     queryOptions({
-      queryKey: [...boardQueries.lists(), workspacesSlug],
-      queryFn: () => getBoards(workspacesSlug),
+      queryKey: [...boardQueries.lists(), workspacesSlug, query],
+      queryFn: () => getBoards(workspacesSlug, query),
     }),
 
   details: () => [...boardQueries.all, "detail"],

@@ -23,6 +23,7 @@ import { Route as AuthenticatedOnboardedWorkspaceSlugSettingsRouteImport } from 
 import { Route as AuthenticatedOnboardedWorkspaceSlugInboxRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/inbox'
 import { Route as AuthenticatedOnboardedWorkspaceSlugHomeRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/home'
 import { Route as AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/boards/route'
+import { Route as AuthenticatedOnboardedWorkspaceSlugBoardsIndexRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/boards/index'
 import { Route as AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/boards/$boardId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -99,6 +100,12 @@ const AuthenticatedOnboardedWorkspaceSlugBoardsRouteRoute =
     path: '/boards',
     getParentRoute: () => AuthenticatedOnboardedWorkspaceSlugRouteRoute,
   } as any)
+const AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute =
+  AuthenticatedOnboardedWorkspaceSlugBoardsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOnboardedWorkspaceSlugBoardsRouteRoute,
+  } as any)
 const AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute =
   AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRouteImport.update({
     id: '/$boardId',
@@ -119,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/$workspaceSlug/': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
   '/$workspaceSlug/boards/$boardId': typeof AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute
+  '/$workspaceSlug/boards/': typeof AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -126,12 +134,12 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/signin': typeof GuestSigninRoute
   '/signup': typeof GuestSignupRoute
-  '/$workspaceSlug/boards': typeof AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteWithChildren
   '/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   '/$workspaceSlug/inbox': typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   '/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
   '/$workspaceSlug/boards/$boardId': typeof AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute
+  '/$workspaceSlug/boards': typeof AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/_onboarded/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
   '/_authenticated/_onboarded/$workspaceSlug/': typeof AuthenticatedOnboardedWorkspaceSlugIndexRoute
   '/_authenticated/_onboarded/$workspaceSlug/boards/$boardId': typeof AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute
+  '/_authenticated/_onboarded/$workspaceSlug/boards/': typeof AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/$workspaceSlug/settings'
     | '/$workspaceSlug/'
     | '/$workspaceSlug/boards/$boardId'
+    | '/$workspaceSlug/boards/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -173,12 +183,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/signin'
     | '/signup'
-    | '/$workspaceSlug/boards'
     | '/$workspaceSlug/home'
     | '/$workspaceSlug/inbox'
     | '/$workspaceSlug/settings'
     | '/$workspaceSlug'
     | '/$workspaceSlug/boards/$boardId'
+    | '/$workspaceSlug/boards'
   id:
     | '__root__'
     | '/'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_onboarded/$workspaceSlug/settings'
     | '/_authenticated/_onboarded/$workspaceSlug/'
     | '/_authenticated/_onboarded/$workspaceSlug/boards/$boardId'
+    | '/_authenticated/_onboarded/$workspaceSlug/boards/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -305,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteImport
       parentRoute: typeof AuthenticatedOnboardedWorkspaceSlugRouteRoute
     }
+    '/_authenticated/_onboarded/$workspaceSlug/boards/': {
+      id: '/_authenticated/_onboarded/$workspaceSlug/boards/'
+      path: '/'
+      fullPath: '/$workspaceSlug/boards/'
+      preLoaderRoute: typeof AuthenticatedOnboardedWorkspaceSlugBoardsIndexRouteImport
+      parentRoute: typeof AuthenticatedOnboardedWorkspaceSlugBoardsRouteRoute
+    }
     '/_authenticated/_onboarded/$workspaceSlug/boards/$boardId': {
       id: '/_authenticated/_onboarded/$workspaceSlug/boards/$boardId'
       path: '/$boardId'
@@ -317,12 +335,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteChildren {
   AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute: typeof AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute
+  AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute: typeof AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute
 }
 
 const AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteChildren: AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteChildren =
   {
     AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute:
       AuthenticatedOnboardedWorkspaceSlugBoardsBoardIdRoute,
+    AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute:
+      AuthenticatedOnboardedWorkspaceSlugBoardsIndexRoute,
   }
 
 const AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteWithChildren =

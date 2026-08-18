@@ -24,7 +24,7 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recent</SidebarGroupLabel>
+      <SidebarGroupLabel>Boards</SidebarGroupLabel>
 
       <SidebarGroupAction>
         <CreateBoardDialog

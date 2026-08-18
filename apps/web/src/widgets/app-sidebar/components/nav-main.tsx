@@ -6,12 +6,11 @@ import {
   SidebarMenuItem,
 } from "@bola/ui/components/sidebar";
 import { Link } from "@tanstack/react-router";
-import { FolderKanbanIcon, InboxIcon, LayoutDashboardIcon, SettingsIcon } from "lucide-react";
+import { InboxIcon, LayoutDashboardIcon, SettingsIcon } from "lucide-react";
 
 const items = [
   { title: "Home", url: "/home", icon: LayoutDashboardIcon },
   { title: "Inbox", url: "/inbox", icon: InboxIcon },
-  { title: "Boards", url: "/boards", icon: FolderKanbanIcon },
   { title: "Settings", url: "/settings", icon: SettingsIcon },
 ];
 
@@ -29,7 +28,6 @@ export function NavMain() {
                   activeProps={{
                     className: "bg-sidebar-accent text-sidebar-accent-foreground border",
                   }}
-                  activeOptions={{ exact: true }}
                 >
                   <item.icon />
                   <span>{item.title}</span>
