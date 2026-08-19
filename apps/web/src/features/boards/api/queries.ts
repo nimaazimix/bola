@@ -12,10 +12,10 @@ export const boardQueries = {
       queryFn: () => getBoards(workspaceSlug, { limit }).then((page) => page.data),
     }),
 
-  infinite: (workspaceSlug: string, limit?: number) =>
+  infinite: (workspaceSlug: string, q?: string, limit?: number) =>
     infiniteQueryOptions({
-      queryKey: [...boardQueries.lists(workspaceSlug), "infinite", { limit }],
-      queryFn: ({ pageParam }) => getBoards(workspaceSlug, { limit, cursor: pageParam }),
+      queryKey: [...boardQueries.lists(workspaceSlug), "infinite", { q, limit }],
+      queryFn: ({ pageParam }) => getBoards(workspaceSlug, { q, limit, cursor: pageParam }),
       initialPageParam: "",
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }),

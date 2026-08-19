@@ -7,11 +7,12 @@ import { Button } from "@bola/ui/components/button";
 
 interface BoardListProps {
   workspaceSlug: string;
+  q?: string;
 }
 
-export function BoardList({ workspaceSlug }: BoardListProps) {
+export function BoardList({ q, workspaceSlug }: BoardListProps) {
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug));
+    useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
   return (
     <div className="grid gap-4">

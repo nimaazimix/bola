@@ -35,7 +35,15 @@ export class BoardsService {
     const workspace = await this.workspacesService.findOneAccessible(workspaceSlug, user);
 
     const boards = await this.prismaService.board.findMany({
-      where: { workspaceId: workspace.id },
+      where: {
+        workspaceId: workspace.id,
+        ...(query.q && {
+          name: {
+            contains: query.q,
+            mode: "insensitive",
+          },
+        }),
+      },
 
       orderBy: { createdAt: "desc" },
       cursor: query.cursor ? { id: query.cursor } : undefined, // Start from the cursor
