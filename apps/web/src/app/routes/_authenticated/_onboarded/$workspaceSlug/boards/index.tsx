@@ -35,7 +35,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="space-y-8 p-4">
+    <div className="flex min-h-[calc(100svh-5rem)] flex-col gap-8 p-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">{workspace.name}'s boards</h1>
@@ -56,7 +56,7 @@ function RouteComponent() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="flex flex-1 flex-col space-y-4">
         <InputGroup className="max-w-md">
           <InputGroupAddon>
             <SearchIcon />

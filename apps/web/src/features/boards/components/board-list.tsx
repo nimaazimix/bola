@@ -4,6 +4,7 @@ import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { boardQueries } from "../api/queries";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "@bola/ui/components/button";
+import { BoardListEmpty } from "./board-list-empty";
 
 interface BoardListProps {
   workspaceSlug: string;
@@ -14,9 +15,13 @@ export function BoardList({ q, workspaceSlug }: BoardListProps) {
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
+  if (!data.pages[0]?.data.length) {
+    return <BoardListEmpty />;
+  }
+
   return (
     <div className="grid gap-4">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
         {data.pages.map((group, i) => (
           <Fragment key={i}>
             {group.data.map((board) => (
