@@ -10,7 +10,7 @@ export function useCreateBoard(workspaceSlug: string) {
     mutationFn: ({ input }: { input: CreateBoardInput }) => postBoard(workspaceSlug, input),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: boardQueries.list(workspaceSlug).queryKey });
+      queryClient.invalidateQueries({ queryKey: boardQueries.lists(workspaceSlug) });
     },
   });
 }

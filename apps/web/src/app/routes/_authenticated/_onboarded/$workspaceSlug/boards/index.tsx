@@ -1,4 +1,4 @@
-import { BoardList, CreateBoardDialog } from "#/features/boards";
+import { BoardList, boardQueries, CreateBoardDialog } from "#/features/boards";
 import { Search } from "#/shared/components/search";
 import { Button } from "@bola/ui/components/button";
 import { PlusIcon } from "lucide-react";
@@ -8,6 +8,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/")({
+  loader: async ({ context: { queryClient }, params }) => {
+    await queryClient.ensureInfiniteQueryData(boardQueries.infinite(params.workspaceSlug));
+  },
   component: RouteComponent,
 });
 

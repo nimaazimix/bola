@@ -11,7 +11,11 @@ export async function postBoard(workspaceSlug: string, input: CreateBoardInput) 
 export async function getBoards(workspaceSlug: string, query?: BoardListQueryIn) {
   return api
     .get<ApiSuccess<Board[]>>(`/workspaces/${workspaceSlug}/boards`, { params: query })
-    .then((res) => res.data.data);
+    .then((res) => ({
+      data: res.data.data,
+      nextCursor:
+        res.data.meta?.pagination?.type === "cursor" ? res.data.meta.pagination.nextCursor : null,
+    }));
 }
 
 export async function getBoard(workspaceSlug: string, boardId: string) {

@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug"
     await Promise.all([
       queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
-      queryClient.ensureQueryData(boardQueries.list(params.workspaceSlug)),
+      queryClient.ensureQueryData(boardQueries.recent(params.workspaceSlug)),
     ]);
   },
   component: RouteComponent,

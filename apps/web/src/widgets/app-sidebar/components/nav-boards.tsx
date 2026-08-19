@@ -20,7 +20,7 @@ export interface NavBoardsProps {
 
 export function NavBoards({ workspaceSlug }: NavBoardsProps) {
   const navigate = useNavigate({ from: "/$workspaceSlug" });
-  const { data: boards } = useSuspenseQuery(boardQueries.list(workspaceSlug));
+  const { data: boards } = useSuspenseQuery(boardQueries.recent(workspaceSlug));
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
