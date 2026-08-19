@@ -1,4 +1,4 @@
-import { ApiErrorPayload } from "@bola/contracts/api";
+import { ApiError } from "@bola/contracts/api";
 
 export const AuthErrors = {
   EMAIL_ALREADY_IN_USE: {
@@ -50,4 +50,4 @@ export const AuthErrors = {
     code: "auth.user_not_found",
     message: "Authenticated user no longer exists",
   },
-} satisfies Record<string, ApiErrorPayload>;
+} satisfies Record<string, ApiError>;

@@ -11,6 +11,7 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PrismaService, WorkspaceRole } from "src/prisma/prisma.service";
 import { WorkspacesService } from "src/workspaces/workspaces.service";
 import { AbilityFactory } from "src/casl/ability.factory";
+import { ApiResult } from "src/common/interceptors";
 import { BoardsService } from "./boards.service";
 
 describe("BoardsService", () => {
@@ -107,36 +108,50 @@ describe("BoardsService", () => {
   });
 
   describe("findAll", () => {
-    it("should return all boards scoped to the workspace", async () => {
+    it("should return paginated boards scoped to the workspace", async () => {
       // Arrange
       const user = userFactory.build();
       const workspace = {
         ...workspaceFactory.build({ id: "wsp_id" }),
         membership: WorkspaceMembershipFactory.build({ workspaceId: "wsp_id", userId: user.id }),
       };
-      const boards = boardFactory.buildList(3, { workspaceId: workspace.id });
+      const boards = boardFactory.buildList(5, { workspaceId: workspace.id });
+
+      const query = { limit: 2, cursor: boards[1]!.id };
 
       workspacesServiceMock.findOneAccessible.mockResolvedValue(workspace);
-      prismaServiceMock.board.findMany.mockResolvedValue(boards);
+      prismaServiceMock.board.findMany.mockResolvedValue(boards.slice(2, 5));
 
       // Act
-      const result = await service.findAll(workspace.slug, user);
+      const result = await service.findAll(workspace.slug, query, user);
 
       // Arrange
-      expect(result).toEqual(boards);
+      expect(result).toBeInstanceOf(ApiResult);
+      expect(result).toEqual({
+        data: boards.slice(2, 4),
+        meta: {
+          pagination: { type: "cursor", limit: 2, nextCursor: boards[3]!.id },
+        },
+      });
       expect(prismaServiceMock.board.findMany).toHaveBeenCalledWith({
         where: { workspaceId: workspace.id },
+
+        orderBy: { createdAt: "desc" },
+        cursor: { id: boards[1]!.id },
+        skip: 1,
+        take: 3,
       });
     });
 
     it("should throw exceptions from findOneAccessible", async () => {
       // Arrange
+      const query = { limit: 2 };
       const user = userFactory.build();
       const error = new NotFoundException();
       workspacesServiceMock.findOneAccessible.mockRejectedValue(error);
 
       // Act, Assert
-      await expect(service.findAll("acme", user)).rejects.toThrow(error);
+      await expect(service.findAll("acme", query, user)).rejects.toThrow(error);
     });
   });
 

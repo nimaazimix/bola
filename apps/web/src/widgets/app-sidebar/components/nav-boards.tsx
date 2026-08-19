@@ -20,20 +20,21 @@ export interface NavBoardsProps {
 
 export function NavBoards({ workspaceSlug }: NavBoardsProps) {
   const navigate = useNavigate({ from: "/$workspaceSlug" });
-  const { data: boards } = useSuspenseQuery(boardQueries.list(workspaceSlug));
+  const { data: boards } = useSuspenseQuery(boardQueries.recent(workspaceSlug));
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recent</SidebarGroupLabel>
+      <SidebarGroupLabel>Boards</SidebarGroupLabel>
 
       <SidebarGroupAction>
         <CreateBoardDialog
-          trigger={<PlusIcon className="text-muted-foreground" />}
           workspaceSlug={workspaceSlug}
           onCreateBoard={(boardId) =>
             navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
           }
-        />
+        >
+          <PlusIcon className="text-muted-foreground" />
+        </CreateBoardDialog>
       </SidebarGroupAction>
 
       <SidebarGroupContent>

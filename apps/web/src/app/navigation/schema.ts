@@ -7,3 +7,7 @@ export const AuthSearchSchema = z.object({
 export const VerifyEmailSearchSchema = AuthSearchSchema.extend({
   token: z.string().nonempty().optional().catch(undefined),
 });
+
+export const BoardsSearchSchema = z.object({
+  q: z.string().nonempty().optional().catch(undefined),
+});

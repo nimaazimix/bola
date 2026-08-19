@@ -5,8 +5,6 @@ import { workspaceQueries } from "#/features/workspaces";
 export async function resolveEntryRoute(redirect?: string) {
   const workspaces = await queryClient.ensureQueryData(workspaceQueries.list());
 
-  console.log(workspaces[0]);
-
   if (!workspaces.length) {
     return linkOptions({ to: "/onboarding" });
   }

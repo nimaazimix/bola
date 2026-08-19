@@ -1,5 +1,5 @@
 import { isAxiosError } from "axios";
-import type { ApiError as ResponseApiError } from "@bola/contracts/api";
+import type { ApiFailure } from "@bola/contracts/api";
 
 export type ApiErrorKind = "http" | "network" | "unknown";
 
@@ -39,7 +39,7 @@ export function toApiError(error: unknown): ApiError {
   }
 
   if (error.response) {
-    const data = error.response.data as ResponseApiError;
+    const data = error.response.data as ApiFailure;
 
     return new ApiError({
       kind: "http",
