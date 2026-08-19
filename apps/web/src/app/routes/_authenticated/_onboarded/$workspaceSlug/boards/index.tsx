@@ -35,7 +35,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex min-h-[calc(100svh-5rem)] flex-col gap-8 p-4">
+    <div className="@container flex min-h-[calc(100svh-5rem)] flex-col gap-8 p-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">{workspace.name}'s boards</h1>
@@ -45,7 +45,7 @@ function RouteComponent() {
               navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
             }
           >
-            <Button>
+            <Button className="@max-sm:hidden">
               <PlusIcon />
               Create board
             </Button>
@@ -54,6 +54,18 @@ function RouteComponent() {
         <p className="text-muted-foreground text-sm">
           Discover and search all the boards available in this workspace
         </p>
+
+        <CreateBoardDialog
+          workspaceSlug={workspaceSlug}
+          onCreateBoard={(boardId) =>
+            navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
+          }
+        >
+          <Button className="@sm:hidden">
+            <PlusIcon />
+            Create board
+          </Button>
+        </CreateBoardDialog>
       </div>
 
       <div className="flex flex-1 flex-col space-y-4">
