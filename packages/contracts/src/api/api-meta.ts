@@ -1,14 +1,8 @@
 import z from "zod";
+import { PaginationMetaSchema } from "./pagination-meta";
 
 export const ApiMetaSchema = z.object({
-  pagination: z
-    .object({
-      page: z.number(),
-      limit: z.number(),
-      total: z.number(),
-    })
-    .optional(),
+  pagination: PaginationMetaSchema.optional(),
 });
 
 export type ApiMeta = z.infer<typeof ApiMetaSchema>;
-export type PaginationMeta = ApiMeta["pagination"];

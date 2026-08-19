@@ -34,22 +34,26 @@ export class BoardsService {
   async findAll(workspaceSlug: string, query: BoardListQueryDto, user: User) {
     const workspace = await this.workspacesService.findOneAccessible(workspaceSlug, user);
 
-    const [data, total] = await Promise.all([
-      this.prismaService.board.findMany({
-        where: { workspaceId: workspace.id },
+    const boards = await this.prismaService.board.findMany({
+      where: { workspaceId: workspace.id },
 
-        orderBy: { createdAt: "desc" },
-        skip: (query.page - 1) * query.limit,
-        take: query.limit,
-      }),
-      this.prismaService.board.count(),
-    ]);
+      orderBy: { createdAt: "desc" },
+      cursor: query.cursor ? { id: query.cursor } : undefined, // Start from the cursor
+      skip: query.cursor ? 1 : undefined, // Skip the cursor itself
+      take: query.limit + 1, // Fetch extra to check the next page
+    });
 
-    return new ApiResult(data, {
+    const hasNextPage = boards.length > query.limit;
+
+    // Drop the extra item if there is a next page
+    const results = hasNextPage ? boards.slice(0, query.limit) : boards;
+    const nextCursor = hasNextPage ? results.at(-1)!.id : null;
+
+    return new ApiResult(results, {
       pagination: {
-        page: query.page,
+        type: "cursor",
         limit: query.limit,
-        total,
+        nextCursor,
       },
     });
   }

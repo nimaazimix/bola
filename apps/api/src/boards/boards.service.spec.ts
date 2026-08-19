@@ -110,17 +110,17 @@ describe("BoardsService", () => {
   describe("findAll", () => {
     it("should return paginated boards scoped to the workspace", async () => {
       // Arrange
-      const query = { page: 1, limit: 4 };
       const user = userFactory.build();
       const workspace = {
         ...workspaceFactory.build({ id: "wsp_id" }),
         membership: WorkspaceMembershipFactory.build({ workspaceId: "wsp_id", userId: user.id }),
       };
-      const boards = boardFactory.buildList(3, { workspaceId: workspace.id });
+      const boards = boardFactory.buildList(5, { workspaceId: workspace.id });
+
+      const query = { limit: 2, cursor: boards[1]!.id };
 
       workspacesServiceMock.findOneAccessible.mockResolvedValue(workspace);
-      prismaServiceMock.board.findMany.mockResolvedValue(boards);
-      prismaServiceMock.board.count.mockResolvedValue(3);
+      prismaServiceMock.board.findMany.mockResolvedValue(boards.slice(2, 5));
 
       // Act
       const result = await service.findAll(workspace.slug, query, user);
@@ -128,23 +128,24 @@ describe("BoardsService", () => {
       // Arrange
       expect(result).toBeInstanceOf(ApiResult);
       expect(result).toEqual({
-        data: boards,
+        data: boards.slice(2, 4),
         meta: {
-          pagination: { page: 1, limit: 4, total: 3 },
+          pagination: { type: "cursor", limit: 2, nextCursor: boards[3]!.id },
         },
       });
       expect(prismaServiceMock.board.findMany).toHaveBeenCalledWith({
         where: { workspaceId: workspace.id },
 
         orderBy: { createdAt: "desc" },
-        skip: 0,
-        take: 4,
+        cursor: { id: boards[1]!.id },
+        skip: 1,
+        take: 3,
       });
     });
 
     it("should throw exceptions from findOneAccessible", async () => {
       // Arrange
-      const query = { page: 1, limit: 4 };
+      const query = { limit: 2 };
       const user = userFactory.build();
       const error = new NotFoundException();
       workspacesServiceMock.findOneAccessible.mockRejectedValue(error);
