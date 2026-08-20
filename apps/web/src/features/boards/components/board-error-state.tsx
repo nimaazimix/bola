@@ -1,4 +1,4 @@
-import { ErrorState, type ErrorStateProps } from "#/shared/components/error-state";
+// import { ErrorState, type ErrorStateProps } from "#/shared/components/error-state";
 import { Button } from "@bola/ui/components/button";
 import { CloudOffIcon, DatabaseXIcon, TriangleAlert } from "lucide-react";
 import { ApiError } from "#/shared/api/errors";
@@ -10,10 +10,10 @@ interface BoardErrorStateProps {
 }
 
 export function BoardErrorState(props: BoardErrorStateProps) {
-  return <ErrorState {...getErrorStateProps(props)} className="h-[calc(100svh-5rem)]" />;
+  // return <ErrorState {...getErrorStateProps(props)} className="h-[calc(100svh-5rem)]" />;
 }
 
-function getErrorStateProps({ error, onRetry }: BoardErrorStateProps): ErrorStateProps {
+function getErrorStateProps({ error, onRetry }: BoardErrorStateProps) {
   if (error instanceof ApiError) {
     if (error.status === 404) {
       return {

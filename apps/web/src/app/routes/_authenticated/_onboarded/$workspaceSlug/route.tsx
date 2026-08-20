@@ -1,6 +1,7 @@
-import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
 import { AppHeader } from "#/widgets/app-header";
 import { AppSidebar } from "#/widgets/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
+import { Loader } from "@bola/ui/components/loader";
 
 import {
   createFileRoute,
@@ -8,20 +9,20 @@ import {
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { WorkspaceErrorState, workspaceQueries } from "#/features/workspaces";
+import { WorkspaceError, workspaceQueries } from "#/features/workspaces";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
-import { boardQueries } from "#/features/boards";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
-      queryClient.ensureQueryData(boardQueries.recent(params.workspaceSlug)),
     ]);
   },
-  component: RouteComponent,
+  pendingMs: 0,
+  pendingComponent: PendingComponent,
   errorComponent: ErrorComponent,
+  component: RouteComponent,
 });
 
 function RouteComponent() {
@@ -42,16 +43,22 @@ function ErrorComponent({ error }: ErrorComponentProps) {
   const navigate = Route.useNavigate();
   const router = useRouter();
 
-  async function handleNavigate() {
+  async function handleGoHome() {
     const entry = await resolveEntryRoute();
     navigate(entry);
   }
 
   return (
-    <WorkspaceErrorState
-      error={error}
-      onNavigate={handleNavigate}
-      onRetry={() => router.invalidate()}
-    />
+    <div className="centered h-dvh">
+      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={() => router.invalidate()} />
+    </div>
+  );
+}
+
+function PendingComponent() {
+  return (
+    <div className="centered h-dvh">
+      <Loader />
+    </div>
   );
 }
