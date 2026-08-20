@@ -21,7 +21,7 @@ export function BoardList({ q, workspaceSlug }: BoardListProps) {
 
   return (
     <div className="grid gap-4">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
         {data.pages.map((group, i) => (
           <Fragment key={i}>
             {group.data.map((board) => (
