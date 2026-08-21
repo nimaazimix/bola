@@ -1,12 +1,13 @@
-import { BoardList, boardQueries, CreateBoardDialog } from "#/features/boards";
+import { BoardList, boardQueries, BoardsError, CreateBoardDialog } from "#/features/boards";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@bola/ui/components/input-group";
 import { Button } from "@bola/ui/components/button";
 import { PlusIcon, SearchIcon } from "lucide-react";
 
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { BoardsSearchSchema } from "#/app/navigation/schema";
 import { workspaceQueries } from "#/features/workspaces";
+import { Loader } from "@bola/ui/components/loader";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/")({
   validateSearch: BoardsSearchSchema,
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/
   loader: async ({ context: { queryClient }, params, deps }) => {
     await queryClient.ensureInfiniteQueryData(boardQueries.infinite(params.workspaceSlug, deps.q));
   },
+  pendingComponent: PendingComponent,
+  errorComponent: ErrorComponent,
   component: RouteComponent,
 });
 
@@ -81,6 +84,24 @@ function RouteComponent() {
         </InputGroup>
         <BoardList workspaceSlug={workspaceSlug} q={search.q} />
       </div>
+    </div>
+  );
+}
+
+function ErrorComponent({ error }: ErrorComponentProps) {
+  const router = useRouter();
+
+  return (
+    <div className="centered h-[calc(100svh-5rem)]">
+      <BoardsError error={error} onRetry={router.invalidate} />
+    </div>
+  );
+}
+
+function PendingComponent() {
+  return (
+    <div className="centered h-[calc(100svh-5rem)]">
+      <Loader />
     </div>
   );
 }

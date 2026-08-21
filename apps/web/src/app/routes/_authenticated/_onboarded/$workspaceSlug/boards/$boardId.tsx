@@ -1,7 +1,7 @@
 import { BoardViewport } from "#/widgets/board-viewport";
-import { BoardErrorState, boardQueries } from "#/features/boards";
+import { boardQueries } from "#/features/boards";
 
-import { createFileRoute, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import type { Board } from "@bola/contracts/boards";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/$boardId")({
@@ -12,7 +12,6 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/
     title: (loaderData) => (loaderData as Board)?.name || "Error",
   },
   component: RouteComponent,
-  errorComponent: ErrorComponent,
 });
 
 function RouteComponent() {
@@ -21,10 +20,4 @@ function RouteComponent() {
       <BoardViewport />;
     </div>
   );
-}
-
-function ErrorComponent({ error }: ErrorComponentProps) {
-  const router = useRouter();
-
-  return <BoardErrorState error={error} onRetry={() => router.invalidate()} />;
 }

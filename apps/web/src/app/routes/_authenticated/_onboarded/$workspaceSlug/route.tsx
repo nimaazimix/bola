@@ -19,7 +19,6 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug"
       queryClient.ensureQueryData(workspaceQueries.list()),
     ]);
   },
-  pendingMs: 0,
   pendingComponent: PendingComponent,
   errorComponent: ErrorComponent,
   component: RouteComponent,

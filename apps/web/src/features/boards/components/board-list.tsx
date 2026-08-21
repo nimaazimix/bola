@@ -4,7 +4,9 @@ import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { boardQueries } from "../api/queries";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "@bola/ui/components/button";
-import { BoardListEmpty } from "./board-list-empty";
+import { BoardsEmpty } from "./boards-empty";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { CreateBoardDialog } from "./create-board-dialog";
 
 interface BoardListProps {
   workspaceSlug: string;
@@ -12,11 +14,37 @@ interface BoardListProps {
 }
 
 export function BoardList({ q, workspaceSlug }: BoardListProps) {
+  const navigate = useNavigate({ from: "/$workspaceSlug/boards" });
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
   if (!data.pages[0]?.data.length) {
-    return <BoardListEmpty />;
+    if (q) {
+      return (
+        <BoardsEmpty
+          title="No boards found"
+          description="We couldn't find any board you're looking for. Clear your search to see all available boards."
+        >
+          <Button asChild>
+            <Link from="/$workspaceSlug/boards" to="." search={{ q: undefined }}>
+              Clear search
+            </Link>
+          </Button>
+        </BoardsEmpty>
+      );
+    }
+    return (
+      <BoardsEmpty>
+        <CreateBoardDialog
+          workspaceSlug={workspaceSlug}
+          onCreateBoard={(boardId) =>
+            navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
+          }
+        >
+          <Button>Create board</Button>
+        </CreateBoardDialog>
+      </BoardsEmpty>
+    );
   }
 
   return (
