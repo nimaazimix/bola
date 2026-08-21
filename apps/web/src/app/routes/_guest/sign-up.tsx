@@ -1,4 +1,5 @@
 import { SignUp } from "#/features/auth";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthSearchSchema } from "#/app/navigation/schema";
 
@@ -11,7 +12,7 @@ function RouteComponent() {
   const { redirect } = Route.useSearch();
 
   return (
-    <div className="centered min-h-svh">
+    <div className="centered min-h-dvh">
       <SignUp redirect={redirect} />
     </div>
   );

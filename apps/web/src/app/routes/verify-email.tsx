@@ -1,7 +1,7 @@
 import { Loader } from "@bola/ui/components/loader";
 
-import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useVerifyEmail } from "#/features/auth";
 import { VerifyEmailSearchSchema } from "../navigation/schema";
 import { resolveEntryRoute } from "../navigation/resolve-entry-route";
@@ -37,7 +37,7 @@ function RouteComponent() {
   }, [navigate, redirect, token, verifyEmail]);
 
   return (
-    <div className="centered min-h-screen">
+    <div className="centered min-h-dvh">
       <Loader />
     </div>
   );

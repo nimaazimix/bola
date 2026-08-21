@@ -1,7 +1,7 @@
-import { AppHeader } from "#/widgets/app-header";
-import { AppSidebar } from "#/widgets/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
 import { Loader } from "@bola/ui/components/loader";
+import { AppSidebar } from "#/widgets/app-sidebar";
+import { AppHeader } from "#/widgets/app-header";
 
 import {
   createFileRoute,
@@ -30,7 +30,7 @@ function RouteComponent() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="w-full overflow-hidden">
+        <main className="w-full flex-1 overflow-hidden">
           <Outlet />
         </main>
       </SidebarInset>
@@ -48,15 +48,15 @@ function ErrorComponent({ error }: ErrorComponentProps) {
   }
 
   return (
-    <div className="centered h-dvh">
-      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={() => router.invalidate()} />
+    <div className="centered min-h-dvh">
+      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
     </div>
   );
 }
 
 function PendingComponent() {
   return (
-    <div className="centered h-dvh">
+    <div className="centered min-h-dvh">
       <Loader />
     </div>
   );

@@ -1,22 +1,26 @@
 import { BoardCard } from "./board-card";
 
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { boardQueries } from "../api/queries";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "@bola/ui/components/button";
 import { BoardsEmpty } from "./boards-empty";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { CreateBoardDialog } from "./create-board-dialog";
 
 interface BoardListProps {
-  workspaceSlug: string;
   q?: string;
 }
 
-export function BoardList({ q, workspaceSlug }: BoardListProps) {
+export function BoardList({ q }: BoardListProps) {
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
   const navigate = useNavigate({ from: "/$workspaceSlug/boards" });
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
+
+  const { status, data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+    useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
+
+  if (status === "pending") return;
+  if (status === "error") return;
 
   if (!data.pages[0]?.data.length) {
     if (q) {
@@ -36,7 +40,6 @@ export function BoardList({ q, workspaceSlug }: BoardListProps) {
     return (
       <BoardsEmpty>
         <CreateBoardDialog
-          workspaceSlug={workspaceSlug}
           onCreateBoard={(boardId) =>
             navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
           }

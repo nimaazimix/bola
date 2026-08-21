@@ -1,4 +1,5 @@
 import { SignIn } from "#/features/auth";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthSearchSchema } from "#/app/navigation/schema";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
@@ -18,7 +19,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="centered min-h-svh">
+    <div className="centered min-h-dvh">
       <SignIn onSignIn={handleSignIn} redirect={redirect} />
     </div>
   );

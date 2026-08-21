@@ -18,17 +18,15 @@ import { CreateBoardSchema } from "@bola/contracts/boards";
 import { useCreateBoard } from "../hooks/use-create-board";
 import { ApiError } from "#/shared/api/errors";
 import { toast } from "sonner";
+import { useParams } from "@tanstack/react-router";
 
 interface CreateBoardDialogProps extends React.PropsWithChildren {
-  workspaceSlug: string;
   onCreateBoard: (boardId: string) => void;
 }
 
-export function CreateBoardDialog({
-  workspaceSlug,
-  onCreateBoard,
-  children,
-}: CreateBoardDialogProps) {
+export function CreateBoardDialog({ onCreateBoard, children }: CreateBoardDialogProps) {
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
+
   const [open, setOpen] = useState(false);
   const { mutateAsync: CreateBoard } = useCreateBoard(workspaceSlug);
 
