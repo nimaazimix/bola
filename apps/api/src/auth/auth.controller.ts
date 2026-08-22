@@ -23,7 +23,7 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Post("signup")
+  @Post("sign-up")
   @ZodSerializerDto(UserResponseDto)
   async signUp(@Body() dto: SignUpDto, @Query() query: SignUpQueryDto) {
     return this.authService.signUp(dto, query.redirect);
@@ -45,7 +45,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post("signin")
+  @Post("sign-in")
   @HttpCode(HttpStatus.OK)
   @ZodSerializerDto(AuthResponseDto)
   async signIn(
@@ -71,7 +71,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post("signout")
+  @Post("sign-out")
   @HttpCode(HttpStatus.NO_CONTENT)
   async signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     await this.authService.signOut(req.cookies["refresh_token"]);

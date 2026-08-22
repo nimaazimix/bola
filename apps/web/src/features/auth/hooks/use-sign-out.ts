@@ -14,7 +14,7 @@ export function useSignOut() {
     onSuccess: () => {
       queryClient.clear();
       clearAuth();
-      navigate({ to: "/signin" });
+      navigate({ to: "/sign-in" });
     },
   });
 }

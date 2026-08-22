@@ -13,8 +13,8 @@ import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as GuestRouteRouteImport } from './routes/_guest/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GuestSignupRouteImport } from './routes/_guest/signup'
-import { Route as GuestSigninRouteImport } from './routes/_guest/signin'
+import { Route as GuestSignUpRouteImport } from './routes/_guest/sign-up'
+import { Route as GuestSignInRouteImport } from './routes/_guest/sign-in'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedOnboardedRouteRouteImport } from './routes/_authenticated/_onboarded/route'
 import { Route as AuthenticatedOnboardedWorkspaceSlugRouteRouteImport } from './routes/_authenticated/_onboarded/$workspaceSlug/route'
@@ -44,14 +44,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuestSignupRoute = GuestSignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const GuestSignUpRoute = GuestSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
   getParentRoute: () => GuestRouteRoute,
 } as any)
-const GuestSigninRoute = GuestSigninRouteImport.update({
-  id: '/signin',
-  path: '/signin',
+const GuestSignInRoute = GuestSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => GuestRouteRoute,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
@@ -117,8 +117,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/verify-email': typeof VerifyEmailRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/signin': typeof GuestSigninRoute
-  '/signup': typeof GuestSignupRoute
+  '/sign-in': typeof GuestSignInRoute
+  '/sign-up': typeof GuestSignUpRoute
   '/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugRouteRouteWithChildren
   '/$workspaceSlug/boards': typeof AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteWithChildren
   '/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
@@ -132,8 +132,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/verify-email': typeof VerifyEmailRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/signin': typeof GuestSigninRoute
-  '/signup': typeof GuestSignupRoute
+  '/sign-in': typeof GuestSignInRoute
+  '/sign-up': typeof GuestSignUpRoute
   '/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
   '/$workspaceSlug/inbox': typeof AuthenticatedOnboardedWorkspaceSlugInboxRoute
   '/$workspaceSlug/settings': typeof AuthenticatedOnboardedWorkspaceSlugSettingsRoute
@@ -149,8 +149,8 @@ export interface FileRoutesById {
   '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/_onboarded': typeof AuthenticatedOnboardedRouteRouteWithChildren
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/_guest/signin': typeof GuestSigninRoute
-  '/_guest/signup': typeof GuestSignupRoute
+  '/_guest/sign-in': typeof GuestSignInRoute
+  '/_guest/sign-up': typeof GuestSignUpRoute
   '/_authenticated/_onboarded/$workspaceSlug': typeof AuthenticatedOnboardedWorkspaceSlugRouteRouteWithChildren
   '/_authenticated/_onboarded/$workspaceSlug/boards': typeof AuthenticatedOnboardedWorkspaceSlugBoardsRouteRouteWithChildren
   '/_authenticated/_onboarded/$workspaceSlug/home': typeof AuthenticatedOnboardedWorkspaceSlugHomeRoute
@@ -166,8 +166,8 @@ export interface FileRouteTypes {
     | '/'
     | '/verify-email'
     | '/onboarding'
-    | '/signin'
-    | '/signup'
+    | '/sign-in'
+    | '/sign-up'
     | '/$workspaceSlug'
     | '/$workspaceSlug/boards'
     | '/$workspaceSlug/home'
@@ -181,8 +181,8 @@ export interface FileRouteTypes {
     | '/'
     | '/verify-email'
     | '/onboarding'
-    | '/signin'
-    | '/signup'
+    | '/sign-in'
+    | '/sign-up'
     | '/$workspaceSlug/home'
     | '/$workspaceSlug/inbox'
     | '/$workspaceSlug/settings'
@@ -197,8 +197,8 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/_authenticated/_onboarded'
     | '/_authenticated/onboarding'
-    | '/_guest/signin'
-    | '/_guest/signup'
+    | '/_guest/sign-in'
+    | '/_guest/sign-up'
     | '/_authenticated/_onboarded/$workspaceSlug'
     | '/_authenticated/_onboarded/$workspaceSlug/boards'
     | '/_authenticated/_onboarded/$workspaceSlug/home'
@@ -246,18 +246,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_guest/signup': {
-      id: '/_guest/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof GuestSignupRouteImport
+    '/_guest/sign-up': {
+      id: '/_guest/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof GuestSignUpRouteImport
       parentRoute: typeof GuestRouteRoute
     }
-    '/_guest/signin': {
-      id: '/_guest/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof GuestSigninRouteImport
+    '/_guest/sign-in': {
+      id: '/_guest/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof GuestSignInRouteImport
       parentRoute: typeof GuestRouteRoute
     }
     '/_authenticated/onboarding': {
@@ -408,13 +408,13 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface GuestRouteRouteChildren {
-  GuestSigninRoute: typeof GuestSigninRoute
-  GuestSignupRoute: typeof GuestSignupRoute
+  GuestSignInRoute: typeof GuestSignInRoute
+  GuestSignUpRoute: typeof GuestSignUpRoute
 }
 
 const GuestRouteRouteChildren: GuestRouteRouteChildren = {
-  GuestSigninRoute: GuestSigninRoute,
-  GuestSignupRoute: GuestSignupRoute,
+  GuestSignInRoute: GuestSignInRoute,
+  GuestSignUpRoute: GuestSignUpRoute,
 }
 
 const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(

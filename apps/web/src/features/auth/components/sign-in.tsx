@@ -31,7 +31,7 @@ export function SignIn({ onSignIn, redirect }: SignInProps) {
       <CardFooter className="py-3">
         <p className="text-muted-foreground mx-auto">
           Doesn&apos;t have an account?{" "}
-          <Link to="/signup" search={{ redirect }} className="text-primary underline">
+          <Link to="/sign-up" search={{ redirect }} className="text-primary underline">
             Sign up
           </Link>
         </p>

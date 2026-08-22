@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AuthSearchSchema } from "#/app/navigation/schema";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
-export const Route = createFileRoute("/_guest/signin")({
+export const Route = createFileRoute("/_guest/sign-in")({
   validateSearch: AuthSearchSchema,
   component: RouteComponent,
 });

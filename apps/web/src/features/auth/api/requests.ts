@@ -11,7 +11,7 @@ import type { User } from "@bola/contracts/users";
 
 export async function signUp(input: SignUpInput, query?: SignUpQuery) {
   return api
-    .post<ApiSuccess<User>>("/auth/signup", input, { params: query })
+    .post<ApiSuccess<User>>("/auth/sign-up", input, { params: query })
     .then((res) => res.data.data);
 }
 
@@ -23,7 +23,7 @@ export async function verifyEmail(input: VerifyEmailInput) {
 
 export async function signIn(input: SignInInput) {
   return api
-    .post<ApiSuccess<AuthPayload>>("/auth/signin", input, { withCredentials: true })
+    .post<ApiSuccess<AuthPayload>>("/auth/sign-in", input, { withCredentials: true })
     .then((res) => res.data.data);
 }
 
@@ -35,6 +35,6 @@ export async function refresh() {
 
 export async function signOut() {
   return api
-    .post<ApiSuccess<never>>("/auth/signout", undefined, { withCredentials: true })
+    .post<ApiSuccess<never>>("/auth/sign-out", undefined, { withCredentials: true })
     .then((res) => res.data.data);
 }
