@@ -10,31 +10,34 @@ import type {
 import type { User } from "@bola/contracts/users";
 
 export async function signUp(input: SignUpInput, query?: SignUpQuery) {
-  return api
-    .post<ApiSuccess<User>>("/auth/sign-up", input, { params: query })
-    .then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<User>>("/auth/sign-up", input, { params: query });
+  return res.data.data;
 }
 
 export async function verifyEmail(input: VerifyEmailInput) {
-  return api
-    .post<ApiSuccess<AuthPayload>>("/auth/verify-email", input, { withCredentials: true })
-    .then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<AuthPayload>>("/auth/verify-email", input, {
+    withCredentials: true,
+  });
+  return res.data.data;
 }
 
 export async function signIn(input: SignInInput) {
-  return api
-    .post<ApiSuccess<AuthPayload>>("/auth/sign-in", input, { withCredentials: true })
-    .then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<AuthPayload>>("/auth/sign-in", input, {
+    withCredentials: true,
+  });
+  return res.data.data;
 }
 
 export async function refresh() {
-  return api
-    .post<ApiSuccess<AuthPayload>>("/auth/refresh", undefined, { withCredentials: true })
-    .then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<AuthPayload>>("/auth/refresh", undefined, {
+    withCredentials: true,
+  });
+  return res.data.data;
 }
 
 export async function signOut() {
-  return api
-    .post<ApiSuccess<never>>("/auth/sign-out", undefined, { withCredentials: true })
-    .then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<never>>("/auth/sign-out", undefined, {
+    withCredentials: true,
+  });
+  return res.data.data;
 }

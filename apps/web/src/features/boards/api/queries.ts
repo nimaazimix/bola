@@ -6,10 +6,10 @@ export const boardQueries = {
 
   lists: (workspaceSlug: string) => [...boardQueries.all(workspaceSlug), "list"],
 
-  recent: (workspaceSlug: string, limit?: number) =>
+  recent: (workspaceSlug: string) =>
     queryOptions({
-      queryKey: [...boardQueries.lists(workspaceSlug), { limit }],
-      queryFn: () => getBoards(workspaceSlug, { limit }).then((page) => page.data),
+      queryKey: [...boardQueries.lists(workspaceSlug), "recent"],
+      queryFn: () => getBoards(workspaceSlug, { limit: 5 }).then((page) => page.boards),
     }),
 
   infinite: (workspaceSlug: string, q?: string, limit?: number) =>

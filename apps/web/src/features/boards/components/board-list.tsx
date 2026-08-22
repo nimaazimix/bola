@@ -22,7 +22,7 @@ export function BoardList({ q }: BoardListProps) {
   if (status === "pending") return;
   if (status === "error") return;
 
-  if (!data.pages[0]?.data.length) {
+  if (!data.pages[0]?.boards.length) {
     if (q) {
       return (
         <BoardsEmpty
@@ -55,7 +55,7 @@ export function BoardList({ q }: BoardListProps) {
       <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
         {data.pages.map((group, i) => (
           <Fragment key={i}>
-            {group.data.map((board) => (
+            {group.boards.map((board) => (
               <BoardCard key={board.id} board={board} />
             ))}
           </Fragment>

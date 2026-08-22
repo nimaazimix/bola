@@ -10,6 +10,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { WorkspaceError, workspaceQueries } from "#/features/workspaces";
+import { boardQueries } from "#/features/boards";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug"
     await Promise.all([
       queryClient.ensureQueryData(workspaceQueries.detail(params.workspaceSlug)),
       queryClient.ensureQueryData(workspaceQueries.list()),
+      queryClient.ensureQueryData(boardQueries.recent(params.workspaceSlug)),
     ]);
   },
   pendingComponent: PendingComponent,
