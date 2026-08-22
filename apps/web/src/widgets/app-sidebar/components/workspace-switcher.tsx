@@ -1,3 +1,4 @@
+import { Link, useParams } from "@tanstack/react-router";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -15,16 +16,12 @@ import {
 import { Avatar, AvatarFallback } from "@bola/ui/components/avatar";
 import { CheckIcon, ChevronsUpDown, PlusIcon } from "lucide-react";
 
-import { Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
 import { capitalize, getInitial } from "#/shared/lib/string";
 
-export interface WorkspaceSwitcherProps {
-  workspaceSlug: string;
-}
-
-export function WorkspaceSwitcher({ workspaceSlug }: WorkspaceSwitcherProps) {
+export function WorkspaceSwitcher() {
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
   const { isMobile } = useSidebar();
 
   const { data: workspaces } = useSuspenseQuery(workspaceQueries.list());

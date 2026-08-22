@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation, useParams } from "@tanstack/react-router";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -8,18 +8,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@bola/ui/components/sidebar";
-import { FolderIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { FileIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 
 import { useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { boardQueries, CreateBoardDialog } from "#/features/boards";
+import { cn } from "@bola/ui/lib/utils";
 
-export interface NavBoardsProps {
-  workspaceSlug: string;
-}
-
-export function NavBoards({ workspaceSlug }: NavBoardsProps) {
+export function NavBoards() {
+  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
+  const location = useLocation();
   const navigate = useNavigate({ from: "/$workspaceSlug" });
+
   const { data: boards } = useSuspenseQuery(boardQueries.recent(workspaceSlug));
 
   function handleCreateBoard(boardId: string) {
@@ -37,41 +37,45 @@ export function NavBoards({ workspaceSlug }: NavBoardsProps) {
       </SidebarGroupAction>
 
       <SidebarGroupContent>
-        <SidebarMenu className="gap-0.5">
-          {boards.map((board) => (
-            <SidebarMenuItem key={board.name}>
+        {boards.length === 0 ? (
+          <p className="p-2 text-xs">You don't have any boards yet.</p>
+        ) : (
+          <SidebarMenu className="gap-0.5">
+            {boards.map((board) => (
+              <SidebarMenuItem key={board.name}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    from="/$workspaceSlug"
+                    to="/$workspaceSlug/boards/$boardId"
+                    params={{ boardId: board.id }}
+                    activeProps={{
+                      className: "bg-sidebar-accent text-sidebar-accent-foreground border",
+                    }}
+                  >
+                    <FileIcon />
+                    <span>{board.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+
+            <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
                   from="/$workspaceSlug"
-                  to="/$workspaceSlug/boards/$boardId"
-                  params={{ boardId: board.id }}
-                  activeProps={{
-                    className: "bg-sidebar-accent text-sidebar-accent-foreground border",
-                  }}
+                  to="/$workspaceSlug/boards"
+                  className={cn(
+                    location.pathname.endsWith("/boards") &&
+                      "bg-sidebar-accent text-sidebar-accent-foreground border",
+                  )}
                 >
-                  <FolderIcon />
-                  <span>{board.name}</span>
+                  <MoreHorizontalIcon />
+                  <span>View all</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link
-                from="/$workspaceSlug"
-                to="/$workspaceSlug/boards"
-                activeProps={{
-                  className: "bg-sidebar-accent text-sidebar-accent-foreground border",
-                }}
-                activeOptions={{ exact: true }}
-              >
-                <MoreHorizontalIcon />
-                <span>More</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+          </SidebarMenu>
+        )}
       </SidebarGroupContent>
     </SidebarGroup>
   );
