@@ -4,17 +4,26 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { boardQueries } from "../api/queries";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "@bola/ui/components/button";
-import { BoardsEmpty } from "./boards-empty";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { CreateBoardDialog } from "./create-board-dialog";
+import { FileIcon, SearchIcon } from "lucide-react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@bola/ui/components/empty";
 
 interface BoardListProps {
   q?: string;
+  onClear: () => void;
 }
 
-export function BoardList({ q }: BoardListProps) {
+export function BoardList({ q, onClear }: BoardListProps) {
   const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
-  const navigate = useNavigate({ from: "/$workspaceSlug/boards" });
+  const navigate = useNavigate({ from: "/$workspaceSlug" });
 
   const { status, data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
@@ -25,28 +34,45 @@ export function BoardList({ q }: BoardListProps) {
   if (!data.pages[0]?.boards.length) {
     if (q) {
       return (
-        <BoardsEmpty
-          title="No boards found"
-          description="We couldn't find any board you're looking for. Clear your search to see all available boards."
-        >
-          <Button asChild>
-            <Link from="/$workspaceSlug/boards" to="." search={{ q: undefined }}>
-              Clear search
-            </Link>
-          </Button>
-        </BoardsEmpty>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <SearchIcon />
+            </EmptyMedia>
+            <EmptyTitle>No boards found</EmptyTitle>
+            <EmptyDescription>
+              We couldn't find any board you're looking for. Clear your search to see all available
+              boards.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={onClear}>Clear search</Button>
+          </EmptyContent>
+        </Empty>
       );
     }
+
     return (
-      <BoardsEmpty>
-        <CreateBoardDialog
-          onCreateBoard={(boardId) =>
-            navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
-          }
-        >
-          <Button>Create board</Button>
-        </CreateBoardDialog>
-      </BoardsEmpty>
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <FileIcon />
+          </EmptyMedia>
+          <EmptyTitle>No boards yet</EmptyTitle>
+          <EmptyDescription>
+            You don't have any boards yet. Create your first board to get started
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <CreateBoardDialog
+            onCreateBoard={(boardId) =>
+              navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
+            }
+          >
+            <Button>Create board</Button>
+          </CreateBoardDialog>
+        </EmptyContent>
+      </Empty>
     );
   }
 

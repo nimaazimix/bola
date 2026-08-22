@@ -36,6 +36,10 @@ function RouteComponent() {
     navigate({ to: ".", search: newSearch });
   }
 
+  function handleClear() {
+    navigate({ to: ".", search: { q: undefined } });
+  }
+
   return (
     <div className="@container flex min-h-full flex-col gap-5 p-4">
       <div className="space-y-2">
@@ -71,7 +75,7 @@ function RouteComponent() {
             placeholder="Search by board name"
           />
         </InputGroup>
-        <BoardList q={search.q} />
+        <BoardList q={search.q} onClear={handleClear} />
       </div>
     </div>
   );
