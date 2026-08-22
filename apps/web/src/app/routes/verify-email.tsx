@@ -20,7 +20,7 @@ function RouteComponent() {
   useEffect(() => {
     async function verify() {
       if (!token) {
-        return navigate({ to: "/signin", search: { redirect }, replace: true });
+        return navigate({ to: "/sign-in", search: { redirect }, replace: true });
       }
 
       try {
@@ -29,7 +29,7 @@ function RouteComponent() {
         const entry = await resolveEntryRoute(redirect);
         navigate({ ...entry, replace: true });
       } catch {
-        navigate({ to: "/signin", search: { redirect }, replace: true });
+        navigate({ to: "/sign-in", search: { redirect }, replace: true });
       }
     }
 
