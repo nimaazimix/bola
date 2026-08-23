@@ -7,6 +7,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { workspaceQueries } from "#/features/workspaces";
 import { BoardsSearchSchema } from "#/app/navigation/schema";
+import { useDebouncedCallback } from "use-debounce";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/")({
   validateSearch: BoardsSearchSchema,
@@ -19,21 +21,16 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { data: workspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
+  const [searchTerm, setSearchTerm] = useState(search.q ?? "");
 
-  function handleSearch(term: string) {
-    const newSearch = { ...search };
-
-    if (term) {
-      newSearch.q = term;
-    } else {
-      newSearch.q = undefined;
-    }
-
-    navigate({ to: ".", search: newSearch });
-  }
+  const handleSearch = useDebouncedCallback((term: string) => {
+    navigate({ to: ".", search: (prev) => ({ ...prev, q: term || undefined }) });
+  }, 300);
 
   function handleClear() {
-    navigate({ to: ".", search: { q: undefined } });
+    handleSearch.cancel();
+    setSearchTerm("");
+    navigate({ to: ".", search: (prev) => ({ ...prev, q: undefined }) });
   }
 
   return (
@@ -70,8 +67,11 @@ function RouteComponent() {
             <SearchIcon />
           </InputGroupAddon>
           <InputGroupInput
-            defaultValue={search.q}
-            onChange={(e) => handleSearch(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              handleSearch(e.target.value);
+            }}
             placeholder="Search by board name"
           />
         </InputGroup>

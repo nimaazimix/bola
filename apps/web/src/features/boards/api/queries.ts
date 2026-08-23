@@ -1,4 +1,4 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { getBoard, getBoards } from "./requests";
 
 export const boardQueries = {
@@ -18,6 +18,7 @@ export const boardQueries = {
       queryFn: ({ pageParam }) => getBoards(workspaceSlug, { q, limit, cursor: pageParam }),
       initialPageParam: "",
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      placeholderData: keepPreviousData,
     }),
 
   details: (workspaceSlug: string) => [...boardQueries.all(workspaceSlug), "detail"],

@@ -9,6 +9,7 @@ import {
 } from "@bola/ui/components/empty";
 import { Button } from "@bola/ui/components/button";
 import { BoardCard } from "./board-card";
+import { BoardCardSkeleton } from "./board-card-skeleton";
 import { BoardDialog } from "./board-dialog";
 import { FileIcon, SearchIcon } from "lucide-react";
 
@@ -27,7 +28,16 @@ export function BoardList({ q, onClear }: BoardListProps) {
   const { status, data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
-  if (status === "pending") return;
+  if (status === "pending") {
+    return (
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <BoardCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
   if (status === "error") return;
 
   if (!data.pages[0]?.boards.length) {
