@@ -1,71 +1,64 @@
-import { BoardList, boardQueries, CreateBoardDialog } from "#/features/boards";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@bola/ui/components/input-group";
 import { Button } from "@bola/ui/components/button";
+import { BoardDialog, BoardList } from "#/features/boards";
 import { PlusIcon, SearchIcon } from "lucide-react";
 
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { BoardsSearchSchema } from "#/app/navigation/schema";
+import { useDebouncedCallback } from "use-debounce";
 import { workspaceQueries } from "#/features/workspaces";
+import { BoardsSearchSchema } from "#/app/navigation/schema";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/")({
   validateSearch: BoardsSearchSchema,
-  loaderDeps: ({ search: { q } }) => ({ q }),
-  loader: async ({ context: { queryClient }, params, deps }) => {
-    await queryClient.ensureInfiniteQueryData(boardQueries.infinite(params.workspaceSlug, deps.q));
-  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const navigate = Route.useNavigate();
-  const search = Route.useSearch();
   const { workspaceSlug } = Route.useParams();
+  const { q } = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   const { data: workspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
+  const [searchTerm, setSearchTerm] = useState(q ?? "");
 
-  function handleSearch(term: string) {
-    const newSearch = { ...search };
-    if (term) {
-      newSearch.q = term;
-    } else {
-      newSearch.q = undefined;
-    }
-    navigate({ to: ".", search: newSearch });
+  const handleSearch = useDebouncedCallback((term: string) => {
+    navigate({ to: ".", search: (prev) => ({ ...prev, q: term || undefined }) });
+  }, 300);
+
+  function handleClear() {
+    handleSearch.cancel();
+    setSearchTerm("");
+    navigate({ to: ".", search: (prev) => ({ ...prev, q: undefined }) });
   }
 
   return (
-    <div className="@container flex min-h-[calc(100svh-5rem)] flex-col gap-8 p-4">
+    <div className="@container flex min-h-full flex-col gap-5 p-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">{workspace.name}'s boards</h1>
-          <CreateBoardDialog
-            workspaceSlug={workspaceSlug}
-            onCreateBoard={(boardId) =>
-              navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
+          <BoardDialog
+            trigger={
+              <Button className="@max-sm:hidden">
+                <PlusIcon />
+                Create board
+              </Button>
             }
-          >
-            <Button className="@max-sm:hidden">
-              <PlusIcon />
-              Create board
-            </Button>
-          </CreateBoardDialog>
+          />
         </div>
         <p className="text-muted-foreground text-sm">
           Discover and search all the boards available in this workspace
         </p>
 
-        <CreateBoardDialog
-          workspaceSlug={workspaceSlug}
-          onCreateBoard={(boardId) =>
-            navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
+        <BoardDialog
+          trigger={
+            <Button className="@sm:hidden">
+              <PlusIcon />
+              Create board
+            </Button>
           }
-        >
-          <Button className="@sm:hidden">
-            <PlusIcon />
-            Create board
-          </Button>
-        </CreateBoardDialog>
+        />
       </div>
 
       <div className="flex flex-1 flex-col space-y-4">
@@ -74,12 +67,15 @@ function RouteComponent() {
             <SearchIcon />
           </InputGroupAddon>
           <InputGroupInput
-            defaultValue={search.q}
-            onChange={(e) => handleSearch(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              handleSearch(e.target.value);
+            }}
             placeholder="Search by board name"
           />
         </InputGroup>
-        <BoardList workspaceSlug={workspaceSlug} q={search.q} />
+        <BoardList q={q} onClear={handleClear} />
       </div>
     </div>
   );

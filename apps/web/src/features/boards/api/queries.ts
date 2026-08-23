@@ -1,4 +1,4 @@
-import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { getBoard, getBoards } from "./requests";
 
 export const boardQueries = {
@@ -6,10 +6,10 @@ export const boardQueries = {
 
   lists: (workspaceSlug: string) => [...boardQueries.all(workspaceSlug), "list"],
 
-  recent: (workspaceSlug: string, limit?: number) =>
+  recent: (workspaceSlug: string) =>
     queryOptions({
-      queryKey: [...boardQueries.lists(workspaceSlug), { limit }],
-      queryFn: () => getBoards(workspaceSlug, { limit }).then((page) => page.data),
+      queryKey: [...boardQueries.lists(workspaceSlug), "recent"],
+      queryFn: () => getBoards(workspaceSlug, { limit: 5 }).then((page) => page.boards),
     }),
 
   infinite: (workspaceSlug: string, q?: string, limit?: number) =>
@@ -18,6 +18,7 @@ export const boardQueries = {
       queryFn: ({ pageParam }) => getBoards(workspaceSlug, { q, limit, cursor: pageParam }),
       initialPageParam: "",
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      placeholderData: keepPreviousData,
     }),
 
   details: (workspaceSlug: string) => [...boardQueries.all(workspaceSlug), "detail"],

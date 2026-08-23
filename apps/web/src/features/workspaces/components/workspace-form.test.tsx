@@ -2,13 +2,13 @@ import { render, screen, userEvent, waitFor } from "#/test/utils";
 import { predicates, server } from "#/test/mocks";
 import { workspaceFactory } from "#/test/factories";
 import { http, HttpResponse } from "msw";
-import { CreateWorkspaceForm } from "./create-workspace-form";
+import { WorkspaceForm } from "./workspace-form";
 
-describe("CreateWorkspaceForm", () => {
+describe("WorkspaceForm", () => {
   it("should automatically generate the slug", async () => {
     // Arrange
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -21,7 +21,7 @@ describe("CreateWorkspaceForm", () => {
   it("should stop auto-generating the slug after user changes it manually", async () => {
     // Arrange
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -52,7 +52,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -75,7 +75,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -113,7 +113,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -140,7 +140,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -164,7 +164,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -179,7 +179,7 @@ describe("CreateWorkspaceForm", () => {
   it("should display generic error message when something unexpected happens", async () => {
     // Arrange
     const onCreateWorkspace = vi.fn().mockThrow(new Error());
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act
@@ -203,7 +203,7 @@ describe("CreateWorkspaceForm", () => {
     );
 
     const onCreateWorkspace = vi.fn();
-    render(<CreateWorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
+    render(<WorkspaceForm onCreateWorkspace={onCreateWorkspace} />);
     const user = userEvent.setup();
 
     // Act

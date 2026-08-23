@@ -4,20 +4,16 @@ import { NavMain } from "./nav-main";
 import { NavBoards } from "./nav-boards";
 import { NavUser } from "./nav-user";
 
-import { useParams } from "@tanstack/react-router";
-
 export function AppSidebar() {
-  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
-
   return (
     <Sidebar variant="inset">
       <SidebarHeader>
-        <WorkspaceSwitcher workspaceSlug={workspaceSlug} />
+        <WorkspaceSwitcher />
       </SidebarHeader>
 
       <SidebarContent>
         <NavMain />
-        <NavBoards workspaceSlug={workspaceSlug} />
+        <NavBoards />
       </SidebarContent>
 
       <SidebarFooter>

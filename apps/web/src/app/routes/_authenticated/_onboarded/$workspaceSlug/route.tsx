@@ -1,6 +1,7 @@
 import { SidebarInset, SidebarProvider } from "@bola/ui/components/sidebar";
-import { AppHeader } from "#/widgets/app-header";
+import { Loader } from "@bola/ui/components/loader";
 import { AppSidebar } from "#/widgets/app-sidebar";
+import { AppHeader } from "#/widgets/app-header";
 
 import {
   createFileRoute,
@@ -8,9 +9,9 @@ import {
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { WorkspaceErrorState, workspaceQueries } from "#/features/workspaces";
-import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
+import { WorkspaceError, workspaceQueries } from "#/features/workspaces";
 import { boardQueries } from "#/features/boards";
+import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
   loader: async ({ context: { queryClient }, params }) => {
@@ -20,8 +21,15 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug"
       queryClient.ensureQueryData(boardQueries.recent(params.workspaceSlug)),
     ]);
   },
-  component: RouteComponent,
+
+  pendingComponent: () => (
+    <div className="centered min-h-dvh">
+      <Loader />
+    </div>
+  ),
+
   errorComponent: ErrorComponent,
+  component: RouteComponent,
 });
 
 function RouteComponent() {
@@ -30,7 +38,7 @@ function RouteComponent() {
       <AppSidebar />
       <SidebarInset>
         <AppHeader />
-        <main className="w-full overflow-hidden">
+        <main className="w-full flex-1 overflow-hidden">
           <Outlet />
         </main>
       </SidebarInset>
@@ -42,16 +50,14 @@ function ErrorComponent({ error }: ErrorComponentProps) {
   const navigate = Route.useNavigate();
   const router = useRouter();
 
-  async function handleNavigate() {
+  async function handleGoHome() {
     const entry = await resolveEntryRoute();
     navigate(entry);
   }
 
   return (
-    <WorkspaceErrorState
-      error={error}
-      onNavigate={handleNavigate}
-      onRetry={() => router.invalidate()}
-    />
+    <div className="centered min-h-dvh">
+      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
+    </div>
   );
 }

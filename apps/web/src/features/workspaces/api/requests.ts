@@ -3,19 +3,23 @@ import type { ApiSuccess } from "@bola/contracts/api";
 import type { CheckSlugResult, CreateWorkspaceInput, Workspace } from "@bola/contracts/workspaces";
 
 export async function postWorkspace(input: CreateWorkspaceInput) {
-  return api.post<ApiSuccess<Workspace>>("/workspaces", input).then((res) => res.data.data);
+  const res = await api.post<ApiSuccess<Workspace>>("/workspaces", input);
+  return res.data.data;
 }
 
 export async function getWorkspaces() {
-  return api.get<ApiSuccess<Workspace[]>>("/workspaces").then((res) => res.data.data);
+  const res = await api.get<ApiSuccess<Workspace[]>>("/workspaces");
+  return res.data.data;
 }
 
 export async function getWorkspace(slug: string) {
-  return api.get<ApiSuccess<Workspace>>(`/workspaces/${slug}`).then((res) => res.data.data);
+  const res = await api.get<ApiSuccess<Workspace>>(`/workspaces/${slug}`);
+  return res.data.data;
 }
 
 export async function checkSlug(slug: string) {
-  return api
-    .get<ApiSuccess<CheckSlugResult>>("/workspaces/check-slug", { params: { slug } })
-    .then((res) => res.data.data);
+  const res = await api.get<ApiSuccess<CheckSlugResult>>("/workspaces/check-slug", {
+    params: { slug },
+  });
+  return res.data.data;
 }

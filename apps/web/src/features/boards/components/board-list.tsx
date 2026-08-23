@@ -1,33 +1,57 @@
-import { BoardCard } from "./board-card";
-
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { boardQueries } from "../api/queries";
-import { Fragment } from "react/jsx-runtime";
 import { Button } from "@bola/ui/components/button";
+import { BoardCard } from "./board-card";
+import { BoardCardSkeleton } from "./board-card-skeleton";
+import { BoardListError } from "./board-list-error";
 import { BoardListEmpty } from "./board-list-empty";
 
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useWorkspaceSlug } from "#/shared/hooks/use-workspace-slug";
+import { boardQueries } from "../api/queries";
+
 interface BoardListProps {
-  workspaceSlug: string;
   q?: string;
+  onClear: () => void;
 }
 
-export function BoardList({ q, workspaceSlug }: BoardListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
-    useSuspenseInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
+export function BoardList({ q, onClear }: BoardListProps) {
+  const workspaceSlug = useWorkspaceSlug();
 
-  if (!data.pages[0]?.data.length) {
-    return <BoardListEmpty />;
+  const {
+    status,
+    isFetching,
+    error,
+    data,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    fetchNextPage,
+  } = useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
+
+  if (status === "pending") {
+    return (
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <BoardCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return <BoardListError error={error} onRetry={refetch} />;
+  }
+
+  const boards = data.pages.flatMap((page) => page.boards);
+
+  if (!boards.length) {
+    return <BoardListEmpty type={q ? "no-result" : "no-boards"} onClear={onClear} />;
   }
 
   return (
     <div className="grid gap-4">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
-        {data.pages.map((group, i) => (
-          <Fragment key={i}>
-            {group.data.map((board) => (
-              <BoardCard key={board.id} board={board} />
-            ))}
-          </Fragment>
+        {boards.map((board) => (
+          <BoardCard key={board.id} board={board} />
         ))}
       </div>
       {hasNextPage && (

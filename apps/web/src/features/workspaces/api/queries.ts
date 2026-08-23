@@ -2,16 +2,16 @@ import { queryOptions } from "@tanstack/react-query";
 import { getWorkspace, getWorkspaces } from "./requests";
 
 export const workspaceQueries = {
-  all: ["workspaces"],
+  all: () => ["workspaces"],
 
-  lists: () => [...workspaceQueries.all, "list"],
+  lists: () => [...workspaceQueries.all(), "list"],
   list: () =>
     queryOptions({
       queryKey: [...workspaceQueries.lists()],
       queryFn: () => getWorkspaces(),
     }),
 
-  details: () => [...workspaceQueries.all, "detail"],
+  details: () => [...workspaceQueries.all(), "detail"],
   detail: (slug: string) =>
     queryOptions({
       queryKey: [workspaceQueries.details(), slug],

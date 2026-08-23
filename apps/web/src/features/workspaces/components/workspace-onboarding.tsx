@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@bola/ui/components/card";
-import { CreateWorkspaceForm } from "./create-workspace-form";
+import { WorkspaceForm } from "./workspace-form";
 import { useNavigate } from "@tanstack/react-router";
 
 export function WorkspaceOnboarding() {
@@ -22,7 +22,7 @@ export function WorkspaceOnboarding() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateWorkspaceForm
+          <WorkspaceForm
             onCreateWorkspace={(workspaceSlug) =>
               navigate({ to: "/$workspaceSlug/home", params: { workspaceSlug } })
             }
