@@ -5,14 +5,12 @@ import { AppHeader } from "#/widgets/app-header";
 
 import {
   createFileRoute,
-  ErrorComponent as DefaultErrorComponent,
   Outlet,
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { WorkspaceError, workspaceQueries } from "#/features/workspaces";
 import { boardQueries } from "#/features/boards";
-import { ApiError } from "#/shared/api/errors";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
@@ -23,7 +21,13 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug"
       queryClient.ensureQueryData(boardQueries.recent(params.workspaceSlug)),
     ]);
   },
-  pendingComponent: PendingComponent,
+
+  pendingComponent: () => (
+    <div className="centered min-h-dvh">
+      <Loader />
+    </div>
+  ),
+
   errorComponent: ErrorComponent,
   component: RouteComponent,
 });
@@ -51,21 +55,9 @@ function ErrorComponent({ error }: ErrorComponentProps) {
     navigate(entry);
   }
 
-  if (error instanceof ApiError) {
-    return (
-      <div className="centered min-h-dvh">
-        <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
-      </div>
-    );
-  }
-
-  return <DefaultErrorComponent error={error} />;
-}
-
-function PendingComponent() {
   return (
     <div className="centered min-h-dvh">
-      <Loader />
+      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
     </div>
   );
 }

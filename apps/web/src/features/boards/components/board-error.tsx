@@ -7,10 +7,10 @@ import {
   EmptyTitle,
 } from "@bola/ui/components/empty";
 import { Button } from "@bola/ui/components/button";
+import { ErrorComponent, Link } from "@tanstack/react-router";
 import { AlertTriangleIcon, CloudOffIcon, FileIcon } from "lucide-react";
 
 import { ApiError } from "#/shared/api/errors";
-import { Link } from "@tanstack/react-router";
 
 const data = {
   notFound: {
@@ -37,11 +37,15 @@ const data = {
 };
 
 interface BoardErrorProps {
-  error: ApiError;
+  error: Error;
   onRetry: () => void;
 }
 
 export function BoardError({ error, onRetry }: BoardErrorProps) {
+  if (!(error instanceof ApiError)) {
+    return <ErrorComponent error={error} />;
+  }
+
   let state = data.unknown;
 
   if (error.status === 404) {

@@ -4,11 +4,11 @@ import { BoardDialog, BoardList } from "#/features/boards";
 import { PlusIcon, SearchIcon } from "lucide-react";
 
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
 import { workspaceQueries } from "#/features/workspaces";
 import { BoardsSearchSchema } from "#/app/navigation/schema";
-import { useDebouncedCallback } from "use-debounce";
-import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/boards/")({
   validateSearch: BoardsSearchSchema,
@@ -17,11 +17,11 @@ export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug/
 
 function RouteComponent() {
   const { workspaceSlug } = Route.useParams();
-  const search = Route.useSearch();
+  const { q } = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const { data: workspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
-  const [searchTerm, setSearchTerm] = useState(search.q ?? "");
+  const [searchTerm, setSearchTerm] = useState(q ?? "");
 
   const handleSearch = useDebouncedCallback((term: string) => {
     navigate({ to: ".", search: (prev) => ({ ...prev, q: term || undefined }) });
@@ -75,7 +75,7 @@ function RouteComponent() {
             placeholder="Search by board name"
           />
         </InputGroup>
-        <BoardList q={search.q} onClear={handleClear} />
+        <BoardList q={q} onClear={handleClear} />
       </div>
     </div>
   );

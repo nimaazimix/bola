@@ -1,12 +1,12 @@
 import { Button } from "@bola/ui/components/button";
 import { BoardCard } from "./board-card";
 import { BoardCardSkeleton } from "./board-card-skeleton";
+import { BoardListError } from "./board-list-error";
+import { BoardListEmpty } from "./board-list-empty";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useWorkspaceSlug } from "#/shared/hooks/use-workspace-slug";
 import { boardQueries } from "../api/queries";
-import { BoardListEmpty } from "./board-list-empty";
-import { BoardListError } from "./board-list-error";
 
 interface BoardListProps {
   q?: string;
@@ -19,12 +19,12 @@ export function BoardList({ q, onClear }: BoardListProps) {
   const {
     status,
     isFetching,
-    refetch,
     error,
     data,
     hasNextPage,
-    fetchNextPage,
     isFetchingNextPage,
+    refetch,
+    fetchNextPage,
   } = useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
   if (status === "pending") {

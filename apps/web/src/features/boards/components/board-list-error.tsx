@@ -7,6 +7,7 @@ import {
   EmptyTitle,
 } from "@bola/ui/components/empty";
 import { Button } from "@bola/ui/components/button";
+import { ErrorComponent } from "@tanstack/react-router";
 import { AlertTriangleIcon, CloudOffIcon } from "lucide-react";
 
 import { ApiError } from "#/shared/api/errors";
@@ -27,11 +28,15 @@ const data = {
 };
 
 interface BoardListErrorProps {
-  error: ApiError;
+  error: Error;
   onRetry: () => void;
 }
 
 export function BoardListError({ error, onRetry }: BoardListErrorProps) {
+  if (!(error instanceof ApiError)) {
+    return <ErrorComponent error={error} />;
+  }
+
   let state = data.unknown;
 
   if (error.kind === "network") {

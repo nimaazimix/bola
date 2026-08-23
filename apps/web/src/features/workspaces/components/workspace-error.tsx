@@ -7,6 +7,7 @@ import {
   EmptyTitle,
 } from "@bola/ui/components/empty";
 import { Button } from "@bola/ui/components/button";
+import { ErrorComponent } from "@tanstack/react-router";
 import { AlertTriangleIcon, CloudOffIcon, DatabaseXIcon } from "lucide-react";
 
 import { ApiError } from "#/shared/api/errors";
@@ -36,12 +37,16 @@ const data = {
 };
 
 interface WorkspaceErrorProps {
-  error: ApiError;
+  error: Error;
   onGoHome: () => void;
   onRetry: () => void;
 }
 
 export function WorkspaceError({ error, onGoHome, onRetry }: WorkspaceErrorProps) {
+  if (!(error instanceof ApiError)) {
+    return <ErrorComponent error={error} />;
+  }
+
   let state = data.unknown;
 
   if (error.status === 404) {

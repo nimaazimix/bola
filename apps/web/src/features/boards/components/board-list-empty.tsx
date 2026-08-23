@@ -11,12 +11,12 @@ import { BoardDialog } from "./board-dialog";
 import { FileIcon, SearchIcon } from "lucide-react";
 
 const data = {
-  "no-boards": {
+  noBoards: {
     icon: FileIcon,
     title: "No boards yet",
-    description: "You don't have any boards yet. Create your first board to get started.",
+    description: "Your workspace has no board yet. Create your first board to get started.",
   },
-  "no-result": {
+  noResult: {
     icon: SearchIcon,
     title: "No boards found",
     description:
@@ -30,7 +30,7 @@ interface BoardListEmptyProps {
 }
 
 export function BoardListEmpty({ type, onClear }: BoardListEmptyProps) {
-  const state = data[type];
+  const state = type === "no-boards" ? data.noBoards : data.noResult;
 
   return (
     <Empty>
@@ -38,8 +38,8 @@ export function BoardListEmpty({ type, onClear }: BoardListEmptyProps) {
         <EmptyMedia variant="icon">
           <state.icon />
         </EmptyMedia>
-        <EmptyTitle>{data[type].title}</EmptyTitle>
-        <EmptyDescription>{data[type].description}</EmptyDescription>
+        <EmptyTitle>{state.title}</EmptyTitle>
+        <EmptyDescription>{state.description}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         {type === "no-boards" ? (
