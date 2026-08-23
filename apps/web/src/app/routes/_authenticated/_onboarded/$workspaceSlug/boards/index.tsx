@@ -1,6 +1,6 @@
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@bola/ui/components/input-group";
 import { Button } from "@bola/ui/components/button";
-import { BoardList, CreateBoardDialog } from "#/features/boards";
+import { BoardDialog, BoardList } from "#/features/boards";
 import { PlusIcon, SearchIcon } from "lucide-react";
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -19,10 +19,6 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { data: workspace } = useSuspenseQuery(workspaceQueries.detail(workspaceSlug));
-
-  function handleCreateBoard(boardId: string) {
-    navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } });
-  }
 
   function handleSearch(term: string) {
     const newSearch = { ...search };
@@ -45,23 +41,27 @@ function RouteComponent() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">{workspace.name}'s boards</h1>
-          <CreateBoardDialog onCreateBoard={handleCreateBoard}>
-            <Button className="@max-sm:hidden">
-              <PlusIcon />
-              Create board
-            </Button>
-          </CreateBoardDialog>
+          <BoardDialog
+            trigger={
+              <Button className="@max-sm:hidden">
+                <PlusIcon />
+                Create board
+              </Button>
+            }
+          />
         </div>
         <p className="text-muted-foreground text-sm">
           Discover and search all the boards available in this workspace
         </p>
 
-        <CreateBoardDialog onCreateBoard={handleCreateBoard}>
-          <Button className="@sm:hidden">
-            <PlusIcon />
-            Create board
-          </Button>
-        </CreateBoardDialog>
+        <BoardDialog
+          trigger={
+            <Button className="@sm:hidden">
+              <PlusIcon />
+              Create board
+            </Button>
+          }
+        />
       </div>
 
       <div className="flex flex-1 flex-col space-y-4">

@@ -9,11 +9,9 @@ export const Route = createFileRoute("/_guest/sign-up")({
 });
 
 function RouteComponent() {
-  const { redirect } = Route.useSearch();
-
   return (
     <div className="centered min-h-dvh">
-      <SignUp redirect={redirect} />
+      <SignUp />
     </div>
   );
 }

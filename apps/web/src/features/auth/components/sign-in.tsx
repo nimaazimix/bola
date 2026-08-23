@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -7,15 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@bola/ui/components/card";
+import { Link, useSearch } from "@tanstack/react-router";
 import { SignInForm } from "./sign-in-form";
 import { OAuthButtons } from "./oauth-buttons";
 
 interface SignInProps {
   onSignIn: () => void;
-  redirect?: string;
 }
 
-export function SignIn({ onSignIn, redirect }: SignInProps) {
+export function SignIn({ onSignIn }: SignInProps) {
+  const { redirect } = useSearch({ from: "/_guest/sign-in" });
+
   return (
     <Card className="m-4 w-full max-w-sm [--card-spacing:--spacing(5)]">
       <CardHeader>

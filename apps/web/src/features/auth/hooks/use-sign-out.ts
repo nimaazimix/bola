@@ -12,8 +12,8 @@ export function useSignOut() {
     mutationFn: () => signOut(),
 
     onSuccess: () => {
-      queryClient.clear();
       clearAuth();
+      queryClient.clear();
       navigate({ to: "/sign-in" });
     },
   });

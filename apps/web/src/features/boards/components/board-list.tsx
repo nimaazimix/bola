@@ -1,12 +1,4 @@
-import { BoardCard } from "./board-card";
-
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { boardQueries } from "../api/queries";
 import { Fragment } from "react/jsx-runtime";
-import { Button } from "@bola/ui/components/button";
-import { useNavigate, useParams } from "@tanstack/react-router";
-import { CreateBoardDialog } from "./create-board-dialog";
-import { FileIcon, SearchIcon } from "lucide-react";
 import {
   Empty,
   EmptyContent,
@@ -15,6 +7,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@bola/ui/components/empty";
+import { Button } from "@bola/ui/components/button";
+import { BoardCard } from "./board-card";
+import { BoardDialog } from "./board-dialog";
+import { FileIcon, SearchIcon } from "lucide-react";
+
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useWorkspaceSlug } from "#/shared/hooks/use-workspace-slug";
+import { boardQueries } from "../api/queries";
 
 interface BoardListProps {
   q?: string;
@@ -22,8 +22,7 @@ interface BoardListProps {
 }
 
 export function BoardList({ q, onClear }: BoardListProps) {
-  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
-  const navigate = useNavigate({ from: "/$workspaceSlug" });
+  const workspaceSlug = useWorkspaceSlug();
 
   const { status, data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
@@ -64,13 +63,7 @@ export function BoardList({ q, onClear }: BoardListProps) {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <CreateBoardDialog
-            onCreateBoard={(boardId) =>
-              navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } })
-            }
-          >
-            <Button>Create board</Button>
-          </CreateBoardDialog>
+          <BoardDialog trigger={<Button>Create board</Button>} />
         </EmptyContent>
       </Empty>
     );

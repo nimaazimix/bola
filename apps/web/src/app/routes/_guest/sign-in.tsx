@@ -20,7 +20,7 @@ function RouteComponent() {
 
   return (
     <div className="centered min-h-dvh">
-      <SignIn onSignIn={handleSignIn} redirect={redirect} />
+      <SignIn onSignIn={handleSignIn} />
     </div>
   );
 }

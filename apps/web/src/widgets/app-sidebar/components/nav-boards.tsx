@@ -1,4 +1,3 @@
-import { Link, useLocation, useParams } from "@tanstack/react-router";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -10,30 +9,24 @@ import {
 } from "@bola/ui/components/sidebar";
 import { FileIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { boardQueries, CreateBoardDialog } from "#/features/boards";
+import { useWorkspaceSlug } from "#/shared/hooks/use-workspace-slug";
+import { BoardDialog, boardQueries } from "#/features/boards";
 import { cn } from "@bola/ui/lib/utils";
 
 export function NavBoards() {
-  const { workspaceSlug } = useParams({ from: "/_authenticated/_onboarded/$workspaceSlug" });
-  const location = useLocation();
-  const navigate = useNavigate({ from: "/$workspaceSlug" });
-
+  const workspaceSlug = useWorkspaceSlug();
   const { data: boards } = useSuspenseQuery(boardQueries.recent(workspaceSlug));
 
-  function handleCreateBoard(boardId: string) {
-    navigate({ to: "/$workspaceSlug/boards/$boardId", params: { boardId } });
-  }
+  const location = useLocation();
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Boards</SidebarGroupLabel>
 
       <SidebarGroupAction>
-        <CreateBoardDialog onCreateBoard={handleCreateBoard}>
-          <PlusIcon className="text-muted-foreground" />
-        </CreateBoardDialog>
+        <BoardDialog trigger={<PlusIcon className="text-muted-foreground" />} />
       </SidebarGroupAction>
 
       <SidebarGroupContent>
