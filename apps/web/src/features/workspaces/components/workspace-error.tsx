@@ -1,4 +1,3 @@
-import { ErrorComponent } from "@tanstack/react-router";
 import {
   Empty,
   EmptyContent,
@@ -12,72 +11,63 @@ import { AlertTriangleIcon, CloudOffIcon, DatabaseXIcon } from "lucide-react";
 
 import { ApiError } from "#/shared/api/errors";
 
+const data = {
+  notFound: {
+    icon: DatabaseXIcon,
+    title: "Workspace not found",
+    description:
+      "We couldn't find the workspace you're trying to access. It may have been deleted, moved, or you may not have access to it.",
+    actions: ["go-home"],
+  },
+  network: {
+    icon: CloudOffIcon,
+    title: "Unable to connect to the server",
+    description:
+      "We couldn't load this workspace because there was a problem connecting to the server. Check your connection and try again.",
+    actions: ["retry"],
+  },
+  unknown: {
+    icon: AlertTriangleIcon,
+    title: "Something went wrong",
+    description:
+      "We couldn't load this workspace due to an unexpected error. Please try again, and if the problem continues, contact support.",
+    actions: ["retry"],
+  },
+};
+
 interface WorkspaceErrorProps {
-  error: Error;
+  error: ApiError;
   onGoHome: () => void;
   onRetry: () => void;
 }
 
-export function WorkspaceError({ error, onRetry, onGoHome }: WorkspaceErrorProps) {
-  if (error instanceof ApiError) {
-    if (error.status === 404) {
-      return (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <DatabaseXIcon />
-            </EmptyMedia>
-            <EmptyTitle>Workspace not found</EmptyTitle>
-            <EmptyDescription>
-              We couldn't find the workspace you're trying to access. It may have been deleted,
-              moved, or you may not have access to it.
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button onClick={onGoHome}>Go home</Button>
-          </EmptyContent>
-        </Empty>
-      );
-    }
+export function WorkspaceError({ error, onGoHome, onRetry }: WorkspaceErrorProps) {
+  let state = data.unknown;
 
-    if (error.kind === "network") {
-      return (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <CloudOffIcon />
-            </EmptyMedia>
-            <EmptyTitle>Unable to connect to the server</EmptyTitle>
-            <EmptyDescription>
-              We couldn't load this workspace because there was a problem connecting to the server.
-              Check your connection and try again.
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button onClick={onRetry}>Retry loading</Button>
-          </EmptyContent>
-        </Empty>
-      );
-    }
-
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <AlertTriangleIcon />
-          </EmptyMedia>
-          <EmptyTitle>Something went wrong</EmptyTitle>
-          <EmptyDescription>
-            We couldn't load this workspace due to an unexpected error. Please try again, and if the
-            problem continues, contact support.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <Button onClick={onRetry}>Retry loading</Button>
-        </EmptyContent>
-      </Empty>
-    );
+  if (error.status === 404) {
+    state = data.notFound;
+  } else if (error.kind === "network") {
+    state = data.network;
   }
 
-  return <ErrorComponent error={error} />;
+  return (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <state.icon />
+        </EmptyMedia>
+        <EmptyTitle>{state.title}</EmptyTitle>
+        <EmptyDescription>{state.description}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        {state.actions.map((action) =>
+          action === "go-home" ? (
+            <Button onClick={onGoHome}>Go home</Button>
+          ) : (
+            <Button onClick={onRetry}>Retry loading</Button>
+          ),
+        )}
+      </EmptyContent>
+    </Empty>
+  );
 }

@@ -16,7 +16,7 @@ const data = {
     icon: CloudOffIcon,
     title: "Unable to connect to the server",
     description:
-      " We couldn't load boards because there was a problem connecting to the server. Check your connection and try again.",
+      "We couldn't load boards because there was a problem connecting to the server. Check your connection and try again.",
   },
   unknown: {
     icon: AlertTriangleIcon,
@@ -48,7 +48,7 @@ export function BoardListError({ error, onRetry }: BoardListErrorProps) {
         <EmptyDescription>{state.description}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={onRetry}>Retry</Button>
+        <Button onClick={onRetry}>Retry loading</Button>
       </EmptyContent>
     </Empty>
   );

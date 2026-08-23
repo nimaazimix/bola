@@ -17,11 +17,11 @@ import { ApiError } from "#/shared/api/errors";
 import { toast } from "sonner";
 import slugify from "slugify";
 
-interface CreateWorkspaceFormProps {
+interface WorkspaceFormProps {
   onCreateWorkspace: (slug: string) => void;
 }
 
-export function CreateWorkspaceForm({ onCreateWorkspace }: CreateWorkspaceFormProps) {
+export function WorkspaceForm({ onCreateWorkspace }: WorkspaceFormProps) {
   const { mutateAsync: createWorkspace } = useCreateWorkspace();
 
   const NameSchema = CreateWorkspaceSchema.shape.name;

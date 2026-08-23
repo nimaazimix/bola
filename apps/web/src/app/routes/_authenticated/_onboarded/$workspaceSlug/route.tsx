@@ -5,12 +5,14 @@ import { AppHeader } from "#/widgets/app-header";
 
 import {
   createFileRoute,
+  ErrorComponent as DefaultErrorComponent,
   Outlet,
   useRouter,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { WorkspaceError, workspaceQueries } from "#/features/workspaces";
 import { boardQueries } from "#/features/boards";
+import { ApiError } from "#/shared/api/errors";
 import { resolveEntryRoute } from "#/app/navigation/resolve-entry-route";
 
 export const Route = createFileRoute("/_authenticated/_onboarded/$workspaceSlug")({
@@ -49,11 +51,15 @@ function ErrorComponent({ error }: ErrorComponentProps) {
     navigate(entry);
   }
 
-  return (
-    <div className="centered min-h-dvh">
-      <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
-    </div>
-  );
+  if (error instanceof ApiError) {
+    return (
+      <div className="centered min-h-dvh">
+        <WorkspaceError error={error} onGoHome={handleGoHome} onRetry={router.invalidate} />
+      </div>
+    );
+  }
+
+  return <DefaultErrorComponent error={error} />;
 }
 
 function PendingComponent() {
