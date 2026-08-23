@@ -30,13 +30,13 @@ interface BoardListEmptyProps {
 }
 
 export function BoardListEmpty({ type, onClear }: BoardListEmptyProps) {
-  const Icon = data[type].icon;
+  const state = data[type];
 
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <Icon />
+          <state.icon />
         </EmptyMedia>
         <EmptyTitle>{data[type].title}</EmptyTitle>
         <EmptyDescription>{data[type].description}</EmptyDescription>

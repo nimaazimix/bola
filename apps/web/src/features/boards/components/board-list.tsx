@@ -6,6 +6,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useWorkspaceSlug } from "#/shared/hooks/use-workspace-slug";
 import { boardQueries } from "../api/queries";
 import { BoardListEmpty } from "./board-list-empty";
+import { BoardListError } from "./board-list-error";
 
 interface BoardListProps {
   q?: string;
@@ -15,8 +16,16 @@ interface BoardListProps {
 export function BoardList({ q, onClear }: BoardListProps) {
   const workspaceSlug = useWorkspaceSlug();
 
-  const { status, data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
-    useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
+  const {
+    status,
+    isFetching,
+    refetch,
+    error,
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery(boardQueries.infinite(workspaceSlug, q));
 
   if (status === "pending") {
     return (
@@ -28,7 +37,9 @@ export function BoardList({ q, onClear }: BoardListProps) {
     );
   }
 
-  if (status === "error") return;
+  if (status === "error") {
+    return <BoardListError error={error} onRetry={refetch} />;
+  }
 
   const boards = data.pages.flatMap((page) => page.boards);
 
