@@ -27,14 +27,14 @@ const data = {
 };
 
 interface BoardListErrorProps {
-  error: Error;
+  error: ApiError;
   onRetry: () => void;
 }
 
 export function BoardListError({ error, onRetry }: BoardListErrorProps) {
   let state = data.unknown;
 
-  if (error instanceof ApiError && error.kind === "network") {
+  if (error.kind === "network") {
     state = data.network;
   }
 
