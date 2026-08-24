@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { userFactory } from "#/test/factories";
+import { userFactory } from "#/testing/factories";
 import { useAuthStore } from "../stores/auth.store";
 import { ApiError } from "./errors";
 import { setupInterceptors } from "./interceptors";
@@ -68,7 +68,10 @@ describe("API interceptors", () => {
 
       refreshMock.onPost("/auth/refresh").reply(200, {
         success: true,
-        data: { accessToken: "access-token", user: userFactory.build() },
+        data: {
+          accessToken: "access-token",
+          user: userFactory.build(),
+        },
       });
     });
 
@@ -76,7 +79,10 @@ describe("API interceptors", () => {
       // Arrange
       apiMock
         .onGet("/data")
-        .replyOnce(401, { success: false, error: { code: "auth.access_token_expired" } })
+        .replyOnce(401, {
+          success: false,
+          error: { code: "auth.access_token_expired" },
+        })
         .onGet("/data")
         .reply(200, { success: true });
 
@@ -112,7 +118,7 @@ describe("API interceptors", () => {
       // Arrange
       refreshMock.onPost("/auth/refresh").reply(401, {
         success: false,
-        error: { code: "auth.session_invalid", message: "Session is missing or invalid" },
+        error: { code: "auth.session_invalid", message: "..." },
       });
 
       apiMock
@@ -181,7 +187,7 @@ describe("API interceptors", () => {
           401,
           {
             success: false,
-            error: { code: "auth.session_invalid", message: "Session is missing or invalid" },
+            error: { code: "auth.session_invalid", message: "..." },
           },
         ];
       });

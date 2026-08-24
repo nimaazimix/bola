@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "#/test/utils";
-import { predicates, server } from "#/test/mocks";
+import { render, screen, waitFor } from "#/testing/utils";
+import { predicates, server } from "#/testing/mocks";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores/auth.store";
 import { AuthProvider } from "./auth-provider";

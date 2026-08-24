@@ -22,7 +22,7 @@ const config = defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./src/test/setup.ts",
+    setupFiles: "./src/testing/setup.ts",
     clearMocks: true,
   },
 });

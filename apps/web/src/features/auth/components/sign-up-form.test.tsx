@@ -1,46 +1,28 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { predicates, server } from "#/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/testing/utils";
+import { predicates, server } from "#/testing/mocks";
 import { http, HttpResponse } from "msw";
+import type { SignUpInput } from "@bola/contracts/auth";
 import { SignUpForm } from "./sign-up-form";
 
 describe("SignUpForm", () => {
-  it("should request sign up and call the provided onSignUp callback", async () => {
+  it("should prefill provided data", async () => {
     // Arrange
-    let requestBody: unknown;
-    server.use(
-      http.post(predicates.api.auth.signUp, async ({ request }) => {
-        requestBody = await request.json();
-        return HttpResponse.json({ success: true });
-      }),
-    );
-
     const onSignUp = vi.fn();
-    render(<SignUpForm onSignUp={onSignUp} />);
-    const user = userEvent.setup();
-
-    // Act
-    await user.type(screen.getByLabelText(/name/i), "Test");
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/password/i), "password");
-    await user.click(screen.getByRole("button", { name: /sign up/i }));
+    render(<SignUpForm onSignUp={onSignUp} data={{ name: "Test", email: "test@example.com" }} />);
 
     // Assert
-    await waitFor(() => {
-      expect(onSignUp).toHaveBeenCalledWith({ name: "Test", email: "test@example.com" });
-    });
-    expect(requestBody).toEqual({
-      name: "Test",
-      email: "test@example.com",
-      password: "password",
-    });
+    expect(screen.getByLabelText(/name/i)).toHaveValue("Test");
+    expect(screen.getByLabelText(/email/i)).toHaveValue("test@example.com");
   });
 
-  it("should send redirect as the request query param when it is provided", async () => {
+  it("should request sign up and call the provided onSignUp callback", async () => {
     // Arrange
     let requestUrl!: string;
+    let requestBody!: SignUpInput;
     server.use(
-      http.post(predicates.api.auth.signUp, ({ request }) => {
+      http.post(predicates.api.auth.signUp, async ({ request }) => {
         requestUrl = request.url;
+        requestBody = (await request.json()) as SignUpInput;
         return HttpResponse.json({ success: true });
       }),
     );
@@ -57,19 +39,14 @@ describe("SignUpForm", () => {
 
     // Assert
     await waitFor(() => {
-      expect(onSignUp).toHaveBeenCalled();
+      expect(onSignUp).toHaveBeenCalledWith({ name: "Test", email: "test@example.com" });
     });
     expect(requestUrl).toContain("redirect=%2Facme");
-  });
-
-  it("should prefill provided data", async () => {
-    // Arrange
-    const onSignUp = vi.fn();
-    render(<SignUpForm onSignUp={onSignUp} data={{ name: "Test", email: "test@example.com" }} />);
-
-    // Assert
-    expect(screen.getByDisplayValue("Test")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("test@example.com")).toBeInTheDocument();
+    expect(requestBody).toEqual({
+      name: "Test",
+      email: "test@example.com",
+      password: "password",
+    });
   });
 
   it("should prevent form submission when validation fails", async () => {
@@ -98,8 +75,8 @@ describe("SignUpForm", () => {
     expect(screen.getByLabelText(/password/i)).toHaveAttribute("data-invalid", "true");
     expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
 
-    expect(requestSent).toBe(false);
     expect(onSignUp).not.toHaveBeenCalled();
+    expect(requestSent).toBe(false);
   });
 
   it("should display server error message when the request fails with an exception", async () => {
@@ -109,10 +86,7 @@ describe("SignUpForm", () => {
         return HttpResponse.json(
           {
             success: false,
-            error: {
-              code: "auth.email_already_in_use",
-              message: "Email address is already in use",
-            },
+            error: { code: "api_code", message: "api message" },
           },
           { status: 409 },
         );
@@ -130,7 +104,7 @@ describe("SignUpForm", () => {
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     // Assert
-    expect(await screen.findByText("Email address is already in use")).toBeInTheDocument();
+    expect(await screen.findByText("api message")).toBeInTheDocument();
     expect(onSignUp).not.toHaveBeenCalled();
   });
 
