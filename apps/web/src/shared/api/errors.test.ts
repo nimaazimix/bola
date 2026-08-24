@@ -10,8 +10,8 @@ describe("toApiError", () => {
       data: {
         success: false,
         error: {
-          message: "Internal server error",
-          code: "common.internal_error",
+          message: "api message",
+          code: "api_code",
           details: { reason: "server" },
         },
       },
@@ -24,8 +24,8 @@ describe("toApiError", () => {
     expect(result).toBeInstanceOf(ApiError);
     expect(result.kind).toBe("http");
     expect(result.status).toBe(500);
-    expect(result.message).toBe("Internal server error");
-    expect(result.code).toBe("common.internal_error");
+    expect(result.message).toBe("api message");
+    expect(result.code).toBe("api_code");
     expect(result.details).toEqual({ reason: "server" });
     expect(result.cause).toBe(originalError);
   });

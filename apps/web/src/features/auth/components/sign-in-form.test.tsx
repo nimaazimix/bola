@@ -3,6 +3,7 @@ import { predicates, server } from "#/testing/mocks";
 import { userFactory } from "#/testing/factories";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores/auth.store";
+import type { SignInInput } from "@bola/contracts/auth";
 import { SignInForm } from "./sign-in-form";
 
 describe("SignInForm", () => {
@@ -12,13 +13,16 @@ describe("SignInForm", () => {
 
   it("should authenticate user and call the provided onSignIn callback", async () => {
     // Arrange
-    let requestBody: unknown;
+    let requestBody!: SignInInput;
     server.use(
       http.post(predicates.api.auth.signIn, async ({ request }) => {
-        requestBody = await request.json();
+        requestBody = (await request.json()) as SignInInput;
         return HttpResponse.json({
           success: true,
-          data: { accessToken: "access-token", user: userFactory.build() },
+          data: {
+            accessToken: "access-token",
+            user: userFactory.build({ email: requestBody.email }),
+          },
         });
       }),
     );
@@ -62,8 +66,8 @@ describe("SignInForm", () => {
     expect(screen.getByLabelText(/email/i)).toHaveAttribute("data-invalid", "true");
     expect(screen.getByText(/enter a valid email address/i)).toBeInTheDocument();
 
-    expect(requestSent).toBe(false);
     expect(onSignIn).not.toHaveBeenCalled();
+    expect(requestSent).toBe(false);
   });
 
   it("should display server error message when the request fails with an exception", async () => {
@@ -73,10 +77,7 @@ describe("SignInForm", () => {
         return HttpResponse.json(
           {
             success: false,
-            error: {
-              code: "auth.credentials_invalid",
-              message: "Email address or password is incorrect",
-            },
+            error: { code: "api_code", message: "api message" },
           },
           { status: 401 },
         );
@@ -93,7 +94,7 @@ describe("SignInForm", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     // Assert
-    expect(await screen.findByText("Email address or password is incorrect")).toBeInTheDocument();
+    expect(await screen.findByText("api message")).toBeInTheDocument();
     expect(onSignIn).not.toHaveBeenCalled();
   });
 

@@ -1,12 +1,14 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
 import { workspaceFactory } from "#/testing/factories";
+import type { CreateWorkspaceInput } from "@bola/contracts/workspaces";
 
 export const workspacesHandlers = [
-  http.post(predicates.api.workspaces.all, () => {
+  http.post(predicates.api.workspaces.all, async ({ request }) => {
+    const body = (await request.json()) as CreateWorkspaceInput;
     return HttpResponse.json({
       success: true,
-      data: workspaceFactory.build(),
+      data: workspaceFactory.build({ name: body.name, slug: body.slug }),
     });
   }),
   http.get(predicates.api.workspaces.all, () => {
