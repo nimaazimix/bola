@@ -1,6 +1,6 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { predicates, server } from "#/test/mocks";
-import { userFactory } from "#/test/factories";
+import { render, screen, userEvent, waitFor } from "#/testing/utils";
+import { predicates, server } from "#/testing/mocks";
+import { userFactory } from "#/testing/factories";
 import { http, HttpResponse } from "msw";
 import { useAuthStore } from "#/shared/stores/auth.store";
 import { SignInForm } from "./sign-in-form";

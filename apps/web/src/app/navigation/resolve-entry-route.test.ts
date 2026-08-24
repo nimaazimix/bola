@@ -1,4 +1,4 @@
-import { workspaceFactory } from "#/test/factories";
+import { workspaceFactory } from "#/testing/factories";
 import { queryClient } from "#/shared/api/query-client";
 import { resolveEntryRoute } from "./resolve-entry-route";
 

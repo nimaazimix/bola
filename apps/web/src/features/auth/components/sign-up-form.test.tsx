@@ -1,5 +1,5 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { predicates, server } from "#/test/mocks";
+import { render, screen, userEvent, waitFor } from "#/testing/utils";
+import { predicates, server } from "#/testing/mocks";
 import { http, HttpResponse } from "msw";
 import { SignUpForm } from "./sign-up-form";
 

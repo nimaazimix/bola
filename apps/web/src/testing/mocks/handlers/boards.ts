@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
-import { boardFactory } from "#/test/factories";
+import { boardFactory } from "#/testing/factories";
 
 export const boardsHandlers = [
   http.post(predicates.api.boards.all, () => {

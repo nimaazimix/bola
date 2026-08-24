@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
-import { userFactory } from "#/test/factories";
+import { userFactory } from "#/testing/factories";
 
 export const authHandlers = [
   http.post(predicates.api.auth.signUp, () => {

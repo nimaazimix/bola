@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { userFactory } from "#/test/factories";
+import { userFactory } from "#/testing/factories";
 import { useAuthStore } from "../stores/auth.store";
 import { ApiError } from "./errors";
 import { setupInterceptors } from "./interceptors";

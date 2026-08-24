@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { predicates } from "../predicates";
-import { workspaceFactory } from "#/test/factories";
+import { workspaceFactory } from "#/testing/factories";
 
 export const workspacesHandlers = [
   http.post(predicates.api.workspaces.all, () => {

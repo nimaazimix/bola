@@ -1,6 +1,6 @@
-import { render, screen, userEvent, waitFor } from "#/test/utils";
-import { predicates, server } from "#/test/mocks";
-import { workspaceFactory } from "#/test/factories";
+import { render, screen, userEvent, waitFor } from "#/testing/utils";
+import { predicates, server } from "#/testing/mocks";
+import { workspaceFactory } from "#/testing/factories";
 import { http, HttpResponse } from "msw";
 import { WorkspaceForm } from "./workspace-form";
 
